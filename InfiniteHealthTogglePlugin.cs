@@ -14,7 +14,7 @@ using UnityEngine;
 
 namespace InfiniteHealthToggle
 {
-    [BepInPlugin("com.master.tools", "Advanced SPT Mod Menu", "1.7.2")]
+    [BepInPlugin("com.master.tools", "Advanced SPT Mod Menu", "1.8.2")]
     public sealed class InfiniteHealthTogglePlugin : BaseUnityPlugin
     {
         internal static InfiniteHealthTogglePlugin Instance;
@@ -23,12 +23,11 @@ namespace InfiniteHealthToggle
         internal static ConfigEntry<bool> GodModeEnabled;
         internal static ConfigEntry<bool> InfiniteStaminaEnabled;
         internal static ConfigEntry<bool> NoWeightEnabled;
-        internal static ConfigEntry<bool> InfiniteAmmoEnabled;
         internal static ConfigEntry<bool> StatusWindowEnabled;
 
         internal static ConfigEntry<bool> ShowWeaponInfo;
         internal static ConfigEntry<KeyboardShortcut> ToggleWeaponInfoHotkey;
-        private static FieldInfo _stackCountField; // Adicione esta linha para o Reflection
+        private static FieldInfo _stackCountField;
 
         // --- Hotkeys (Customizable) ---
         internal static ConfigEntry<KeyboardShortcut> ToggleUiHotkey;
@@ -36,7 +35,6 @@ namespace InfiniteHealthToggle
         internal static ConfigEntry<KeyboardShortcut> ToggleGodModeHotkey;
         internal static ConfigEntry<KeyboardShortcut> ToggleStaminaHotkey;
         internal static ConfigEntry<KeyboardShortcut> ToggleWeightHotkey;
-        internal static ConfigEntry<KeyboardShortcut> ToggleAmmoHotkey;
         internal static ConfigEntry<KeyboardShortcut> ToggleEspHotkey;
         internal static ConfigEntry<KeyboardShortcut> ToggleItemEspHotkey;
         internal static ConfigEntry<KeyboardShortcut> ToggleContainerEspHotkey;
@@ -116,7 +114,6 @@ namespace InfiniteHealthToggle
             GodModeEnabled = Config.Bind("General", "GodMode", false, "Player takes no damage.");
             InfiniteStaminaEnabled = Config.Bind("General", "Infinite Stamina", false, "Unlimited stamina and breath.");
             NoWeightEnabled = Config.Bind("General", "No Weight", false, "Removes weight penalties.");
-            InfiniteAmmoEnabled = Config.Bind("General", "Infinite Ammo", false, "Unlimited ammo in magazines.");
             StatusWindowEnabled = Config.Bind("General", "Status Window", true, "Show the mini status window.");
 
             ShowWeaponInfo = Config.Bind("General", "Show Weapon Info", true, "Show current weapon and ammo in status window.");
@@ -128,7 +125,6 @@ namespace InfiniteHealthToggle
             ToggleStatusHotkey = Config.Bind("Hotkeys", "02. Toggle Status Window", new KeyboardShortcut(KeyCode.Keypad0), hotkeyDesc);
             ToggleGodModeHotkey = Config.Bind("Hotkeys", "03. Toggle GodMode", new KeyboardShortcut(KeyCode.Keypad1), hotkeyDesc);
             ToggleStaminaHotkey = Config.Bind("Hotkeys", "04. Toggle Stamina", new KeyboardShortcut(KeyCode.Keypad2), hotkeyDesc);
-            ToggleAmmoHotkey = Config.Bind("Hotkeys", "05. Toggle Ammo", new KeyboardShortcut(KeyCode.Keypad3), hotkeyDesc);
             ToggleWeightHotkey = Config.Bind("Hotkeys", "06. Toggle Weight", new KeyboardShortcut(KeyCode.Keypad4), hotkeyDesc);
             ToggleEspHotkey = Config.Bind("Hotkeys", "07. Toggle Player ESP", new KeyboardShortcut(KeyCode.Keypad5), hotkeyDesc);
             ToggleItemEspHotkey = Config.Bind("Hotkeys", "08. Toggle Item ESP", new KeyboardShortcut(KeyCode.Keypad6), hotkeyDesc);
@@ -165,18 +161,6 @@ namespace InfiniteHealthToggle
             TryPatchDamageMethod(typeof(Player), "ApplyDamage", nameof(BlockDamagePrefix_Player));
             TryPatchDamageMethod(typeof(ActiveHealthController), "ApplyDamage", nameof(BlockDamagePrefix_ActiveHealthController));
 
-            // Infinite Ammo Patch
-            try
-            {
-                var ammoMethod = typeof(Weapon).GetMethod("ConsumeAmmo", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-                if (ammoMethod != null)
-                {
-                    var ammoPrefix = new HarmonyMethod(typeof(InfiniteHealthTogglePlugin).GetMethod(nameof(InfiniteAmmoPrefix), BindingFlags.Static | BindingFlags.NonPublic));
-                    _harmony.Patch(ammoMethod, prefix: ammoPrefix);
-                }
-            }
-            catch { }
-
             Logger.LogInfo("[AdvancedMod] Loaded. INSERT: UI, Keypad 0-9: Cheats.");
         }
 
@@ -194,7 +178,6 @@ namespace InfiniteHealthToggle
             if (ToggleGodModeHotkey.Value.IsDown()) GodModeEnabled.Value = !GodModeEnabled.Value;
             if (ToggleStaminaHotkey.Value.IsDown()) InfiniteStaminaEnabled.Value = !InfiniteStaminaEnabled.Value;
             if (ToggleWeightHotkey.Value.IsDown()) NoWeightEnabled.Value = !NoWeightEnabled.Value;
-            if (ToggleAmmoHotkey.Value.IsDown()) InfiniteAmmoEnabled.Value = !InfiniteAmmoEnabled.Value;
             if (ToggleEspHotkey.Value.IsDown()) EspEnabled.Value = !EspEnabled.Value;
             if (ToggleItemEspHotkey.Value.IsDown()) ItemEspEnabled.Value = !ItemEspEnabled.Value;
             if (ToggleContainerEspHotkey.Value.IsDown()) ContainerEspEnabled.Value = !ContainerEspEnabled.Value;
@@ -330,7 +313,6 @@ namespace InfiniteHealthToggle
             string status = "<b>[ MOD STATUS ]</b>\n";
             status += $"GodMode: <color={(GodModeEnabled.Value ? "green" : "red")}>{(GodModeEnabled.Value ? "ON" : "OFF")}</color>\n";
             status += $"Stamina: <color={(InfiniteStaminaEnabled.Value ? "green" : "red")}>{(InfiniteStaminaEnabled.Value ? "ON" : "OFF")}</color>\n";
-            status += $"Ammo: <color={(InfiniteAmmoEnabled.Value ? "green" : "red")}>{(InfiniteAmmoEnabled.Value ? "ON" : "OFF")}</color>\n";
             status += $"Weight: <color={(NoWeightEnabled.Value ? "green" : "red")}>{(NoWeightEnabled.Value ? "ON" : "OFF")}</color>\n";
             status += $"ESP: <color={(EspEnabled.Value ? "green" : "red")}>{(EspEnabled.Value ? "ON" : "OFF")}</color>\n";
 
@@ -519,7 +501,6 @@ namespace InfiniteHealthToggle
             GUILayout.Label("<b>--- GENERAL CHEATS ---</b>");
             GodModeEnabled.Value = GUILayout.Toggle(GodModeEnabled.Value, $" GodMode [{ToggleGodModeHotkey.Value}]");
             InfiniteStaminaEnabled.Value = GUILayout.Toggle(InfiniteStaminaEnabled.Value, $" Infinite Stamina [{ToggleStaminaHotkey.Value}]");
-            InfiniteAmmoEnabled.Value = GUILayout.Toggle(InfiniteAmmoEnabled.Value, $" Infinite Ammo [{ToggleAmmoHotkey.Value}]");
             NoWeightEnabled.Value = GUILayout.Toggle(NoWeightEnabled.Value, $" No Weight Penalties [{ToggleWeightHotkey.Value}]");
             StatusWindowEnabled.Value = GUILayout.Toggle(StatusWindowEnabled.Value, $" Show Status Window [{ToggleStatusHotkey.Value}]");
             ShowWeaponInfo.Value = GUILayout.Toggle(ShowWeaponInfo.Value, $" Show Weapon Info in Status [{ToggleWeaponInfoHotkey.Value}]");
@@ -565,7 +546,6 @@ namespace InfiniteHealthToggle
             GUILayout.Label($"GodMode: {ToggleGodModeHotkey.Value}");
             GUILayout.Label($"Stamina: {ToggleStaminaHotkey.Value}");
             GUILayout.Label($"Weight: {ToggleWeightHotkey.Value}");
-            GUILayout.Label($"Ammo: {ToggleAmmoHotkey.Value}");
             GUILayout.Label($"Player ESP: {ToggleEspHotkey.Value}");
             GUILayout.Label($"Item ESP: {ToggleItemEspHotkey.Value}");
             GUILayout.Label($"Container ESP: {ToggleContainerEspHotkey.Value}");
@@ -637,22 +617,6 @@ namespace InfiniteHealthToggle
             }
             return true;
         }
-
-        private static bool InfiniteAmmoPrefix(Weapon __instance)
-        {
-            if (InfiniteAmmoEnabled.Value && _localPlayer != null && ReferenceEquals(__instance.Owner, _localPlayer))
-            {
-                var magazine = __instance.GetCurrentMagazine();
-                if (magazine != null && _stackCountField != null)
-                {
-                    // Força a contagem de munição no campo privado para o máximo
-                    _stackCountField.SetValue(magazine, magazine.MaxCount);
-                }
-                return false; // Bloqueia o consumo original de munição
-            }
-            return true;
-        }
-
 
         private class EspTarget
         {
