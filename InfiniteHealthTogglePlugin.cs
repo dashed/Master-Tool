@@ -1,4 +1,4 @@
-﻿using BepInEx;
+using BepInEx;
 using BepInEx.Configuration;
 using Comfort.Common;
 using EFT;
@@ -14,7 +14,7 @@ using UnityEngine;
 
 namespace InfiniteHealthToggle
 {
-    [BepInPlugin("com.master.tools", "Advanced SPT Mod Menu", "1.5.0")]
+    [BepInPlugin("com.master.tools", "Advanced SPT Mod Menu", "1.7.2")]
     public sealed class InfiniteHealthTogglePlugin : BaseUnityPlugin
     {
         internal static InfiniteHealthTogglePlugin Instance;
@@ -23,17 +23,34 @@ namespace InfiniteHealthToggle
         internal static ConfigEntry<bool> GodModeEnabled;
         internal static ConfigEntry<bool> InfiniteStaminaEnabled;
         internal static ConfigEntry<bool> NoWeightEnabled;
-        internal static ConfigEntry<KeyboardShortcut> ToggleGodModeHotkey;
+        internal static ConfigEntry<bool> InfiniteAmmoEnabled;
+        internal static ConfigEntry<bool> StatusWindowEnabled;
+
+        internal static ConfigEntry<bool> ShowWeaponInfo;
+        internal static ConfigEntry<KeyboardShortcut> ToggleWeaponInfoHotkey;
+        private static FieldInfo _stackCountField; // Adicione esta linha para o Reflection
+
+        // --- Hotkeys (Customizable) ---
         internal static ConfigEntry<KeyboardShortcut> ToggleUiHotkey;
+        internal static ConfigEntry<KeyboardShortcut> ToggleStatusHotkey;
+        internal static ConfigEntry<KeyboardShortcut> ToggleGodModeHotkey;
+        internal static ConfigEntry<KeyboardShortcut> ToggleStaminaHotkey;
+        internal static ConfigEntry<KeyboardShortcut> ToggleWeightHotkey;
+        internal static ConfigEntry<KeyboardShortcut> ToggleAmmoHotkey;
+        internal static ConfigEntry<KeyboardShortcut> ToggleEspHotkey;
+        internal static ConfigEntry<KeyboardShortcut> ToggleItemEspHotkey;
+        internal static ConfigEntry<KeyboardShortcut> ToggleContainerEspHotkey;
+        internal static ConfigEntry<KeyboardShortcut> ToggleCullingHotkey;
+        internal static ConfigEntry<KeyboardShortcut> ToggleUnlockDoorsHotkey;
 
         // --- Player ESP Settings ---
         internal static ConfigEntry<bool> EspEnabled;
-        internal static ConfigEntry<KeyboardShortcut> ToggleEspHotkey;
         internal static ConfigEntry<float> EspUpdateInterval;
         internal static ConfigEntry<float> EspMaxDistance;
         internal static ConfigEntry<Color> ColorBear;
         internal static ConfigEntry<Color> ColorUsec;
         internal static ConfigEntry<Color> ColorSavage;
+        internal static ConfigEntry<Color> ColorBoss;
 
         // --- Item & Container ESP Settings ---
         internal static ConfigEntry<bool> ItemEspEnabled;
@@ -44,20 +61,29 @@ namespace InfiniteHealthToggle
         internal static ConfigEntry<Color> ColorItem;
         internal static ConfigEntry<Color> ColorContainer;
 
+        // --- Performance Settings ---
+        internal static ConfigEntry<bool> PerformanceMode;
+        internal static ConfigEntry<float> BotRenderDistance;
+
         private Harmony _harmony;
 
         // --- UI ---
         private bool _showUi;
-        private Rect _windowRect = new Rect(25, 25, 500, 650);
+        private Rect _windowRect = new Rect(25, 25, 500, 750);
         private Vector2 _mainScroll;
         private bool _isResizing;
         private Vector2 _resizeStartMouse;
         private Rect _resizeStartRect;
         private const float ResizeGripSize = 18f;
         private const float MinWindowWidth = 400f;
-        private const float MinWindowHeight = 450f;
+        private const float MinWindowHeight = 500f;
         private const float DragBarHeight = 22f;
         private const int WindowId = 987654;
+
+        // --- Status Window (Mini Window) ---
+        private Rect _statusRect = new Rect(Screen.width - 210, 20, 200, 165);
+        private GUIStyle _statusStyle;
+        private bool _statusStyleInitialized;
 
         // --- Cache ---
         private static Player _localPlayer;
@@ -78,27 +104,46 @@ namespace InfiniteHealthToggle
         // --- Optimization Cache ---
         private LootableContainer[] _cachedContainers;
         private float _nextContainerCacheRefresh;
-        private const float ContainerCacheInterval = 10.0f; // Refresh container list every 10s
+        private const float ContainerCacheInterval = 10.0f;
 
         private void Awake()
         {
             Instance = this;
 
+            string hotkeyDesc = "Hotkey to toggle this feature. Use Unity KeyCode names (e.g., Keypad0, Keypad1, Insert, Home, PageUp).";
+
             // General Binds
             GodModeEnabled = Config.Bind("General", "GodMode", false, "Player takes no damage.");
             InfiniteStaminaEnabled = Config.Bind("General", "Infinite Stamina", false, "Unlimited stamina and breath.");
             NoWeightEnabled = Config.Bind("General", "No Weight", false, "Removes weight penalties.");
-            ToggleGodModeHotkey = Config.Bind("Hotkeys", "Toggle GodMode", new KeyboardShortcut(KeyCode.F7), "Hotkey for GodMode.");
-            ToggleUiHotkey = Config.Bind("Hotkeys", "Toggle UI", new KeyboardShortcut(KeyCode.Insert), "Hotkey for Menu.");
+            InfiniteAmmoEnabled = Config.Bind("General", "Infinite Ammo", false, "Unlimited ammo in magazines.");
+            StatusWindowEnabled = Config.Bind("General", "Status Window", true, "Show the mini status window.");
+
+            ShowWeaponInfo = Config.Bind("General", "Show Weapon Info", true, "Show current weapon and ammo in status window.");
+            ToggleWeaponInfoHotkey = Config.Bind("Hotkeys", "12. Toggle Weapon Info", new KeyboardShortcut(KeyCode.L), "Hotkey to toggle weapon info display.");
+            _stackCountField = typeof(Item).GetField("StackObjectsCount", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+
+            // Hotkeys - Configured to Numpad 0-9 by default
+            ToggleUiHotkey = Config.Bind("Hotkeys", "01. Toggle UI", new KeyboardShortcut(KeyCode.Insert), hotkeyDesc);
+            ToggleStatusHotkey = Config.Bind("Hotkeys", "02. Toggle Status Window", new KeyboardShortcut(KeyCode.Keypad0), hotkeyDesc);
+            ToggleGodModeHotkey = Config.Bind("Hotkeys", "03. Toggle GodMode", new KeyboardShortcut(KeyCode.Keypad1), hotkeyDesc);
+            ToggleStaminaHotkey = Config.Bind("Hotkeys", "04. Toggle Stamina", new KeyboardShortcut(KeyCode.Keypad2), hotkeyDesc);
+            ToggleAmmoHotkey = Config.Bind("Hotkeys", "05. Toggle Ammo", new KeyboardShortcut(KeyCode.Keypad3), hotkeyDesc);
+            ToggleWeightHotkey = Config.Bind("Hotkeys", "06. Toggle Weight", new KeyboardShortcut(KeyCode.Keypad4), hotkeyDesc);
+            ToggleEspHotkey = Config.Bind("Hotkeys", "07. Toggle Player ESP", new KeyboardShortcut(KeyCode.Keypad5), hotkeyDesc);
+            ToggleItemEspHotkey = Config.Bind("Hotkeys", "08. Toggle Item ESP", new KeyboardShortcut(KeyCode.Keypad6), hotkeyDesc);
+            ToggleContainerEspHotkey = Config.Bind("Hotkeys", "09. Toggle Container ESP", new KeyboardShortcut(KeyCode.Keypad7), hotkeyDesc);
+            ToggleCullingHotkey = Config.Bind("Hotkeys", "10. Toggle Culling", new KeyboardShortcut(KeyCode.Keypad8), hotkeyDesc);
+            ToggleUnlockDoorsHotkey = Config.Bind("Hotkeys", "11. Unlock All Doors", new KeyboardShortcut(KeyCode.Keypad9), hotkeyDesc);
 
             // Player ESP Binds
             EspEnabled = Config.Bind("ESP Players", "Enabled", false, "Show players/bots.");
-            ToggleEspHotkey = Config.Bind("Hotkeys", "Toggle ESP", new KeyboardShortcut(KeyCode.F8), "Hotkey for ESP.");
             EspUpdateInterval = Config.Bind("ESP Players", "Update Interval", 0.05f, "Update rate for player ESP.");
             EspMaxDistance = Config.Bind("ESP Players", "Max Distance", 400f, "Max distance for players.");
             ColorBear = Config.Bind("ESP Players", "Color BEAR", Color.red, "Color for BEAR faction.");
             ColorUsec = Config.Bind("ESP Players", "Color USEC", Color.blue, "Color for USEC faction.");
             ColorSavage = Config.Bind("ESP Players", "Color Savage", Color.yellow, "Color for Scavs/Bots.");
+            ColorBoss = Config.Bind("ESP Players", "Color Boss", new Color(0.5f, 0f, 0.5f), "Color for Bosses.");
 
             // Item & Container ESP Binds
             ItemEspEnabled = Config.Bind("ESP Items", "Enabled", false, "Show loose loot.");
@@ -109,14 +154,30 @@ namespace InfiniteHealthToggle
             ColorItem = Config.Bind("ESP Items", "Color", Color.green, "Color for loose items.");
             ColorContainer = Config.Bind("ESP Containers", "Color", new Color(1f, 0.5f, 0f), "Color for container items.");
 
-            _harmony = new Harmony("com.seunome.infinitehealthtoggle");
+            // Performance Binds
+            PerformanceMode = Config.Bind("Performance", "Enable Distance Culling", true, "Only render bots within distance.");
+            BotRenderDistance = Config.Bind("Performance", "Bot Render Distance", 500f, "Distance to stop rendering bots.");
+
+            _harmony = new Harmony("com.master.tools");
 
             // Patches
             TryPatchDamageMethod(typeof(Player), "ApplyDamageInfo", nameof(BlockDamagePrefix_Player));
             TryPatchDamageMethod(typeof(Player), "ApplyDamage", nameof(BlockDamagePrefix_Player));
             TryPatchDamageMethod(typeof(ActiveHealthController), "ApplyDamage", nameof(BlockDamagePrefix_ActiveHealthController));
 
-            Logger.LogInfo("[AdvancedMod] Loaded. INSERT: UI, F7: GodMode, F8: ESP.");
+            // Infinite Ammo Patch
+            try
+            {
+                var ammoMethod = typeof(Weapon).GetMethod("ConsumeAmmo", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                if (ammoMethod != null)
+                {
+                    var ammoPrefix = new HarmonyMethod(typeof(InfiniteHealthTogglePlugin).GetMethod(nameof(InfiniteAmmoPrefix), BindingFlags.Static | BindingFlags.NonPublic));
+                    _harmony.Patch(ammoMethod, prefix: ammoPrefix);
+                }
+            }
+            catch { }
+
+            Logger.LogInfo("[AdvancedMod] Loaded. INSERT: UI, Keypad 0-9: Cheats.");
         }
 
         private void OnDestroy()
@@ -126,9 +187,19 @@ namespace InfiniteHealthToggle
 
         private void Update()
         {
+            // Hotkey Handling
             if (ToggleUiHotkey.Value.IsDown()) _showUi = !_showUi;
+            if (ToggleStatusHotkey.Value.IsDown()) StatusWindowEnabled.Value = !StatusWindowEnabled.Value;
+            if (ToggleWeaponInfoHotkey.Value.IsDown()) ShowWeaponInfo.Value = !ShowWeaponInfo.Value;
             if (ToggleGodModeHotkey.Value.IsDown()) GodModeEnabled.Value = !GodModeEnabled.Value;
+            if (ToggleStaminaHotkey.Value.IsDown()) InfiniteStaminaEnabled.Value = !InfiniteStaminaEnabled.Value;
+            if (ToggleWeightHotkey.Value.IsDown()) NoWeightEnabled.Value = !NoWeightEnabled.Value;
+            if (ToggleAmmoHotkey.Value.IsDown()) InfiniteAmmoEnabled.Value = !InfiniteAmmoEnabled.Value;
             if (ToggleEspHotkey.Value.IsDown()) EspEnabled.Value = !EspEnabled.Value;
+            if (ToggleItemEspHotkey.Value.IsDown()) ItemEspEnabled.Value = !ItemEspEnabled.Value;
+            if (ToggleContainerEspHotkey.Value.IsDown()) ContainerEspEnabled.Value = !ContainerEspEnabled.Value;
+            if (ToggleCullingHotkey.Value.IsDown()) PerformanceMode.Value = !PerformanceMode.Value;
+            if (ToggleUnlockDoorsHotkey.Value.IsDown()) UnlockAllDoors();
 
             if (Time.time >= _nextLocalRefresh)
             {
@@ -139,7 +210,7 @@ namespace InfiniteHealthToggle
             if (_localPlayer != null)
             {
                 if (InfiniteStaminaEnabled.Value) HandleInfiniteStamina();
-                // NoWeight logic is handled via other means if necessary, but kept for consistency
+                HandlePerformanceCulling();
             }
 
             // ESP Update Logic
@@ -163,10 +234,36 @@ namespace InfiniteHealthToggle
                 var stamina = _localPlayer.Physical.Stamina;
                 var hands = _localPlayer.Physical.HandsStamina;
                 var oxygen = _localPlayer.Physical.Oxygen;
-
                 if (stamina != null) stamina.Current = stamina.TotalCapacity;
                 if (hands != null) hands.Current = hands.TotalCapacity;
                 if (oxygen != null) oxygen.Current = oxygen.TotalCapacity;
+            }
+            catch { }
+        }
+
+        private void HandlePerformanceCulling()
+        {
+            if (_gameWorld == null || _localPlayer == null) return;
+            try
+            {
+                var players = _gameWorld.RegisteredPlayers;
+                foreach (var p in players)
+                {
+                    if (p == null || p.IsYourPlayer) continue;
+
+                    GameObject botObj = (p as Component)?.gameObject;
+                    if (botObj == null) continue;
+
+                    bool shouldRender = true;
+                    if (PerformanceMode.Value)
+                    {
+                        float dist = Vector3.Distance(_localPlayer.Transform.position, p.Transform.position);
+                        shouldRender = dist <= BotRenderDistance.Value;
+                    }
+
+                    if (botObj.activeSelf != shouldRender)
+                        botObj.SetActive(shouldRender);
+                }
             }
             catch { }
         }
@@ -197,11 +294,13 @@ namespace InfiniteHealthToggle
         private void OnGUI()
         {
             if (!_espStyleInitialized) InitializeEspStyle();
+            if (!_statusStyleInitialized) InitializeStatusStyle();
 
             if (_localPlayer != null && _mainCamera != null)
             {
                 if (EspEnabled.Value) RenderEsp();
                 if (ItemEspEnabled.Value || ContainerEspEnabled.Value) RenderItemEsp();
+                if (StatusWindowEnabled.Value) DrawStatusWindow();
             }
 
             if (_showUi)
@@ -217,22 +316,61 @@ namespace InfiniteHealthToggle
             _espStyleInitialized = true;
         }
 
+        private void InitializeStatusStyle()
+        {
+            _statusStyle = new GUIStyle(GUI.skin.box);
+            _statusStyle.alignment = TextAnchor.UpperLeft;
+            _statusStyle.fontSize = 11;
+            _statusStyle.normal.textColor = Color.white;
+            _statusStyleInitialized = true;
+        }
+
+        private void DrawStatusWindow()
+        {
+            string status = "<b>[ MOD STATUS ]</b>\n";
+            status += $"GodMode: <color={(GodModeEnabled.Value ? "green" : "red")}>{(GodModeEnabled.Value ? "ON" : "OFF")}</color>\n";
+            status += $"Stamina: <color={(InfiniteStaminaEnabled.Value ? "green" : "red")}>{(InfiniteStaminaEnabled.Value ? "ON" : "OFF")}</color>\n";
+            status += $"Ammo: <color={(InfiniteAmmoEnabled.Value ? "green" : "red")}>{(InfiniteAmmoEnabled.Value ? "ON" : "OFF")}</color>\n";
+            status += $"Weight: <color={(NoWeightEnabled.Value ? "green" : "red")}>{(NoWeightEnabled.Value ? "ON" : "OFF")}</color>\n";
+            status += $"ESP: <color={(EspEnabled.Value ? "green" : "red")}>{(EspEnabled.Value ? "ON" : "OFF")}</color>\n";
+
+            if (ShowWeaponInfo.Value && _localPlayer != null)
+            {
+                try
+                {
+                    var handsController = _localPlayer.HandsController;
+                    if (handsController != null && handsController.Item is Weapon weapon)
+                    {
+                        string weaponName = weapon.ShortName.Localized();
+                        int currentAmmo = weapon.GetCurrentMagazineCount();
+                        int maxAmmo = weapon.GetMaxMagazineCount();
+
+                        status += $"\n<b>[ WEAPON ]</b>\n";
+                        status += $"Name: <color=yellow>{weaponName}</color>\n";
+                        status += $"Ammo: <color=cyan>{currentAmmo}/{maxAmmo}</color>";
+                    }
+                }
+                catch { }
+            }
+
+            float height = ShowWeaponInfo.Value ? 200 : 140;
+            _statusRect.height = height;
+            GUI.Box(_statusRect, status, _statusStyle);
+        }
+
+
         private void UpdateEspTargets()
         {
             _espTargets.Clear();
             if (_gameWorld == null || _mainCamera == null) return;
-
             var players = _gameWorld.RegisteredPlayers;
             if (players == null) return;
-
             foreach (var player in players)
             {
                 if (player == null || player.IsYourPlayer || !player.HealthController.IsAlive) continue;
-
                 Vector3 targetPos = player.Transform.position;
                 float dist = Vector3.Distance(_localPlayer.Transform.position, targetPos);
                 if (dist > EspMaxDistance.Value) continue;
-
                 Vector3 screenPos = _mainCamera.WorldToScreenPoint(targetPos);
                 if (screenPos.z > 0)
                 {
@@ -240,13 +378,20 @@ namespace InfiniteHealthToggle
                     string side = player.Profile?.Side.ToString() ?? "Unknown";
                     string name = player.Profile?.Info?.Nickname ?? "Bot";
 
+                    bool isBoss = false;
+                    if (player.Profile?.Info?.Settings?.Role != null)
+                    {
+                        var role = player.Profile.Info.Settings.Role;
+                        isBoss = role.ToString().ToLower().Contains("boss") || role.ToString().ToLower().Contains("follower");
+                    }
+
                     _espTargets.Add(new EspTarget
                     {
                         ScreenPosition = screenPos,
                         Distance = dist,
                         Nickname = name,
-                        Side = side,
-                        Color = GetColorForSide(side)
+                        Side = isBoss ? "BOSS" : side,
+                        Color = isBoss ? ColorBoss.Value : GetColorForSide(side)
                     });
                 }
             }
@@ -256,13 +401,7 @@ namespace InfiniteHealthToggle
         {
             _itemEspTargets.Clear();
             if (_gameWorld == null || _mainCamera == null) return;
-
-            // Parse multiple filters
-            string[] filters = ItemEspFilter.Value.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-                                .Select(f => f.Trim().ToLower())
-                                .ToArray();
-
-            // 1. Loose Loot
+            string[] filters = ItemEspFilter.Value.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(f => f.Trim().ToLower()).ToArray();
             if (ItemEspEnabled.Value)
             {
                 var lootItems = _gameWorld.LootItems;
@@ -276,32 +415,22 @@ namespace InfiniteHealthToggle
                     }
                 }
             }
-
-            // 2. Container Loot (Optimized)
             if (ContainerEspEnabled.Value)
             {
-                // Refresh container cache periodically
                 if (_cachedContainers == null || Time.time >= _nextContainerCacheRefresh)
                 {
                     _cachedContainers = FindObjectsOfType<LootableContainer>();
                     _nextContainerCacheRefresh = Time.time + ContainerCacheInterval;
                 }
-
                 Vector3 playerPos = _localPlayer.Transform.position;
                 float maxDistSq = ItemEspMaxDistance.Value * ItemEspMaxDistance.Value;
-
                 foreach (var container in _cachedContainers)
                 {
                     if (container == null) continue;
-
-                    // Fast distance check using squared distance
                     Vector3 containerPos = container.transform.position;
                     float distSq = (containerPos - playerPos).sqrMagnitude;
                     if (distSq > maxDistSq) continue;
-
                     if (container.ItemOwner == null || container.ItemOwner.RootItem == null) continue;
-
-                    // Check items inside
                     var items = container.ItemOwner.RootItem.GetAllItems();
                     foreach (var item in items)
                     {
@@ -316,11 +445,8 @@ namespace InfiniteHealthToggle
         {
             float dist = Vector3.Distance(_localPlayer.Transform.position, pos);
             if (dist > ItemEspMaxDistance.Value) return;
-
             string name = item.ShortName.Localized();
             string id = item.TemplateId;
-
-            // Filter logic: match any of the filters
             bool matches = filters.Length == 0;
             if (!matches)
             {
@@ -333,9 +459,7 @@ namespace InfiniteHealthToggle
                     }
                 }
             }
-
             if (!matches) return;
-
             Vector3 screenPos = _mainCamera.WorldToScreenPoint(pos);
             if (screenPos.z > 0)
             {
@@ -393,14 +517,23 @@ namespace InfiniteHealthToggle
 
             // --- General Section ---
             GUILayout.Label("<b>--- GENERAL CHEATS ---</b>");
-            GodModeEnabled.Value = GUILayout.Toggle(GodModeEnabled.Value, " GodMode (F7)");
-            InfiniteStaminaEnabled.Value = GUILayout.Toggle(InfiniteStaminaEnabled.Value, " Infinite Stamina");
-            NoWeightEnabled.Value = GUILayout.Toggle(NoWeightEnabled.Value, " No Weight Penalties");
-            if (GUILayout.Button("Unlock All Doors in Raid")) UnlockAllDoors();
+            GodModeEnabled.Value = GUILayout.Toggle(GodModeEnabled.Value, $" GodMode [{ToggleGodModeHotkey.Value}]");
+            InfiniteStaminaEnabled.Value = GUILayout.Toggle(InfiniteStaminaEnabled.Value, $" Infinite Stamina [{ToggleStaminaHotkey.Value}]");
+            InfiniteAmmoEnabled.Value = GUILayout.Toggle(InfiniteAmmoEnabled.Value, $" Infinite Ammo [{ToggleAmmoHotkey.Value}]");
+            NoWeightEnabled.Value = GUILayout.Toggle(NoWeightEnabled.Value, $" No Weight Penalties [{ToggleWeightHotkey.Value}]");
+            StatusWindowEnabled.Value = GUILayout.Toggle(StatusWindowEnabled.Value, $" Show Status Window [{ToggleStatusHotkey.Value}]");
+            ShowWeaponInfo.Value = GUILayout.Toggle(ShowWeaponInfo.Value, $" Show Weapon Info in Status [{ToggleWeaponInfoHotkey.Value}]");
+            if (GUILayout.Button($"Unlock All Doors in Raid [{ToggleUnlockDoorsHotkey.Value}]")) UnlockAllDoors();
+
+            GUILayout.Space(10);
+            GUILayout.Label("<b>--- PERFORMANCE ---</b>");
+            PerformanceMode.Value = GUILayout.Toggle(PerformanceMode.Value, $" Enable Bot Distance Culling [{ToggleCullingHotkey.Value}]");
+            GUILayout.Label($"Bot Render Distance: {BotRenderDistance.Value:F0}m");
+            BotRenderDistance.Value = GUILayout.HorizontalSlider(BotRenderDistance.Value, 50f, 1000f);
 
             GUILayout.Space(10);
             GUILayout.Label("<b>--- PLAYER ESP ---</b>");
-            EspEnabled.Value = GUILayout.Toggle(EspEnabled.Value, " Enable Player ESP (F8)");
+            EspEnabled.Value = GUILayout.Toggle(EspEnabled.Value, $" Enable Player ESP [{ToggleEspHotkey.Value}]");
             GUILayout.Label($"Max Distance: {EspMaxDistance.Value:F0}m");
             EspMaxDistance.Value = GUILayout.HorizontalSlider(EspMaxDistance.Value, 50f, 1000f);
             GUILayout.Label($"Update Rate (FPS): {1f / EspUpdateInterval.Value:F0}");
@@ -411,11 +544,12 @@ namespace InfiniteHealthToggle
             ColorBear.Value = DrawColorPicker("BEAR", ColorBear.Value);
             ColorUsec.Value = DrawColorPicker("USEC", ColorUsec.Value);
             ColorSavage.Value = DrawColorPicker("Savage", ColorSavage.Value);
+            ColorBoss.Value = DrawColorPicker("BOSS", ColorBoss.Value);
 
             GUILayout.Space(10);
             GUILayout.Label("<b>--- ITEM & CONTAINER ESP ---</b>");
-            ItemEspEnabled.Value = GUILayout.Toggle(ItemEspEnabled.Value, " Enable Loose Item ESP");
-            ContainerEspEnabled.Value = GUILayout.Toggle(ContainerEspEnabled.Value, " Enable Container Item ESP");
+            ItemEspEnabled.Value = GUILayout.Toggle(ItemEspEnabled.Value, $" Enable Loose Item ESP [{ToggleItemEspHotkey.Value}]");
+            ContainerEspEnabled.Value = GUILayout.Toggle(ContainerEspEnabled.Value, $" Enable Container Item ESP [{ToggleContainerEspHotkey.Value}]");
             GUILayout.Label("Filter (Name or ID, comma separated):");
             ItemEspFilter.Value = GUILayout.TextField(ItemEspFilter.Value);
             GUILayout.Label($"Max Distance: {ItemEspMaxDistance.Value:F0}m");
@@ -425,10 +559,18 @@ namespace InfiniteHealthToggle
             ItemEspUpdateInterval.Value = 1f / iFps;
 
             GUILayout.Space(10);
-            GUILayout.Label("<b>--- DEBUG INFO ---</b>");
-            GUILayout.Label($"GameWorld: {(_gameWorld != null ? "OK" : "NULL")}");
-            GUILayout.Label($"LocalPlayer: {(_localPlayer != null ? "OK" : "NULL")}");
-            GUILayout.Label($"Containers Cached: {(_cachedContainers != null ? _cachedContainers.Length.ToString() : "0")}");
+            GUILayout.Label("<b>--- HOTKEYS (Customizable in .cfg) ---</b>");
+            GUILayout.Label($"Menu: {ToggleUiHotkey.Value}");
+            GUILayout.Label($"Status Window: {ToggleStatusHotkey.Value}");
+            GUILayout.Label($"GodMode: {ToggleGodModeHotkey.Value}");
+            GUILayout.Label($"Stamina: {ToggleStaminaHotkey.Value}");
+            GUILayout.Label($"Weight: {ToggleWeightHotkey.Value}");
+            GUILayout.Label($"Ammo: {ToggleAmmoHotkey.Value}");
+            GUILayout.Label($"Player ESP: {ToggleEspHotkey.Value}");
+            GUILayout.Label($"Item ESP: {ToggleItemEspHotkey.Value}");
+            GUILayout.Label($"Container ESP: {ToggleContainerEspHotkey.Value}");
+            GUILayout.Label($"Culling: {ToggleCullingHotkey.Value}");
+            GUILayout.Label($"Unlock Doors: {ToggleUnlockDoorsHotkey.Value}");
 
             GUILayout.EndScrollView();
             GUILayout.EndArea();
@@ -495,6 +637,22 @@ namespace InfiniteHealthToggle
             }
             return true;
         }
+
+        private static bool InfiniteAmmoPrefix(Weapon __instance)
+        {
+            if (InfiniteAmmoEnabled.Value && _localPlayer != null && ReferenceEquals(__instance.Owner, _localPlayer))
+            {
+                var magazine = __instance.GetCurrentMagazine();
+                if (magazine != null && _stackCountField != null)
+                {
+                    // Força a contagem de munição no campo privado para o máximo
+                    _stackCountField.SetValue(magazine, magazine.MaxCount);
+                }
+                return false; // Bloqueia o consumo original de munição
+            }
+            return true;
+        }
+
 
         private class EspTarget
         {
