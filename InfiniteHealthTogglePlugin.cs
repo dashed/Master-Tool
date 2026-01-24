@@ -80,7 +80,6 @@ namespace InfiniteHealthToggle
         private bool _itemEspStyleInitialized;
         internal static ConfigEntry<int> ItemEspFontSize;
 
-
         // --- Performance Settings ---
         internal static ConfigEntry<bool> PerformanceMode;
         internal static ConfigEntry<float> BotRenderDistance;
@@ -88,6 +87,7 @@ namespace InfiniteHealthToggle
         // --- GUI Settings ---
         private int _selectedTab = 0;
         private readonly string[] _tabNames = { "Geral", "ESP Players", "ESP Itens", "Visual", "Troll", "Configs" };
+        private Vector2 _itemFilterScroll = Vector2.zero;
 
         private Harmony _harmony;
 
@@ -164,7 +164,7 @@ namespace InfiniteHealthToggle
             NightVisionEnabled = Config.Bind("Visuals", "Night Vision", false, "Toggle Night Vision.");
             BigHeadModeEnabled = Config.Bind("Visuals", "Big Head Mode", false, "Enlarge enemy heads.");
             HeadSizeMultiplier = Config.Bind("Visuals", "Head Size", 3f, "How big the heads should be.");
-
+          
             // Player ESP Binds
             EspEnabled = Config.Bind("ESP Players", "Enabled", false, "Show players/bots.");
             EspTextAlpha = Config.Bind("ESP Players", "Text Alpha", 1.0f, "Text Alpha.");
@@ -481,7 +481,7 @@ namespace InfiniteHealthToggle
                             ScreenPosition = new Vector2(screenPos.x, Screen.height - screenPos.y),
                             Distance = dist,
                             Nickname = playerClass.Profile.Nickname,
-                            Side = playerClass.Side.ToString(),
+                            Side = GetPlayerTag(playerClass),
                             Color = textColor
                         });
                     }
@@ -665,6 +665,7 @@ namespace InfiniteHealthToggle
                     NoWeightEnabled.Value = GUILayout.Toggle(NoWeightEnabled.Value, $" No Weight Penalties [{ToggleWeightHotkey.Value}]");
                     StatusWindowEnabled.Value = GUILayout.Toggle(StatusWindowEnabled.Value, $" Show Status Window [{ToggleStatusHotkey.Value}]");
                     ShowWeaponInfo.Value = GUILayout.Toggle(ShowWeaponInfo.Value, $" Show Weapon Info in Status [{ToggleWeaponInfoHotkey.Value}]");
+                    GUILayout.Space(10);
                     if (GUILayout.Button($"Unlock All Doors in Raid [{ToggleUnlockDoorsHotkey.Value}]")) UnlockAllDoors();
 
                     GUILayout.Space(10);
@@ -707,7 +708,14 @@ namespace InfiniteHealthToggle
                     ItemEspEnabled.Value = GUILayout.Toggle(ItemEspEnabled.Value, $" Enable Loose Item ESP [{ToggleItemEspHotkey.Value}]");
                     ContainerEspEnabled.Value = GUILayout.Toggle(ContainerEspEnabled.Value, $" Enable Container Item ESP [{ToggleContainerEspHotkey.Value}]");
                     GUILayout.Label("Filter (Name or ID, comma separated):");
-                    ItemEspFilter.Value = GUILayout.TextField(ItemEspFilter.Value);
+
+                    // New Item Text Area
+                    _itemFilterScroll = GUILayout.BeginScrollView(_itemFilterScroll, GUILayout.Height(60), GUILayout.ExpandWidth(true));
+                    ItemEspFilter.Value = GUILayout.TextArea(ItemEspFilter.Value, GUILayout.Width(260), GUILayout.ExpandHeight(true));
+                    GUILayout.EndScrollView();
+
+                    GUILayout.Space(5);
+
                     GUILayout.Label($"Max Distance: {ItemEspMaxDistance.Value:F0}m");
                     ItemEspMaxDistance.Value = GUILayout.HorizontalSlider(ItemEspMaxDistance.Value, 5f, 500f);
                     GUILayout.Label($"Update Rate (FPS): {1f / ItemEspUpdateInterval.Value:F0}");
@@ -875,16 +883,44 @@ namespace InfiniteHealthToggle
 
         private Color GetPlayerColor(Player player)
         {
-            
-            if (player.Profile.Info.Settings.IsBoss()) return ColorBoss.Value;
+            if (player.Side == EPlayerSide.Savage)
+            {
+                if (player.Profile.Info.Settings.Role != WildSpawnType.assault &&
+                    player.Profile.Info.Settings.Role != WildSpawnType.marksman)
+                {
+                    return ColorBoss.Value;
+                }
+                return ColorSavage.Value;
+            }
 
-            
-            if (player.Side == EPlayerSide.Bear) return ColorBear.Value;
-            if (player.Side == EPlayerSide.Usec) return ColorUsec.Value;
+            if (player.Side == EPlayerSide.Bear)
+            {
+                return ColorBear.Value;
+            }
 
-            
-            return ColorSavage.Value;
+            if (player.Side == EPlayerSide.Usec)
+            {
+                return ColorUsec.Value;
+            }
+
+            return Color.white;
         }
+
+        private string GetPlayerTag(Player player)
+        {
+            if (player.Side == EPlayerSide.Savage)
+            {
+                // Verifica se é um Boss ou seguidor
+                var role = player.Profile.Info.Settings.Role;
+                if (role != WildSpawnType.assault && role != WildSpawnType.marksman)
+                {
+                    return "BOSS";
+                }
+                return "SCAV";
+            }
+            return player.Side.ToString().ToUpper(); // Retorna BEAR ou USEC
+        }
+
 
         private void TeleportEnemiesToMe()
         {
