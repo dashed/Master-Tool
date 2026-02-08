@@ -28,6 +28,7 @@ namespace MasterTool.UI
         private Vector2 _itemFilterScroll;
 
         private ConfigEntry<KeyboardShortcut> _rebindingEntry;
+        private int _rebindStartFrame = -1;
         private HotkeyBinding[] _hotkeyBindings;
 
         private bool _isResizing;
@@ -364,7 +365,7 @@ namespace MasterTool.UI
             GUILayout.Label("Click [Rebind] then press any key. [Clear] to unbind.");
             GUILayout.Space(5);
 
-            if (_rebindingEntry != null)
+            if (_rebindingEntry != null && Time.frameCount > _rebindStartFrame)
             {
                 Event e = Event.current;
                 if (e.type == EventType.KeyDown && e.keyCode != KeyCode.None)
@@ -398,7 +399,10 @@ namespace MasterTool.UI
                 if (!isRebinding)
                 {
                     if (GUILayout.Button("Rebind", GUILayout.Width(60)))
+                    {
                         _rebindingEntry = binding.Entry;
+                        _rebindStartFrame = Time.frameCount;
+                    }
                     if (GUILayout.Button("Clear", GUILayout.Width(50)))
                         binding.Entry.Value = new KeyboardShortcut(KeyCode.None);
                 }

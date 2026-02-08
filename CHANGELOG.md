@@ -6,15 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
-## [2.11.1] - 2026-02-07
+## [2.11.2] - 2026-02-07
 
 ### Fixed
 
 - Plugin no longer crashes on startup in SPT 4.0 — `ActiveHealthController.DoBleed` has multiple overloads that caused `AmbiguousMatchException` during Harmony patching. All ActiveHealthController patches now use `TryPatchAllOverloads` which iterates methods by name and patches each overload individually with per-overload error handling
+- Eliminated spurious `IL Compile Error` warning for inherited base-class method overloads — `TryPatchAllOverloads` now uses `BindingFlags.DeclaredOnly` to skip inherited methods with incompatible IL. Only warns if all overloads fail to patch
+- Hotkey rebinding no longer immediately captures a spurious key (e.g., F13 from peripheral software) when clicking the Rebind button — one-frame grace period using `Time.frameCount` ensures only deliberate key presses are accepted
 
 ### Added
 
 - `UnityEngine.InputLegacyModule.dll` assembly reference required for Fly Mode input handling (`Input.GetAxis`/`Input.GetKey`)
+- Unit tests for hotkey rebind frame-delay guard logic (9 tests)
 
 ## [2.11.0] - 2026-02-07
 

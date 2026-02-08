@@ -57,10 +57,14 @@ namespace MasterTool.Features.GodMode
         {
             try
             {
-                var methods = type.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                var methods = type.GetMethods(
+                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly
+                );
                 var prefix = new HarmonyMethod(
                     typeof(DamagePatches).GetMethod(prefixMethodName, BindingFlags.Static | BindingFlags.NonPublic)
                 );
+                int patched = 0;
+                int failed = 0;
                 foreach (var method in methods)
                 {
                     if (method.Name == methodName)
@@ -68,12 +72,18 @@ namespace MasterTool.Features.GodMode
                         try
                         {
                             harmony.Patch(method, prefix: prefix);
+                            patched++;
                         }
-                        catch (Exception ex)
+                        catch (Exception)
                         {
-                            MasterToolPlugin.Log?.LogWarning($"[GodMode] Failed to patch {type.Name}.{methodName} overload: {ex.Message}");
+                            failed++;
                         }
                     }
+                }
+
+                if (patched == 0 && failed > 0)
+                {
+                    MasterToolPlugin.Log?.LogWarning($"[GodMode] Failed to patch any {type.Name}.{methodName} overload ({failed} failed)");
                 }
             }
             catch (Exception ex)

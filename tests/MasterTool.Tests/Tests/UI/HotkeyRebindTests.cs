@@ -12,10 +12,31 @@ public class HotkeyRebindTests
     /// <summary>
     /// Duplicates ModMenu.ShouldAcceptKey: determines whether a key event should be accepted
     /// during hotkey rebinding. KeyCode.None = 0.
+    /// Includes frame-delay guard: currentFrame must be greater than rebindStartFrame
+    /// to prevent spurious key capture on the same frame the Rebind button was clicked.
     /// </summary>
     private static bool ShouldAcceptKey(bool isRebinding, bool isKeyDown, int keyCode)
     {
         return isRebinding && isKeyDown && keyCode != 0;
+    }
+
+    /// <summary>
+    /// Duplicates the frame-delay guard from ModMenu: key events are only accepted
+    /// when the current frame is strictly after the frame where rebinding started.
+    /// This prevents spurious keycodes (e.g., F13 from peripheral software) that
+    /// fire in the same frame as the Rebind button click.
+    /// </summary>
+    private static bool IsFrameReadyForInput(int currentFrame, int rebindStartFrame)
+    {
+        return currentFrame > rebindStartFrame;
+    }
+
+    /// <summary>
+    /// Combined check: rebinding active, frame delay passed, and valid key event.
+    /// </summary>
+    private static bool ShouldAcceptKeyWithFrameGuard(bool isRebinding, bool isKeyDown, int keyCode, int currentFrame, int rebindStartFrame)
+    {
+        return isRebinding && IsFrameReadyForInput(currentFrame, rebindStartFrame) && isKeyDown && keyCode != 0;
     }
 
     /// <summary>
@@ -241,5 +262,74 @@ public class HotkeyRebindTests
         Assert.That(outcome, Is.EqualTo(RebindOutcome.Cancel));
         hasActiveRebind = false;
         Assert.That(GetRebindState(hasActiveRebind), Is.EqualTo(RebindState.Idle));
+    }
+
+    // --- Frame delay guard tests ---
+
+    [Test]
+    public void FrameGuard_SameFrame_RejectsInput()
+    {
+        // Rebind started on frame 100, current frame is also 100
+        Assert.That(IsFrameReadyForInput(100, 100), Is.False);
+    }
+
+    [Test]
+    public void FrameGuard_NextFrame_AcceptsInput()
+    {
+        // Rebind started on frame 100, current frame is 101
+        Assert.That(IsFrameReadyForInput(101, 100), Is.True);
+    }
+
+    [Test]
+    public void FrameGuard_ManyFramesLater_AcceptsInput()
+    {
+        Assert.That(IsFrameReadyForInput(200, 100), Is.True);
+    }
+
+    [Test]
+    public void FrameGuard_DefaultNegativeOne_AcceptsFrame0()
+    {
+        // Default _rebindStartFrame is -1, so even frame 0 should pass
+        Assert.That(IsFrameReadyForInput(0, -1), Is.True);
+    }
+
+    [Test]
+    public void ShouldAcceptKeyWithFrameGuard_SameFrame_ReturnsFalse()
+    {
+        // Valid key on same frame as rebind start → rejected
+        Assert.That(ShouldAcceptKeyWithFrameGuard(true, true, 282, 50, 50), Is.False);
+    }
+
+    [Test]
+    public void ShouldAcceptKeyWithFrameGuard_NextFrame_ValidKey_ReturnsTrue()
+    {
+        // Valid key one frame after rebind start → accepted
+        Assert.That(ShouldAcceptKeyWithFrameGuard(true, true, 282, 51, 50), Is.True);
+    }
+
+    [Test]
+    public void ShouldAcceptKeyWithFrameGuard_NextFrame_NotRebinding_ReturnsFalse()
+    {
+        Assert.That(ShouldAcceptKeyWithFrameGuard(false, true, 282, 51, 50), Is.False);
+    }
+
+    [Test]
+    public void ShouldAcceptKeyWithFrameGuard_NextFrame_KeyCodeNone_ReturnsFalse()
+    {
+        Assert.That(ShouldAcceptKeyWithFrameGuard(true, true, 0, 51, 50), Is.False);
+    }
+
+    [Test]
+    public void FullRebindCycle_WithFrameDelay_RejectsThenAccepts()
+    {
+        // Simulate: click Rebind at frame 100
+        int rebindStartFrame = 100;
+        bool isRebinding = true;
+
+        // Same frame: spurious F13 (keyCode=124) should be rejected
+        Assert.That(ShouldAcceptKeyWithFrameGuard(isRebinding, true, 124, 100, rebindStartFrame), Is.False);
+
+        // Next frame: real key press (F1=282) should be accepted
+        Assert.That(ShouldAcceptKeyWithFrameGuard(isRebinding, true, 282, 101, rebindStartFrame), Is.True);
     }
 }
