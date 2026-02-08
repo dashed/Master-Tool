@@ -6,6 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [2.10.0] - 2026-02-07
+
+### Added
+
+- Loot Chams: colored material overlays on loose loot items for through-wall visibility, using the same shader and anti-occlusion approach as player chams. Toggle and color picker in the Item ESP tab. Uses `MeshRenderer` (items) instead of `SkinnedMeshRenderer` (players). Distance limited by Item ESP max distance setting
+- Screen bounds validation for all ESP modules: filters out targets with extreme off-screen coordinates that caused text to glitch across the screen when objects were near camera frustum edges. 50px margin allows smooth edge behavior
+- `IsOnScreen` helper in EspRenderer for reusable screen bounds checking
+- Config entries for Loot Chams (toggle, color)
+- Unit tests for screen bounds validation (19 tests) and loot chams logic (12 tests)
+
+### Fixed
+
+- ESP text (player, item, quest, zone) no longer glitches or appears at wrong screen positions when targets are near the edge of the camera view — all 5 projection sites (PlayerEsp, ItemEsp, QuestEsp×3) now validate screen bounds before adding targets
+
 ## [2.9.0] - 2026-02-07
 
 ### Added

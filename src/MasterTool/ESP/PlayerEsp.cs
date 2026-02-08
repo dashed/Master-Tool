@@ -118,10 +118,13 @@ namespace MasterTool.ESP
                     Vector3 screenPos = mainCamera.WorldToScreenPoint(worldPos);
                     if (screenPos.z > 0)
                     {
+                        float screenY = Screen.height - screenPos.y;
+                        if (!EspRenderer.IsOnScreen(screenPos.x, screenY, Screen.width, Screen.height, 50f))
+                            continue;
                         Targets.Add(
                             new EspTarget
                             {
-                                ScreenPosition = new Vector2(screenPos.x, Screen.height - screenPos.y),
+                                ScreenPosition = new Vector2(screenPos.x, screenY),
                                 Distance = dist,
                                 Nickname = playerClass.Profile.Nickname,
                                 Side = PlayerUtils.GetPlayerTag(playerClass),

@@ -130,6 +130,8 @@ namespace MasterTool.ESP
             if (screenPos.z > 0)
             {
                 screenPos.y = Screen.height - screenPos.y;
+                if (!EspRenderer.IsOnScreen(screenPos.x, screenPos.y, Screen.width, Screen.height, 50f))
+                    return;
                 Targets.Add(
                     new ItemEspTarget
                     {

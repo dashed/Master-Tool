@@ -86,6 +86,96 @@ namespace MasterTool.ESP
             }
         }
 
+        /// <summary>
+        /// Applies or removes chams on loose loot items based on distance and config toggle.
+        /// </summary>
+        public void UpdateLootChams(GameWorld gameWorld, Camera mainCamera, Player localPlayer)
+        {
+            if (gameWorld == null || mainCamera == null || _chamsShader == null)
+                return;
+
+            var lootItems = gameWorld.LootItems;
+            if (lootItems == null)
+                return;
+
+            try
+            {
+                float maxDistSq = PluginConfig.ItemEspMaxDistance.Value * PluginConfig.ItemEspMaxDistance.Value;
+                Vector3 playerPos = localPlayer.Transform.position;
+
+                for (int i = 0; i < lootItems.Count; i++)
+                {
+                    var loot = lootItems.GetByIndex(i);
+                    if (loot == null)
+                        continue;
+
+                    float distSq = (loot.transform.position - playerPos).sqrMagnitude;
+                    bool shouldChams = PluginConfig.LootChamsEnabled.Value && distSq <= maxDistSq;
+
+                    if (shouldChams)
+                    {
+                        ApplyLootChams(loot.gameObject, PluginConfig.LootChamsColor.Value);
+                    }
+                    else
+                    {
+                        ResetLootChams(loot.gameObject);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                if (!_errorLogged)
+                {
+                    MasterToolPlugin.Log?.LogWarning($"[LootChams] {ex.Message}");
+                    _errorLogged = true;
+                }
+            }
+        }
+
+        private void ApplyLootChams(GameObject obj, Color color)
+        {
+            if (obj == null)
+                return;
+            foreach (var renderer in obj.GetComponentsInChildren<MeshRenderer>())
+            {
+                if (renderer == null || renderer.material == null)
+                    continue;
+
+                renderer.forceRenderingOff = false;
+                renderer.allowOcclusionWhenDynamic = false;
+
+                if (renderer.material.shader != _chamsShader)
+                {
+                    if (!_originalShaders.ContainsKey(renderer))
+                        _originalShaders[renderer] = renderer.material.shader;
+
+                    renderer.material.shader = _chamsShader;
+                    renderer.material.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.Always);
+                    renderer.material.SetInt("_ZWrite", 0);
+                    renderer.material.renderQueue = 4000;
+                }
+
+                float intensity = Mathf.Clamp(PluginConfig.ChamsIntensity.Value, 0.1f, 1f);
+                Color adjusted = new Color(color.r * intensity, color.g * intensity, color.b * intensity, color.a);
+                renderer.material.SetColor("_Color", adjusted);
+            }
+        }
+
+        private void ResetLootChams(GameObject obj)
+        {
+            if (obj == null)
+                return;
+            foreach (var renderer in obj.GetComponentsInChildren<MeshRenderer>())
+            {
+                if (renderer != null && renderer.material != null && _originalShaders.ContainsKey(renderer))
+                {
+                    renderer.material.shader = _originalShaders[renderer];
+                    renderer.allowOcclusionWhenDynamic = true;
+                    _originalShaders.Remove(renderer);
+                }
+            }
+        }
+
         private void PurgeDestroyedEntries()
         {
             var dead = new List<Renderer>();

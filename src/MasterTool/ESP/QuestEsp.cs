@@ -143,10 +143,13 @@ namespace MasterTool.ESP
                 Vector3 screenPos = mainCamera.WorldToScreenPoint(loot.transform.position);
                 if (screenPos.z > 0)
                 {
+                    float screenY = Screen.height - screenPos.y;
+                    if (!EspRenderer.IsOnScreen(screenPos.x, screenY, Screen.width, Screen.height, 50f))
+                        continue;
                     Targets.Add(
                         new QuestEspTarget
                         {
-                            ScreenPosition = new Vector2(screenPos.x, Screen.height - screenPos.y),
+                            ScreenPosition = new Vector2(screenPos.x, screenY),
                             Distance = dist,
                             Name = "[QUEST] " + loot.Item.ShortName.Localized(),
                             Color = PluginConfig.ColorQuestItem.Value,
@@ -187,10 +190,13 @@ namespace MasterTool.ESP
                     Vector3 screenPos = mainCamera.WorldToScreenPoint(container.transform.position);
                     if (screenPos.z > 0)
                     {
+                        float screenY = Screen.height - screenPos.y;
+                        if (!EspRenderer.IsOnScreen(screenPos.x, screenY, Screen.width, Screen.height, 50f))
+                            continue;
                         Targets.Add(
                             new QuestEspTarget
                             {
-                                ScreenPosition = new Vector2(screenPos.x, Screen.height - screenPos.y),
+                                ScreenPosition = new Vector2(screenPos.x, screenY),
                                 Distance = dist,
                                 Name = "[QUEST-C] " + item.ShortName.Localized(),
                                 Color = PluginConfig.ColorQuestItem.Value,
@@ -222,10 +228,13 @@ namespace MasterTool.ESP
                 Vector3 screenPos = mainCamera.WorldToScreenPoint(trigger.transform.position);
                 if (screenPos.z > 0)
                 {
+                    float screenY = Screen.height - screenPos.y;
+                    if (!EspRenderer.IsOnScreen(screenPos.x, screenY, Screen.width, Screen.height, 50f))
+                        continue;
                     Targets.Add(
                         new QuestEspTarget
                         {
-                            ScreenPosition = new Vector2(screenPos.x, Screen.height - screenPos.y),
+                            ScreenPosition = new Vector2(screenPos.x, screenY),
                             Distance = dist,
                             Name = "[ZONE] " + trigger.Id,
                             Color = PluginConfig.ColorQuestZone.Value,

@@ -257,6 +257,14 @@ namespace MasterTool.UI
                 PluginConfig.ContainerEspEnabled.Value,
                 $" Enable Container Item ESP [{PluginConfig.ToggleContainerEspHotkey.Value}]"
             );
+            PluginConfig.LootChamsEnabled.Value = GUILayout.Toggle(
+                PluginConfig.LootChamsEnabled.Value,
+                " Enable Loot Chams (Through-Wall)"
+            );
+            if (PluginConfig.LootChamsEnabled.Value)
+            {
+                PluginConfig.LootChamsColor.Value = ColorPicker.Draw("Loot Chams", PluginConfig.LootChamsColor.Value);
+            }
             GUILayout.Label("Filter (Name or ID, comma separated):");
 
             _itemFilterScroll = GUILayout.BeginScrollView(_itemFilterScroll, GUILayout.Height(60), GUILayout.ExpandWidth(true));

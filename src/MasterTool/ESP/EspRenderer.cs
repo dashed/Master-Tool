@@ -35,5 +35,14 @@ namespace MasterTool.ESP
         {
             DrawTextWithShadow(new Vector3(pos.x, pos.y, 0), text, color, style);
         }
+
+        /// <summary>
+        /// Returns true if the given screen-space coordinates are within screen bounds plus a margin.
+        /// Used to filter out ESP targets that would render at extreme off-screen positions.
+        /// </summary>
+        internal static bool IsOnScreen(float x, float y, float screenWidth, float screenHeight, float margin)
+        {
+            return x >= -margin && x <= screenWidth + margin && y >= -margin && y <= screenHeight + margin;
+        }
     }
 }

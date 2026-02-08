@@ -28,7 +28,7 @@ namespace MasterTool.Plugin
     /// Main BepInEx plugin entry point. Initializes config, applies Harmony patches,
     /// and orchestrates per-frame updates for all feature and ESP modules.
     /// </summary>
-    [BepInPlugin("com.master.tools", "Advanced SPT Mod Menu", "2.9.0")]
+    [BepInPlugin("com.master.tools", "Advanced SPT Mod Menu", "2.10.0")]
     public sealed class MasterToolPlugin : BaseUnityPlugin
     {
         internal static MasterToolPlugin Instance;
@@ -113,6 +113,7 @@ namespace MasterTool.Plugin
                 _playerEsp.Update(gameWorld, mainCamera, localPlayer);
 
             _chams.Update(gameWorld, mainCamera);
+            _chams.UpdateLootChams(gameWorld, mainCamera, localPlayer);
 
             if (PluginConfig.ItemEspEnabled.Value || PluginConfig.ContainerEspEnabled.Value)
                 _itemEsp.Update(gameWorld, mainCamera, localPlayer);

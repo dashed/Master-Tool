@@ -91,7 +91,8 @@ The compiled `MasterTool.dll` will be in `build/`.
 | **Item ESP** | Shows loose items on the ground. Supports multi-filter search by name or ID with comma-separated lists (e.g., `LedX, GPU, Salewa`). |
 | **Container ESP** | Reveals items inside containers, crates, jackets, safes, and bodies. Uses a smart caching system (10-second refresh) and squared-distance calculations for zero FPS impact. |
 | **Quest ESP** | Highlights quest-related items in the world and quest zone markers (placement zones, visit locations, flare zones) with configurable colors for items and zones. |
-| **Chams** | Applies colored material overlays to player models for enhanced visibility through geometry. Configurable color intensity (10%–100%). |
+| **Player Chams** | Applies colored material overlays to player models for enhanced visibility through geometry. Configurable color intensity (10%–100%). Anti-occlusion: forces renderer visibility through multiple walls. |
+| **Loot Chams** | Applies colored material overlays to loose loot items for through-wall visibility. Configurable color via the Item ESP tab. Uses same anti-occlusion approach as player chams. Distance limited by Item ESP max distance. |
 
 ### Visual
 
@@ -247,7 +248,9 @@ Master-Tool/
             │   ├── ChamsCleanupTests.cs
             │   ├── ChamsIntensityTests.cs
             │   ├── EspPositionTests.cs
+            │   ├── EspScreenBoundsTests.cs
             │   ├── LineOfSightTests.cs
+            │   ├── LootChamsTests.cs
             │   └── QuestZoneExtractionTests.cs
             ├── UI/
             │   └── HotkeyRebindTests.cs
@@ -280,7 +283,7 @@ make build    # or: dotnet build
 
 ### Running Tests
 
-275 tests cover pure logic: models, utilities, feature state machines, ESP extraction, and config defaults. Game-dependent code requires Unity/EFT assemblies and cannot be unit-tested — tests duplicate the pure logic with fake types.
+306 tests cover pure logic: models, utilities, feature state machines, ESP extraction, and config defaults. Game-dependent code requires Unity/EFT assemblies and cannot be unit-tested — tests duplicate the pure logic with fake types.
 
 ```bash
 make test     # or: dotnet test

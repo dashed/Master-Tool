@@ -82,6 +82,8 @@ namespace MasterTool.Config
         public static ConfigEntry<bool> ChamsEnabled;
         public static ConfigEntry<float> ChamsIntensity;
         public static ConfigEntry<KeyboardShortcut> ToggleChamsHotkey;
+        public static ConfigEntry<bool> LootChamsEnabled;
+        public static ConfigEntry<Color> LootChamsColor;
 
         // --- Movement ---
         public static ConfigEntry<bool> SpeedhackEnabled;
@@ -295,6 +297,14 @@ namespace MasterTool.Config
             ChamsEnabled = config.Bind("ESP Players", "Chams Enabled", false, "Enable colored models.");
             ChamsIntensity = config.Bind("ESP Players", "Chams Intensity", 0.5f, "Brightness of Chams colors (0.1 to 1.0).");
             ToggleChamsHotkey = config.Bind("Hotkeys", "13. Toggle Chams", new KeyboardShortcut(KeyCode.K), "Hotkey to toggle Chams.");
+
+            LootChamsEnabled = config.Bind(
+                "ESP Items",
+                "Loot Chams Enabled",
+                false,
+                "Enable colored overlays on loot items for through-wall visibility."
+            );
+            LootChamsColor = config.Bind("ESP Items", "Loot Chams Color", Color.green, "Color for loot item chams.");
 
             // Item & Container ESP
             ItemEspEnabled = config.Bind("ESP Items", "Enabled", false, "Show loose loot.");
