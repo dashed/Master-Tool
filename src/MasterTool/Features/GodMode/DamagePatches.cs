@@ -25,29 +25,61 @@ namespace MasterTool.Features.GodMode
             TryPatchDamageMethod(harmony, typeof(Player), "ApplyDamageInfo", nameof(BlockDamagePrefix_Player));
             TryPatchDamageMethod(harmony, typeof(Player), "ApplyDamage", nameof(BlockDamagePrefix_Player));
 
-            // ActiveHealthController patches
-            TryPatchDamageMethod(
+            // ActiveHealthController patches — use TryPatchAllOverloads to handle
+            // methods with multiple overloads (e.g., DoBleed in SPT 4.0)
+            TryPatchAllOverloads(
                 harmony,
                 typeof(ActiveHealthController),
                 nameof(ActiveHealthController.ApplyDamage),
                 nameof(BlockDamagePrefix_ActiveHealthController)
             );
-            TryPatchDamageMethod(harmony, typeof(ActiveHealthController), nameof(ActiveHealthController.Kill), nameof(BlockKillPrefix));
-            TryPatchDamageMethod(
+            TryPatchAllOverloads(harmony, typeof(ActiveHealthController), nameof(ActiveHealthController.Kill), nameof(BlockKillPrefix));
+            TryPatchAllOverloads(
                 harmony,
                 typeof(ActiveHealthController),
                 nameof(ActiveHealthController.DestroyBodyPart),
                 nameof(BlockDestroyBodyPartPrefix)
             );
-            TryPatchDamageMethod(
+            TryPatchAllOverloads(
                 harmony,
                 typeof(ActiveHealthController),
                 nameof(ActiveHealthController.DoFracture),
                 nameof(BlockDoFracturePrefix)
             );
+            TryPatchAllOverloads(harmony, typeof(ActiveHealthController), "DoBleed", nameof(BlockDoBleedPrefix));
+        }
 
-            // DoBleed is private, so we need AccessTools
-            TryPatchDamageMethod(harmony, AccessTools.Method(typeof(ActiveHealthController), "DoBleed"), nameof(BlockDoBleedPrefix));
+        /// <summary>
+        /// Patches all overloads of a method by name. Handles AmbiguousMatchException
+        /// that occurs when a method has multiple overloads (e.g., DoBleed in SPT 4.0).
+        /// </summary>
+        private static void TryPatchAllOverloads(Harmony harmony, Type type, string methodName, string prefixMethodName)
+        {
+            try
+            {
+                var methods = type.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                var prefix = new HarmonyMethod(
+                    typeof(DamagePatches).GetMethod(prefixMethodName, BindingFlags.Static | BindingFlags.NonPublic)
+                );
+                foreach (var method in methods)
+                {
+                    if (method.Name == methodName)
+                    {
+                        try
+                        {
+                            harmony.Patch(method, prefix: prefix);
+                        }
+                        catch (Exception ex)
+                        {
+                            MasterToolPlugin.Log?.LogWarning($"[GodMode] Failed to patch {type.Name}.{methodName} overload: {ex.Message}");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MasterToolPlugin.Log?.LogWarning($"[GodMode] Failed to find {type.Name}.{methodName}: {ex.Message}");
+            }
         }
 
         private static void TryPatchDamageMethod(Harmony harmony, Type type, string methodName, string prefixMethodName)
