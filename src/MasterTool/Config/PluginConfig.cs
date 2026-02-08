@@ -113,6 +113,7 @@ namespace MasterTool.Config
         public static ConfigEntry<Color> ColorContainer;
         public static ConfigEntry<int> ItemEspFontSize;
         public static ConfigEntry<bool> ItemEspLineOfSightOnly;
+        public static ConfigEntry<bool> ItemEspWishlistOnly;
 
         // --- 10. ESP Quests ---
         public static ConfigEntry<bool> QuestEspEnabled;
@@ -452,6 +453,7 @@ namespace MasterTool.Config
                 false,
                 "Only show items visible to the camera (not behind walls)."
             );
+            ItemEspWishlistOnly = config.Bind(Sections.EspItems, "Wishlist Only", false, "Only show items that are in your wishlist.");
 
             // --- 10. ESP Quests ---
             QuestEspEnabled = config.Bind(Sections.EspQuests, "Enabled", false, "Show quest items and objectives.");

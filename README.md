@@ -91,7 +91,7 @@ The compiled `MasterTool.dll` will be in `build/`.
 | Feature | Description |
 |---------|-------------|
 | **Player ESP** | Displays all players and bots with faction-based color coding (BEAR, USEC, Boss, Scav/Raider). Includes distance tracking, customizable colors via RGB sliders, adjustable update rate, distance filter, and optional **line-of-sight mode** that only shows players you can directly see (no wall visibility). |
-| **Item ESP** | Shows loose items on the ground. Supports multi-filter search by name or ID with comma-separated lists (e.g., `LedX, GPU, Salewa`). Optional **line-of-sight mode** hides items behind walls/terrain. |
+| **Item ESP** | Shows loose items on the ground. Supports multi-filter search by name or ID with comma-separated lists (e.g., `LedX, GPU, Salewa`). Optional **line-of-sight mode** hides items behind walls/terrain. Optional **wishlist mode** shows only items in your in-game wishlist. |
 | **Container ESP** | Reveals items inside containers, crates, jackets, safes, and bodies. Uses a smart caching system (10-second refresh) and squared-distance calculations for zero FPS impact. |
 | **Quest ESP** | Highlights quest-related items in the world and quest zone markers (placement zones, visit locations, flare zones) with configurable colors for items and zones. |
 | **Player Chams** | Applies colored material overlays to player models for enhanced visibility through geometry. Three rendering modes: **Solid** (flat color, all faces), **CullFront** (hollow silhouette, back faces only), and **Outline** (normal model + colored edge via inverted hull). Configurable color intensity (10%–100%), opacity (10%–100%), outline thickness, and **dedicated max distance** (independent from ESP label distance). Anti-occlusion: forces renderer visibility through multiple walls. |
@@ -196,7 +196,8 @@ Master-Tool/
 │   │   ├── SustenanceLogic.cs     # Energy/hydration sustenance logic
 │   │   ├── TabDefinitions.cs      # UI tab and sub-tab names
 │   │   ├── VisionLogic.cs         # FOV mapping and override logic
-│   │   └── WeightLogic.cs         # Weight calculation logic
+│   │   ├── WeightLogic.cs         # Weight calculation logic
+│   │   └── WishlistLogic.cs      # Wishlist filter logic
 │   └── MasterTool/
 │       ├── MasterTool.csproj      # Main plugin project (net472)
 │       ├── Plugin/
@@ -295,6 +296,7 @@ Master-Tool/
             │   ├── EspPositionTests.cs
             │   ├── EspScreenBoundsTests.cs
             │   ├── LineOfSightTests.cs
+            │   ├── WishlistFilterTests.cs
             │   ├── LootChamsTests.cs
             │   └── QuestZoneExtractionTests.cs
             ├── UI/
@@ -331,7 +333,7 @@ make build    # or: dotnet build
 
 ### Running Tests
 
-618 tests cover pure logic: models, utilities, feature state machines, ESP calculations, and config defaults. Pure logic lives in the `MasterTool.Core` shared library (`netstandard2.0`), referenced by both the plugin (`net472`) and test project (`net9.0`). Game-dependent code requires Unity/EFT assemblies and cannot be unit-tested.
+628 tests cover pure logic: models, utilities, feature state machines, ESP calculations, and config defaults. Pure logic lives in the `MasterTool.Core` shared library (`netstandard2.0`), referenced by both the plugin (`net472`) and test project (`net9.0`). Game-dependent code requires Unity/EFT assemblies and cannot be unit-tested.
 
 ```bash
 make test     # or: dotnet test

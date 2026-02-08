@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [2.26.0] - 2026-02-08
+
+### Added
+
+- **Wishlist filtering for item/container ESP** — new "Wishlist Only" toggle shows only items in the player's in-game wishlist. Works alongside existing text filters (AND logic: item must be in wishlist AND match text filter if set)
+- `ItemEspWishlistOnly` config entry (default off) in ESP Items section
+- `WishlistLogic.ShouldShowItem` pure logic in MasterTool.Core for testable filter decisions
+- 10 new wishlist filter tests (628 total)
+
 ## [2.25.0] - 2026-02-08
 
 ### Added

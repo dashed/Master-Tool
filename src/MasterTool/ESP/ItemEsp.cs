@@ -22,6 +22,8 @@ namespace MasterTool.ESP
     {
         public List<ItemEspTarget> Targets { get; } = new List<ItemEspTarget>();
 
+        private readonly HashSet<string> _wishlistIds = new HashSet<string>();
+
         private static int _losLayerMask = -1;
 
         private static void InitLayerMask()
@@ -65,6 +67,25 @@ namespace MasterTool.ESP
             if (gameWorld == null || mainCamera == null)
                 return;
 
+            _wishlistIds.Clear();
+            if (PluginConfig.ItemEspWishlistOnly.Value)
+            {
+                try
+                {
+                    var wm = localPlayer.Profile.WishlistManager;
+                    if (wm != null)
+                    {
+                        var wishlist = wm.GetWishlist();
+                        if (wishlist != null)
+                        {
+                            foreach (var kvp in wishlist)
+                                _wishlistIds.Add((string)kvp.Key);
+                        }
+                    }
+                }
+                catch (Exception) { }
+            }
+
             string[] filters = PluginConfig
                 .ItemEspFilter.Value.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
                 .Select(f => f.Trim().ToLower())
@@ -80,7 +101,15 @@ namespace MasterTool.ESP
                         var loot = lootItems.GetByIndex(i);
                         if (loot == null || loot.Item == null)
                             continue;
-                        ProcessLoot(loot.transform.position, loot.Item, PluginConfig.ColorItem.Value, filters, mainCamera, localPlayer);
+                        ProcessLoot(
+                            loot.transform.position,
+                            loot.Item,
+                            PluginConfig.ColorItem.Value,
+                            filters,
+                            mainCamera,
+                            localPlayer,
+                            _wishlistIds
+                        );
                     }
                 }
             }
@@ -112,7 +141,16 @@ namespace MasterTool.ESP
                     {
                         if (item == container.ItemOwner.RootItem)
                             continue;
-                        ProcessLoot(containerPos, item, PluginConfig.ColorContainer.Value, filters, mainCamera, localPlayer, true);
+                        ProcessLoot(
+                            containerPos,
+                            item,
+                            PluginConfig.ColorContainer.Value,
+                            filters,
+                            mainCamera,
+                            localPlayer,
+                            _wishlistIds,
+                            true
+                        );
                     }
                 }
             }
@@ -125,6 +163,7 @@ namespace MasterTool.ESP
             string[] filters,
             Camera mainCamera,
             Player localPlayer,
+            HashSet<string> wishlistIds,
             bool isContainer = false
         )
         {
@@ -138,19 +177,21 @@ namespace MasterTool.ESP
             string name = item.ShortName.Localized();
             string id = item.TemplateId;
 
-            bool matches = filters.Length == 0;
-            if (!matches)
+            bool matchesFilter = filters.Length == 0;
+            if (!matchesFilter)
             {
                 foreach (var f in filters)
                 {
                     if (name.ToLower().Contains(f) || id.ToLower().Contains(f))
                     {
-                        matches = true;
+                        matchesFilter = true;
                         break;
                     }
                 }
             }
-            if (!matches)
+
+            bool isInWishlist = wishlistIds.Contains(id);
+            if (!WishlistLogic.ShouldShowItem(PluginConfig.ItemEspWishlistOnly.Value, isInWishlist, matchesFilter))
                 return;
 
             Vector3 screenPos = mainCamera.WorldToScreenPoint(EspLogic.GetItemEspWorldPosition(pos.ToVec3()).ToVector3());
