@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
     <LangVersion>latest</LangVersion>
-    <Version>2.3.3</Version>
+    <Version>2.3.4</Version>
     <Authors>dashed;M4st3rzzz</Authors>
     <Description>Advanced SPT Mod Menu - A BepInEx plugin for Single Player Tarkov</Description>
     <RepositoryUrl>https://github.com/dashed/Master-Tool</RepositoryUrl>

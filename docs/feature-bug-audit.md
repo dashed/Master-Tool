@@ -28,9 +28,9 @@ This audit examines every feature module for the same three patterns, plus two a
 | 3 | ~~NoWeight toggle has no implementation~~ | ~~**MEDIUM**~~ | ~~Multiple files~~ | ~~Missing feature~~ — **FIXED in v2.3.0** |
 | 4 | ~~ChamsManager leaks shader references~~ | ~~**LOW**~~ | ~~`ChamsManager.cs:73`~~ | ~~Resource leak~~ — **FIXED in v2.3.2** |
 | 5 | ~~GameState.MainCamera never refreshes if changed~~ | ~~**LOW**~~ | ~~`GameState.cs:42-43`~~ | ~~Stale cache~~ — **FIXED in v2.3.3** |
-| 6 | ChamsIntensity config unused | **LOW** | `PluginConfig.cs:52` | Dead config |
-| 7 | FovMelee config unused | **LOW** | `PluginConfig.cs:89` | Dead config |
-| 8 | ColorQuestZone config unused | **LOW** | `PluginConfig.cs:79` | Dead config |
+| 6 | ~~ChamsIntensity config unused~~ | ~~**LOW**~~ | ~~`PluginConfig.cs:52`~~ | ~~Dead config~~ — **FIXED in v2.3.4** |
+| 7 | ~~FovMelee config unused~~ | ~~**LOW**~~ | ~~`PluginConfig.cs:89`~~ | ~~Dead config~~ — **FIXED in v2.3.4** |
+| 8 | ~~ColorQuestZone config unused~~ | ~~**LOW**~~ | ~~`PluginConfig.cs:79`~~ | ~~Dead config~~ — **FIXED in v2.3.4** |
 | 9 | ~~GodMode patches fail silently~~ | ~~**LOW**~~ | ~~`DamagePatches.cs:36`~~ | ~~Silent failure~~ — **FIXED in v2.3.1** |
 
 ---
@@ -233,23 +233,20 @@ public static void Apply(GameWorld gameWorld)
 
 ---
 
-### BUG-6, 7, 8: Unused Config Entries [LOW]
+### ~~BUG-6, 7, 8: Unused Config Entries~~ [FIXED in v2.3.4]
 
-Three config entries are declared and bound but never referenced in feature code:
+**Resolution:** All three unused config entries are now wired to their intended feature code:
 
-| Config Entry | File:Line | Intended Use | Status |
-|---|---|---|---|
-| `ChamsIntensity` | `PluginConfig.cs:52,165` | Brightness of chams colors | Not used in `ChamsManager` |
-| `FovMelee` | `PluginConfig.cs:89,231` | FOV for melee weapons | No `"melee"` case in `VisionFeature.GetFovForCurrentWeapon` switch |
-| `ColorQuestZone` | `PluginConfig.cs:79,182` | Color for quest zones | No zone rendering in `QuestEsp` |
+| Config Entry | Fix | Files Modified |
+|---|---|---|
+| `ChamsIntensity` | `ChamsManager.ApplyChams()` now multiplies faction color RGB by clamped intensity (0.1–1.0), preserving alpha | `ChamsManager.cs` |
+| `FovMelee` | `VisionFeature.GetFovForCurrentWeapon()` detects knife/melee items by type name and returns `FovMelee`. `MasterToolPlugin.Update()` FOV call moved before weapon-type guard so it fires for all held items | `VisionFeature.cs`, `MasterToolPlugin.cs` |
+| `ColorQuestZone` | `QuestEsp.Update()` now extracts zone IDs from quest conditions (`ConditionLeaveItemAtLocation`, `ConditionPlaceBeacon`, `ConditionVisitPlace`, `ConditionLaunchFlare`) and scans for matching `TriggerWithId` objects in the scene. Zone markers rendered with `ColorQuestZone` | `QuestEsp.cs` |
 
-#### Impact
-
-Users editing the BepInEx config file will see these options and may configure them, but the values have no effect. `ChamsIntensity` is particularly misleading since the Chams feature is actively used.
-
-#### Proposed Fix
-
-Either implement the functionality these config entries were meant to control, or remove them to avoid confusion.
+**Tests added:**
+- `ChamsIntensityTests.cs` — 7 tests for intensity color scaling
+- `FovMappingTests.cs` — 2 new tests for melee FOV mapping
+- `QuestZoneExtractionTests.cs` — 10 tests for zone ID extraction logic
 
 ---
 

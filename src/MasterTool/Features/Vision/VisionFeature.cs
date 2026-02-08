@@ -1,3 +1,4 @@
+using System;
 using BSG.CameraEffects;
 using EFT;
 using EFT.InventoryLogic;
@@ -146,6 +147,10 @@ namespace MasterTool.Features.Vision
                         return PluginConfig.FovDefault.Value;
                 }
             }
+
+            // Melee items (knives) are not Weapon type in EFT
+            if (item.GetType().Name.IndexOf("Knife", StringComparison.OrdinalIgnoreCase) >= 0)
+                return PluginConfig.FovMelee.Value;
 
             return PluginConfig.FovDefault.Value;
         }

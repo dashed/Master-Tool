@@ -122,7 +122,9 @@ namespace MasterTool.ESP
                     renderer.material.SetInt("_ZWrite", 0);
                 }
 
-                renderer.material.SetColor("_Color", color);
+                float intensity = Mathf.Clamp(PluginConfig.ChamsIntensity.Value, 0.1f, 1f);
+                Color adjusted = new Color(color.r * intensity, color.g * intensity, color.b * intensity, color.a);
+                renderer.material.SetColor("_Color", adjusted);
             }
         }
 

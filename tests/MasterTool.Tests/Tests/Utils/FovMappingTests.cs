@@ -12,13 +12,19 @@ public class FovMappingTests
     private const float FovShotgun = 55f;
     private const float FovSniper = 50f;
     private const float FovDefault = 75f;
+    private const float FovMelee = 60f;
 
     /// <summary>
     /// Standalone copy of the weapon class to FOV mapping logic
     /// from VisionFeature.GetFovForCurrentWeapon, using fixed config values.
     /// </summary>
-    private static float MapWeaponClassToFov(string weaponClass)
+    private static float MapWeaponClassToFov(string weaponClass, bool isMelee = false)
     {
+        if (isMelee)
+        {
+            return FovMelee;
+        }
+
         switch (weaponClass?.ToLower())
         {
             case "pistol":
@@ -100,5 +106,18 @@ public class FovMappingTests
     public void MapWeaponClassToFov_Null_ReturnsDefaultFov()
     {
         Assert.That(MapWeaponClassToFov(null), Is.EqualTo(FovDefault));
+    }
+
+    [Test]
+    public void MapWeaponClassToFov_MeleeItem_ReturnsMeleeFov()
+    {
+        Assert.That(MapWeaponClassToFov(null, isMelee: true), Is.EqualTo(FovMelee));
+    }
+
+    [Test]
+    public void MapWeaponClassToFov_MeleeWithWeaponClass_ReturnsMeleeFov()
+    {
+        // Melee flag takes priority over any weapClass
+        Assert.That(MapWeaponClassToFov("pistol", isMelee: true), Is.EqualTo(FovMelee));
     }
 }

@@ -6,6 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [2.3.4] - 2026-02-07
+
+### Fixed
+
+- ChamsIntensity config now wired to chams color brightness — multiplies faction color RGB by configurable intensity value (0.1–1.0), previously had no effect
+- FovMelee config now wired to weapon FOV system — melee items (knives) are detected by type name and apply the configured melee FOV, previously FOV updates were skipped entirely for non-weapon items
+- ColorQuestZone config now wired to quest zone ESP rendering — scans for TriggerWithId objects matching active quest zone conditions (PlaceBeacon, VisitPlace, LeaveItemAtLocation, LaunchFlare) and renders them with the configured zone color
+
+### Added
+
+- Quest zone ESP: displays zone markers for active quest objectives (placement zones, visit locations, flare zones)
+- Unit tests for chams intensity color scaling (7 tests)
+- Unit tests for melee FOV mapping (2 tests)
+- Unit tests for quest zone ID extraction logic (10 tests)
+
 ## [2.3.3] - 2026-02-07
 
 ### Fixed

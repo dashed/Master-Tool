@@ -22,7 +22,7 @@ namespace MasterTool.Plugin
     /// Main BepInEx plugin entry point. Initializes config, applies Harmony patches,
     /// and orchestrates per-frame updates for all feature and ESP modules.
     /// </summary>
-    [BepInPlugin("com.master.tools", "Advanced SPT Mod Menu", "2.3.3")]
+    [BepInPlugin("com.master.tools", "Advanced SPT Mod Menu", "2.3.4")]
     public sealed class MasterToolPlugin : BaseUnityPlugin
     {
         internal static MasterToolPlugin Instance;
@@ -108,12 +108,13 @@ namespace MasterTool.Plugin
             if (gameWorld != null)
                 BigHeadFeature.Apply(gameWorld);
 
+            if (localPlayer.HandsController != null)
+                _vision.UpdateWeaponFov(mainCamera, localPlayer);
+
             if (localPlayer.HandsController == null)
                 return;
             if (!(localPlayer.HandsController.Item is Weapon))
                 return;
-
-            _vision.UpdateWeaponFov(mainCamera, localPlayer);
         }
 
         private void OnGUI()

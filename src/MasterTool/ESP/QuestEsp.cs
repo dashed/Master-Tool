@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using EFT;
 using EFT.Interactive;
+using EFT.Quests;
 using MasterTool.Config;
 using MasterTool.Models;
 using MasterTool.Plugin;
@@ -50,6 +51,7 @@ namespace MasterTool.ESP
                     return;
 
                 HashSet<string> questItemIds = new HashSet<string>();
+                HashSet<string> questZoneIds = new HashSet<string>();
 
                 foreach (var quest in questsData)
                 {
@@ -76,15 +78,38 @@ namespace MasterTool.ESP
                             {
                                 questItemIds.Add(itemId);
                             }
+
+                            switch (condition)
+                            {
+                                case ConditionLeaveItemAtLocation loc:
+                                    if (!string.IsNullOrEmpty(loc.zoneId))
+                                        questZoneIds.Add(loc.zoneId);
+                                    break;
+                                case ConditionPlaceBeacon beacon:
+                                    if (!string.IsNullOrEmpty(beacon.zoneId))
+                                        questZoneIds.Add(beacon.zoneId);
+                                    break;
+                                case ConditionVisitPlace visit:
+                                    if (!string.IsNullOrEmpty(visit.target))
+                                        questZoneIds.Add(visit.target);
+                                    break;
+                                case ConditionLaunchFlare flare:
+                                    if (!string.IsNullOrEmpty(flare.zoneID))
+                                        questZoneIds.Add(flare.zoneID);
+                                    break;
+                            }
                         }
                     }
                 }
 
-                if (questItemIds.Count == 0)
+                if (questItemIds.Count == 0 && questZoneIds.Count == 0)
                     return;
 
                 ScanLooseItems(gameWorld, mainCamera, localPlayer, questItemIds);
                 ScanContainers(mainCamera, localPlayer, cachedContainers, questItemIds);
+
+                if (questZoneIds.Count > 0)
+                    ScanZones(mainCamera, localPlayer, questZoneIds);
             }
             catch (Exception ex)
             {
@@ -173,6 +198,40 @@ namespace MasterTool.ESP
                             }
                         );
                     }
+                }
+            }
+        }
+
+        private void ScanZones(Camera mainCamera, Player localPlayer, HashSet<string> questZoneIds)
+        {
+            var triggers = UnityEngine.Object.FindObjectsOfType<TriggerWithId>();
+            if (triggers == null)
+                return;
+
+            foreach (var trigger in triggers)
+            {
+                if (trigger == null || string.IsNullOrEmpty(trigger.Id))
+                    continue;
+                if (!questZoneIds.Contains(trigger.Id))
+                    continue;
+
+                float dist = Vector3.Distance(localPlayer.Transform.position, trigger.transform.position);
+                if (dist > PluginConfig.QuestEspMaxDistance.Value)
+                    continue;
+
+                Vector3 screenPos = mainCamera.WorldToScreenPoint(trigger.transform.position);
+                if (screenPos.z > 0)
+                {
+                    Targets.Add(
+                        new QuestEspTarget
+                        {
+                            ScreenPosition = new Vector2(screenPos.x, Screen.height - screenPos.y),
+                            Distance = dist,
+                            Name = "[ZONE] " + trigger.Id,
+                            Color = PluginConfig.ColorQuestZone.Value,
+                            IsZone = true,
+                        }
+                    );
                 }
             }
         }
