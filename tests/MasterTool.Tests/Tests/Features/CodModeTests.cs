@@ -1,47 +1,16 @@
-using System;
+using MasterTool.Core;
 using NUnit.Framework;
 
 namespace MasterTool.Tests.Tests.Features;
 
 /// <summary>
-/// Tests for the COD Mode heal logic used by CodModeFeature.
-/// Duplicates the pure heal-calculation and timer logic since
-/// ActiveHealthController cannot be referenced from net9.0 tests.
+/// Tests for the COD Mode heal logic.
+/// Uses <see cref="HealingLogic"/> from MasterTool.Core (shared library).
+/// Timer/state tests remain local as they test integration behavior, not pure logic.
 /// </summary>
 [TestFixture]
 public class CodModeTests
 {
-    /// <summary>
-    /// Mirrors the heal-delay check in CodModeFeature.
-    /// Returns true when enough time has passed since the last hit.
-    /// </summary>
-    private static bool ShouldHeal(float timeSinceHit, float healDelay)
-    {
-        return timeSinceHit >= healDelay;
-    }
-
-    /// <summary>
-    /// Mirrors the heal-amount calculation in CodModeFeature.
-    /// Clamps the heal to the remaining HP gap.
-    /// </summary>
-    private static float CalculateHealAmount(float current, float maximum, float healRate)
-    {
-        if (current >= maximum)
-        {
-            return 0f;
-        }
-
-        return Math.Min(healRate, maximum - current);
-    }
-
-    /// <summary>
-    /// Mirrors CodModeFeature.ShouldHealBodyPart: skip destroyed/blacked parts.
-    /// </summary>
-    private static bool ShouldHealBodyPart(float current, float maximum)
-    {
-        return current > 0f && current < maximum;
-    }
-
     /// <summary>
     /// Simulates time since last damage was taken.
     /// </summary>
@@ -84,37 +53,37 @@ public class CodModeTests
     [Test]
     public void ShouldHeal_TimeBelowDelay_ReturnsFalse()
     {
-        Assert.That(ShouldHeal(5f, 10f), Is.False);
+        Assert.That(HealingLogic.ShouldHeal(5f, 10f), Is.False);
     }
 
     [Test]
     public void ShouldHeal_TimeEqualsDelay_ReturnsTrue()
     {
-        Assert.That(ShouldHeal(10f, 10f), Is.True);
+        Assert.That(HealingLogic.ShouldHeal(10f, 10f), Is.True);
     }
 
     [Test]
     public void ShouldHeal_TimeAboveDelay_ReturnsTrue()
     {
-        Assert.That(ShouldHeal(15f, 10f), Is.True);
+        Assert.That(HealingLogic.ShouldHeal(15f, 10f), Is.True);
     }
 
     [Test]
     public void ShouldHeal_ZeroDelay_ReturnsTrue()
     {
-        Assert.That(ShouldHeal(0f, 0f), Is.True);
+        Assert.That(HealingLogic.ShouldHeal(0f, 0f), Is.True);
     }
 
     [Test]
     public void ShouldHeal_ZeroTimeLargeDelay_ReturnsFalse()
     {
-        Assert.That(ShouldHeal(0f, 600f), Is.False);
+        Assert.That(HealingLogic.ShouldHeal(0f, 600f), Is.False);
     }
 
     [Test]
     public void ShouldHeal_VeryLargeTime_ReturnsTrue()
     {
-        Assert.That(ShouldHeal(99999f, 10f), Is.True);
+        Assert.That(HealingLogic.ShouldHeal(99999f, 10f), Is.True);
     }
 
     // === CalculateHealAmount Tests ===
@@ -122,49 +91,49 @@ public class CodModeTests
     [Test]
     public void CalculateHeal_NormalHeal_ReturnsRate()
     {
-        Assert.That(CalculateHealAmount(50f, 100f, 10f), Is.EqualTo(10f));
+        Assert.That(HealingLogic.CalculateHealAmount(50f, 100f, 10f), Is.EqualTo(10f));
     }
 
     [Test]
     public void CalculateHeal_ClampToMax_ReturnsRemaining()
     {
-        Assert.That(CalculateHealAmount(95f, 100f, 10f), Is.EqualTo(5f));
+        Assert.That(HealingLogic.CalculateHealAmount(95f, 100f, 10f), Is.EqualTo(5f));
     }
 
     [Test]
     public void CalculateHeal_AtMax_ReturnsZero()
     {
-        Assert.That(CalculateHealAmount(100f, 100f, 10f), Is.EqualTo(0f));
+        Assert.That(HealingLogic.CalculateHealAmount(100f, 100f, 10f), Is.EqualTo(0f));
     }
 
     [Test]
     public void CalculateHeal_AboveMax_ReturnsZero()
     {
-        Assert.That(CalculateHealAmount(105f, 100f, 10f), Is.EqualTo(0f));
+        Assert.That(HealingLogic.CalculateHealAmount(105f, 100f, 10f), Is.EqualTo(0f));
     }
 
     [Test]
     public void CalculateHeal_FromZero_ReturnsRate()
     {
-        Assert.That(CalculateHealAmount(0f, 100f, 10f), Is.EqualTo(10f));
+        Assert.That(HealingLogic.CalculateHealAmount(0f, 100f, 10f), Is.EqualTo(10f));
     }
 
     [Test]
     public void CalculateHeal_FromZero_MaxBelowRate_ReturnsMax()
     {
-        Assert.That(CalculateHealAmount(0f, 5f, 10f), Is.EqualTo(5f));
+        Assert.That(HealingLogic.CalculateHealAmount(0f, 5f, 10f), Is.EqualTo(5f));
     }
 
     [Test]
     public void CalculateHeal_OneHpRemaining_ReturnsOne()
     {
-        Assert.That(CalculateHealAmount(99f, 100f, 10f), Is.EqualTo(1f));
+        Assert.That(HealingLogic.CalculateHealAmount(99f, 100f, 10f), Is.EqualTo(1f));
     }
 
     [Test]
     public void CalculateHeal_LargeHealRate_ClampsToRemaining()
     {
-        Assert.That(CalculateHealAmount(10f, 15f, 100f), Is.EqualTo(5f));
+        Assert.That(HealingLogic.CalculateHealAmount(10f, 15f, 100f), Is.EqualTo(5f));
     }
 
     // === Timer/State Tests ===
@@ -198,9 +167,9 @@ public class CodModeTests
     public void FullCycle_DamageResetsHealProgress()
     {
         _timeSinceLastHit = 12f; // past 10s delay
-        Assert.That(ShouldHeal(_timeSinceLastHit, 10f), Is.True);
+        Assert.That(HealingLogic.ShouldHeal(_timeSinceLastHit, 10f), Is.True);
         NotifyDirectHit(); // take damage
-        Assert.That(ShouldHeal(_timeSinceLastHit, 10f), Is.False);
+        Assert.That(HealingLogic.ShouldHeal(_timeSinceLastHit, 10f), Is.False);
     }
 
     // === Body Part Coverage ===
@@ -235,19 +204,19 @@ public class CodModeTests
     public void DirectHit_ResetsTimer_BleedDoesNot()
     {
         _timeSinceLastHit = 12f;
-        Assert.That(ShouldHeal(_timeSinceLastHit, 10f), Is.True);
+        Assert.That(HealingLogic.ShouldHeal(_timeSinceLastHit, 10f), Is.True);
 
         // Direct hit resets
         NotifyDirectHit();
-        Assert.That(ShouldHeal(_timeSinceLastHit, 10f), Is.False);
+        Assert.That(HealingLogic.ShouldHeal(_timeSinceLastHit, 10f), Is.False);
 
         // Accumulate past delay again
         _timeSinceLastHit = 11f;
-        Assert.That(ShouldHeal(_timeSinceLastHit, 10f), Is.True);
+        Assert.That(HealingLogic.ShouldHeal(_timeSinceLastHit, 10f), Is.True);
 
         // Bleed tick does NOT reset
         SimulateBleedTick();
-        Assert.That(ShouldHeal(_timeSinceLastHit, 10f), Is.True);
+        Assert.That(HealingLogic.ShouldHeal(_timeSinceLastHit, 10f), Is.True);
     }
 
     [Test]
@@ -261,12 +230,12 @@ public class CodModeTests
         _timeSinceLastHit = 5f;
         SimulateBleedTick();
         Assert.That(_timeSinceLastHit, Is.EqualTo(5f)); // NOT reset
-        Assert.That(ShouldHeal(_timeSinceLastHit, 10f), Is.False); // Not enough time
+        Assert.That(HealingLogic.ShouldHeal(_timeSinceLastHit, 10f), Is.False); // Not enough time
 
         // More time passes with bleed ticks
         _timeSinceLastHit = 11f;
         SimulateBleedTick();
-        Assert.That(ShouldHeal(_timeSinceLastHit, 10f), Is.True); // Healing should start
+        Assert.That(HealingLogic.ShouldHeal(_timeSinceLastHit, 10f), Is.True); // Healing should start
     }
 
     [Test]
@@ -281,7 +250,7 @@ public class CodModeTests
 
         // Timer accumulated to ~15s despite constant bleed ticks
         Assert.That(_timeSinceLastHit, Is.EqualTo(15f).Within(0.01f));
-        Assert.That(ShouldHeal(_timeSinceLastHit, 10f), Is.True);
+        Assert.That(HealingLogic.ShouldHeal(_timeSinceLastHit, 10f), Is.True);
     }
 
     // === Destroyed Body Part Tests ===
@@ -289,37 +258,37 @@ public class CodModeTests
     [Test]
     public void ShouldHealBodyPart_NormalDamaged_ReturnsTrue()
     {
-        Assert.That(ShouldHealBodyPart(50f, 100f), Is.True);
+        Assert.That(HealingLogic.ShouldHealBodyPart(50f, 100f), Is.True);
     }
 
     [Test]
     public void ShouldHealBodyPart_Destroyed_ReturnsFalse()
     {
-        Assert.That(ShouldHealBodyPart(0f, 100f), Is.False);
+        Assert.That(HealingLogic.ShouldHealBodyPart(0f, 100f), Is.False);
     }
 
     [Test]
     public void ShouldHealBodyPart_AtMax_ReturnsFalse()
     {
-        Assert.That(ShouldHealBodyPart(100f, 100f), Is.False);
+        Assert.That(HealingLogic.ShouldHealBodyPart(100f, 100f), Is.False);
     }
 
     [Test]
     public void ShouldHealBodyPart_NegativeHealth_ReturnsFalse()
     {
-        Assert.That(ShouldHealBodyPart(-5f, 100f), Is.False);
+        Assert.That(HealingLogic.ShouldHealBodyPart(-5f, 100f), Is.False);
     }
 
     [Test]
     public void ShouldHealBodyPart_OneHp_ReturnsTrue()
     {
-        Assert.That(ShouldHealBodyPart(1f, 100f), Is.True);
+        Assert.That(HealingLogic.ShouldHealBodyPart(1f, 100f), Is.True);
     }
 
     [Test]
     public void ShouldHealBodyPart_AlmostFull_ReturnsTrue()
     {
-        Assert.That(ShouldHealBodyPart(99.9f, 100f), Is.True);
+        Assert.That(HealingLogic.ShouldHealBodyPart(99.9f, 100f), Is.True);
     }
 
     // === UnscaledDeltaTime Tests ===
@@ -338,7 +307,7 @@ public class CodModeTests
         }
 
         Assert.That(_timeSinceLastHit, Is.EqualTo(10f).Within(0.1f));
-        Assert.That(ShouldHeal(_timeSinceLastHit, 9.5f), Is.True);
+        Assert.That(HealingLogic.ShouldHeal(_timeSinceLastHit, 9.5f), Is.True);
     }
 
     // === Effect Removal Decision Tests ===

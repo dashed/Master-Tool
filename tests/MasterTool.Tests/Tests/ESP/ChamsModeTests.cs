@@ -1,23 +1,16 @@
 using System.Collections.Generic;
+using MasterTool.Core;
 using NUnit.Framework;
 
 namespace MasterTool.Tests.Tests.ESP;
 
 /// <summary>
 /// Tests for chams rendering mode logic.
-/// Duplicates the pure decision logic since Unity cannot be referenced from net9.0 tests.
+/// Uses <see cref="ChamsMode"/> from MasterTool.Core (shared library).
 /// </summary>
 [TestFixture]
 public class ChamsModeTests
 {
-    // Mirror the enum since we can't reference the net472 assembly
-    private enum ChamsMode
-    {
-        Solid = 0,
-        CullFront = 1,
-        Outline = 2,
-    }
-
     // --- Enum value tests ---
 
     [Test]

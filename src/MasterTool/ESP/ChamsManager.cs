@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using EFT;
 using MasterTool.Config;
-using MasterTool.Models;
+using MasterTool.Core;
 using MasterTool.Plugin;
 using MasterTool.Utils;
 using UnityEngine;
+using KeyCode = UnityEngine.KeyCode;
 
 namespace MasterTool.ESP
 {

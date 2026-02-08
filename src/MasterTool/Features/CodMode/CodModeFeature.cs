@@ -2,6 +2,7 @@ using System;
 using EFT;
 using EFT.HealthSystem;
 using MasterTool.Config;
+using MasterTool.Core;
 using MasterTool.Plugin;
 using UnityEngine;
 
@@ -135,26 +136,17 @@ namespace MasterTool.Features.CodMode
 
         internal static bool ShouldHeal(float timeSinceHit, float healDelay)
         {
-            return timeSinceHit >= healDelay;
+            return HealingLogic.ShouldHeal(timeSinceHit, healDelay);
         }
 
         internal static float CalculateHealAmount(float current, float maximum, float healRate)
         {
-            if (current >= maximum)
-            {
-                return 0f;
-            }
-
-            return Math.Min(healRate, maximum - current);
+            return HealingLogic.CalculateHealAmount(current, maximum, healRate);
         }
 
-        /// <summary>
-        /// Pure logic: whether a body part should be healed.
-        /// Returns false for destroyed/blacked parts (Current &lt;= 0).
-        /// </summary>
         internal static bool ShouldHealBodyPart(float current, float maximum)
         {
-            return current > 0f && current < maximum;
+            return HealingLogic.ShouldHealBodyPart(current, maximum);
         }
     }
 }

@@ -1,22 +1,21 @@
 using System.Collections.Generic;
 using System.Linq;
+using MasterTool.Core;
 using NUnit.Framework;
 
 namespace MasterTool.Tests.Tests.UI;
 
 /// <summary>
 /// Tests for mod menu sub-tab structure.
-/// Validates tab and sub-tab naming, counts, and uniqueness.
+/// Uses <see cref="TabDefinitions"/> from MasterTool.Core (shared library).
 /// </summary>
 [TestFixture]
 public class SubTabTests
 {
-    // Mirror the tab/sub-tab arrays from ModMenu since we can't reference net472 assembly
-    private static readonly string[] TabNames = { "General", "ESP Players", "ESP Items", "ESP Quests", "Visual", "Extras", "Hotkeys" };
-
-    private static readonly string[] GeneralSubTabNames = { "Damage", "Survival", "Weapons", "Utility" };
-    private static readonly string[] EspPlayersSubTabNames = { "ESP", "Chams", "Colors" };
-    private static readonly string[] TrollSubTabNames = { "Movement", "Teleport", "Fun" };
+    private static readonly string[] TabNames = TabDefinitions.TabNames;
+    private static readonly string[] GeneralSubTabNames = TabDefinitions.GeneralSubTabNames;
+    private static readonly string[] EspPlayersSubTabNames = TabDefinitions.EspPlayersSubTabNames;
+    private static readonly string[] TrollSubTabNames = TabDefinitions.ExtrasSubTabNames;
 
     // --- Main tab tests ---
 

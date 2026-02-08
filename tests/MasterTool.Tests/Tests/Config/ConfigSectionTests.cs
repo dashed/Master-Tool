@@ -1,36 +1,34 @@
 using System.Collections.Generic;
 using System.Linq;
+using MasterTool.Core;
 using NUnit.Framework;
 
 namespace MasterTool.Tests.Tests.Config;
 
 /// <summary>
 /// Tests for config section organization.
-/// Validates section naming conventions, counts, and ordering.
+/// Uses <see cref="ConfigSections"/> from MasterTool.Core (shared library).
 /// </summary>
 [TestFixture]
 public class ConfigSectionTests
 {
-    /// <summary>
-    /// Mirrors PluginConfig.Sections constants for testing.
-    /// </summary>
     private static readonly string[] AllSections =
     {
-        "00. Mod Menu",
-        "01. Damage",
-        "02. Survival",
-        "03. Healing",
-        "04. Weapons",
-        "05. Movement",
-        "06. FOV",
-        "07. ESP Players",
-        "08. Chams",
-        "09. ESP Items",
-        "10. ESP Quests",
-        "11. Visual",
-        "12. Performance",
-        "13. UI",
-        "14. Hotkeys",
+        ConfigSections.ModMenu,
+        ConfigSections.Damage,
+        ConfigSections.Survival,
+        ConfigSections.Healing,
+        ConfigSections.Weapons,
+        ConfigSections.Movement,
+        ConfigSections.Fov,
+        ConfigSections.EspPlayers,
+        ConfigSections.Chams,
+        ConfigSections.EspItems,
+        ConfigSections.EspQuests,
+        ConfigSections.Visual,
+        ConfigSections.Performance,
+        ConfigSections.Ui,
+        ConfigSections.Hotkeys,
     };
 
     /// <summary>
@@ -38,21 +36,21 @@ public class ConfigSectionTests
     /// </summary>
     private static readonly Dictionary<string, int> SectionEntryCounts = new()
     {
-        { "00. Mod Menu", 1 },
-        { "01. Damage", 7 },
-        { "02. Survival", 6 },
-        { "03. Healing", 4 },
-        { "04. Weapons", 3 },
-        { "05. Movement", 4 },
-        { "06. FOV", 9 },
-        { "07. ESP Players", 10 },
-        { "08. Chams", 8 },
-        { "09. ESP Items", 8 },
-        { "10. ESP Quests", 5 },
-        { "11. Visual", 4 },
-        { "12. Performance", 2 },
-        { "13. UI", 2 },
-        { "14. Hotkeys", 22 },
+        { ConfigSections.ModMenu, 1 },
+        { ConfigSections.Damage, 7 },
+        { ConfigSections.Survival, 6 },
+        { ConfigSections.Healing, 4 },
+        { ConfigSections.Weapons, 3 },
+        { ConfigSections.Movement, 4 },
+        { ConfigSections.Fov, 9 },
+        { ConfigSections.EspPlayers, 10 },
+        { ConfigSections.Chams, 8 },
+        { ConfigSections.EspItems, 8 },
+        { ConfigSections.EspQuests, 5 },
+        { ConfigSections.Visual, 4 },
+        { ConfigSections.Performance, 2 },
+        { ConfigSections.Ui, 2 },
+        { ConfigSections.Hotkeys, 22 },
     };
 
     // --- Section naming convention tests ---
@@ -136,7 +134,7 @@ public class ConfigSectionTests
         const int maxNonHotkey = 10;
         foreach (var kv in SectionEntryCounts)
         {
-            if (kv.Key == "14. Hotkeys")
+            if (kv.Key == ConfigSections.Hotkeys)
             {
                 continue;
             }
@@ -215,15 +213,15 @@ public class ConfigSectionTests
     [Test]
     public void ChamsSeparatedFromEspPlayers()
     {
-        Assert.That(AllSections, Does.Contain("07. ESP Players"));
-        Assert.That(AllSections, Does.Contain("08. Chams"));
+        Assert.That(AllSections, Does.Contain(ConfigSections.EspPlayers));
+        Assert.That(AllSections, Does.Contain(ConfigSections.Chams));
     }
 
     [Test]
     public void ContainersAndItemsMerged()
     {
         // Containers and items are now in the same section
-        Assert.That(AllSections, Does.Contain("09. ESP Items"));
+        Assert.That(AllSections, Does.Contain(ConfigSections.EspItems));
         Assert.That(AllSections, Does.Not.Contain("ESP Containers"));
     }
 }

@@ -1,21 +1,15 @@
+using MasterTool.Core;
 using NUnit.Framework;
 
 namespace MasterTool.Tests.Tests.ESP;
 
 /// <summary>
 /// Tests for chams anti-occlusion property logic.
-/// Duplicates the pure property-setting decisions since Unity cannot be referenced from net9.0 tests.
+/// Uses <see cref="ChamsMode"/> from MasterTool.Core (shared library).
 /// </summary>
 [TestFixture]
 public class ChamsAntiOcclusionTests
 {
-    private enum ChamsMode
-    {
-        Solid = 0,
-        CullFront = 1,
-        Outline = 2,
-    }
-
     /// <summary>
     /// Represents the chams material property state set during ApplyChams.
     /// </summary>

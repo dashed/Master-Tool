@@ -6,6 +6,32 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [2.18.0] - 2026-02-08
+
+### Added
+
+- `MasterTool.Core` shared library (`netstandard2.0`): extracted pure logic from the main plugin so tests reference real code instead of mirrored copies
+  - `KeyCode` enum: platform-agnostic key code matching Unity's int values, enabling tests to use real key codes without Unity assemblies
+  - `KeyBindParser`: full key bind parsing logic (aliases, modifiers, formatting) — main plugin's version is now a thin wrapper that converts between Core and Unity KeyCode types
+  - `HealingLogic`: ShouldHeal, CalculateHealAmount, ShouldHealBodyPart extracted from CodModeFeature
+  - `ScreenLogic`: IsOnScreen extracted from EspRenderer
+  - `ChamsMode` enum: moved from Models/ to Core
+  - `TabDefinitions`: tab and sub-tab name arrays shared between ModMenu and tests
+  - `ConfigSections`: config section name constants shared between PluginConfig and tests
+  - `ReloadDefaults`: default reload timing constants shared between ReloadSpeedFeature and tests
+
+### Changed
+
+- All 8 affected test files now reference `MasterTool.Core` types directly instead of mirroring logic:
+  - `KeyBindParserTests`: removed ~180 lines of mirrored parser code, aliases, and KeyCode constants
+  - `CodModeTests`: calls `HealingLogic` methods instead of local copies
+  - `EspScreenBoundsTests`: calls `ScreenLogic.IsOnScreen` instead of local copy
+  - `ChamsModeTests` / `ChamsAntiOcclusionTests`: use `Core.ChamsMode` instead of local enum
+  - `SubTabTests`: references `TabDefinitions` arrays instead of local copies
+  - `ConfigSectionTests`: references `ConfigSections` constants instead of local string literals
+  - `ReloadSpeedTests`: references `ReloadDefaults` constants instead of local copies
+- Main plugin source files delegate to Core: CodModeFeature, EspRenderer, PluginConfig.Sections, ReloadSpeedFeature, KeyBindParser (thin wrapper)
+
 ## [2.17.0] - 2026-02-08
 
 ### Added

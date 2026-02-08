@@ -1,18 +1,16 @@
+using MasterTool.Core;
 using NUnit.Framework;
 
 namespace MasterTool.Tests.Tests.Features;
 
 /// <summary>
-/// Tests for the reload speed state machine logic used by ReloadSpeedFeature.
-/// Duplicates the state-tracking logic since weapon skill controllers
-/// cannot be referenced from net9.0 tests.
+/// Tests for the reload speed state machine logic.
+/// Uses <see cref="ReloadDefaults"/> from MasterTool.Core (shared library).
+/// State-tracking tests remain local as they test integration behavior.
 /// </summary>
 [TestFixture]
 public class ReloadSpeedTests
 {
-    private const float DefaultLoadTime = 0.85f;
-    private const float DefaultUnloadTime = 0.3f;
-
     /// <summary>
     /// Simulates whether the mod has forced custom reload values.
     /// </summary>
@@ -41,8 +39,8 @@ public class ReloadSpeedTests
         }
         else if (_modForced)
         {
-            _loadTime = DefaultLoadTime;
-            _unloadTime = DefaultUnloadTime;
+            _loadTime = ReloadDefaults.DefaultLoadTime;
+            _unloadTime = ReloadDefaults.DefaultUnloadTime;
             _modForced = false;
         }
     }
@@ -51,8 +49,8 @@ public class ReloadSpeedTests
     public void SetUp()
     {
         _modForced = false;
-        _loadTime = DefaultLoadTime;
-        _unloadTime = DefaultUnloadTime;
+        _loadTime = ReloadDefaults.DefaultLoadTime;
+        _unloadTime = ReloadDefaults.DefaultUnloadTime;
     }
 
     [Test]
@@ -75,8 +73,8 @@ public class ReloadSpeedTests
     {
         Apply(true, 0.5f, 0.1f);
         Apply(false, 0.5f, 0.1f);
-        Assert.That(_loadTime, Is.EqualTo(DefaultLoadTime));
-        Assert.That(_unloadTime, Is.EqualTo(DefaultUnloadTime));
+        Assert.That(_loadTime, Is.EqualTo(ReloadDefaults.DefaultLoadTime));
+        Assert.That(_unloadTime, Is.EqualTo(ReloadDefaults.DefaultUnloadTime));
         Assert.That(_modForced, Is.False);
     }
 
@@ -104,16 +102,16 @@ public class ReloadSpeedTests
     [Test]
     public void DefaultValues_AreCorrect()
     {
-        Assert.That(DefaultLoadTime, Is.EqualTo(0.85f));
-        Assert.That(DefaultUnloadTime, Is.EqualTo(0.3f));
+        Assert.That(ReloadDefaults.DefaultLoadTime, Is.EqualTo(0.85f));
+        Assert.That(ReloadDefaults.DefaultUnloadTime, Is.EqualTo(0.3f));
     }
 
     [Test]
     public void Enable_WithDefaultValues_SetsModForced()
     {
-        Apply(true, DefaultLoadTime, DefaultUnloadTime);
+        Apply(true, ReloadDefaults.DefaultLoadTime, ReloadDefaults.DefaultUnloadTime);
         Assert.That(_modForced, Is.True);
-        Assert.That(_loadTime, Is.EqualTo(DefaultLoadTime));
+        Assert.That(_loadTime, Is.EqualTo(ReloadDefaults.DefaultLoadTime));
     }
 
     [Test]

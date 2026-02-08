@@ -173,24 +173,36 @@ Master-Tool/
 ├── MasterTool.sln                 # Solution file
 ├── libs/                          # Game & BepInEx assemblies (not checked in)
 ├── src/
+│   ├── MasterTool.Core/           # Shared pure-logic library (netstandard2.0)
+│   │   ├── MasterTool.Core.csproj
+│   │   ├── KeyCode.cs             # Platform-agnostic KeyCode enum
+│   │   ├── KeyBindParser.cs       # Key bind string parser
+│   │   ├── ChamsMode.cs           # Chams rendering mode enum
+│   │   ├── ConfigSections.cs      # BepInEx config section names
+│   │   ├── HealingLogic.cs        # COD Mode heal calculations
+│   │   ├── ReloadDefaults.cs      # Reload speed default values
+│   │   ├── ScreenLogic.cs         # ESP screen-bounds logic
+│   │   └── TabDefinitions.cs      # UI tab and sub-tab names
 │   └── MasterTool/
-│       ├── MasterTool.csproj      # Main plugin project
+│       ├── MasterTool.csproj      # Main plugin project (net472)
 │       ├── Plugin/
 │       │   ├── MasterToolPlugin.cs # BepInEx entry point and orchestrator
 │       │   └── GameState.cs       # Cached game references with periodic refresh
 │       ├── Config/
 │       │   └── PluginConfig.cs    # BepInEx configuration bindings
 │       ├── Models/
-│       │   ├── ChamsMode.cs       # Chams rendering mode enum
 │       │   ├── EspTarget.cs       # Player ESP data model
 │       │   ├── ItemEspTarget.cs   # Item ESP data model
 │       │   └── QuestEspTarget.cs  # Quest ESP data model
 │       ├── Utils/
 │       │   ├── PlayerUtils.cs     # Player helper methods
-│       │   └── ReflectionUtils.cs # Reflection helper methods
+│       │   ├── ReflectionUtils.cs # Reflection helper methods
+│       │   └── KeyBindParser.cs   # Unity-side key bind parser (delegates to Core)
 │       ├── Features/
 │       │   ├── GodMode/
 │       │   │   └── DamagePatches.cs
+│       │   ├── CodMode/
+│       │   │   └── CodModeFeature.cs
 │       │   ├── InfiniteStamina/
 │       │   │   └── StaminaFeature.cs
 │       │   ├── Sustenance/
@@ -198,12 +210,16 @@ Master-Tool/
 │       │   │   └── HydrationFeature.cs  # Infinite hydration
 │       │   ├── FallDamage/
 │       │   │   └── FallDamageFeature.cs # No fall damage (state-tracked)
+│       │   ├── FlyMode/
+│       │   │   └── FlyModeFeature.cs
 │       │   ├── Performance/
 │       │   │   └── CullingFeature.cs
 │       │   ├── DoorUnlock/
 │       │   │   └── DoorUnlockFeature.cs
 │       │   ├── Speedhack/
 │       │   │   └── SpeedhackFeature.cs
+│       │   ├── ReloadSpeed/
+│       │   │   └── ReloadSpeedFeature.cs
 │       │   ├── Vision/
 │       │   │   └── VisionFeature.cs
 │       │   ├── BigHeadMode/
@@ -211,7 +227,8 @@ Master-Tool/
 │       │   ├── NoWeight/
 │       │   │   └── NoWeightFeature.cs
 │       │   └── Teleport/
-│       │       └── TeleportFeature.cs
+│       │       ├── TeleportFeature.cs
+│       │       └── PlayerTeleportFeature.cs
 │       ├── ESP/
 │       │   ├── EspRenderer.cs     # Shared ESP drawing utilities
 │       │   ├── PlayerEsp.cs       # Player & bot ESP
@@ -294,7 +311,7 @@ make build    # or: dotnet build
 
 ### Running Tests
 
-456 tests cover pure logic: models, utilities, feature state machines, ESP extraction, and config defaults. Game-dependent code requires Unity/EFT assemblies and cannot be unit-tested — tests duplicate the pure logic with fake types.
+524 tests cover pure logic: models, utilities, feature state machines, ESP calculations, and config defaults. Pure logic lives in the `MasterTool.Core` shared library (`netstandard2.0`), referenced by both the plugin (`net472`) and test project (`net9.0`). Game-dependent code requires Unity/EFT assemblies and cannot be unit-tested.
 
 ```bash
 make test     # or: dotnet test

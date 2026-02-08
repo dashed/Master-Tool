@@ -2,11 +2,13 @@ using System.Collections.Generic;
 using BepInEx.Configuration;
 using EFT;
 using MasterTool.Config;
+using MasterTool.Core;
 using MasterTool.Features.DoorUnlock;
 using MasterTool.Features.Teleport;
-using MasterTool.Models;
 using MasterTool.Utils;
 using UnityEngine;
+using KeyBindParser = MasterTool.Utils.KeyBindParser;
+using KeyCode = UnityEngine.KeyCode;
 
 namespace MasterTool.UI
 {
@@ -27,18 +29,18 @@ namespace MasterTool.UI
     {
         private int _selectedTab;
         private const int TabColumns = 4;
-        internal static readonly string[] TabNames = { "General", "ESP Players", "ESP Items", "ESP Quests", "Visual", "Extras", "Hotkeys" };
+        internal static readonly string[] TabNames = TabDefinitions.TabNames;
         private Vector2 _mainScroll;
         private Vector2 _itemFilterScroll;
 
         private int _generalSubTab;
-        internal static readonly string[] GeneralSubTabNames = { "Damage", "Survival", "Weapons", "Utility" };
+        internal static readonly string[] GeneralSubTabNames = TabDefinitions.GeneralSubTabNames;
 
         private int _espPlayersSubTab;
-        internal static readonly string[] EspPlayersSubTabNames = { "ESP", "Chams", "Colors" };
+        internal static readonly string[] EspPlayersSubTabNames = TabDefinitions.EspPlayersSubTabNames;
 
         private int _trollSubTab;
-        internal static readonly string[] TrollSubTabNames = { "Movement", "Teleport", "Fun" };
+        internal static readonly string[] TrollSubTabNames = TabDefinitions.ExtrasSubTabNames;
 
         private ConfigEntry<KeyboardShortcut> _rebindingEntry;
         private int _rebindStartFrame = -1;

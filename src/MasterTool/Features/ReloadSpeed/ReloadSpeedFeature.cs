@@ -1,14 +1,15 @@
 using System;
 using Comfort.Common;
 using MasterTool.Config;
+using MasterTool.Core;
 using MasterTool.Plugin;
 
 namespace MasterTool.Features.ReloadSpeed
 {
     public static class ReloadSpeedFeature
     {
-        public const float DefaultLoadTime = 0.85f;
-        public const float DefaultUnloadTime = 0.3f;
+        public const float DefaultLoadTime = ReloadDefaults.DefaultLoadTime;
+        public const float DefaultUnloadTime = ReloadDefaults.DefaultUnloadTime;
 
         private static bool _modForced;
         private static bool _errorLogged;

@@ -7,6 +7,10 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\MasterTool.Core\MasterTool.Core.csproj" />
+  </ItemGroup>
+
   <!--
     BepInEx and EFT game assemblies.
     Copy the required DLLs into the libs/ folder from your SPT installation:

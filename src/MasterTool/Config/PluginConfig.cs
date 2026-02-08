@@ -1,9 +1,10 @@
 using System;
 using BepInEx.Configuration;
 using EFT.HealthSystem;
-using MasterTool.Models;
+using MasterTool.Core;
 using MasterTool.Plugin;
 using UnityEngine;
+using KeyCode = UnityEngine.KeyCode;
 
 namespace MasterTool.Config
 {
@@ -150,21 +151,21 @@ namespace MasterTool.Config
         /// </summary>
         public static class Sections
         {
-            public const string ModMenu = "00. Mod Menu";
-            public const string Damage = "01. Damage";
-            public const string Survival = "02. Survival";
-            public const string Healing = "03. Healing";
-            public const string Weapons = "04. Weapons";
-            public const string Movement = "05. Movement";
-            public const string Fov = "06. FOV";
-            public const string EspPlayers = "07. ESP Players";
-            public const string Chams = "08. Chams";
-            public const string EspItems = "09. ESP Items";
-            public const string EspQuests = "10. ESP Quests";
-            public const string Visual = "11. Visual";
-            public const string Performance = "12. Performance";
-            public const string Ui = "13. UI";
-            public const string Hotkeys = "14. Hotkeys";
+            public const string ModMenu = ConfigSections.ModMenu;
+            public const string Damage = ConfigSections.Damage;
+            public const string Survival = ConfigSections.Survival;
+            public const string Healing = ConfigSections.Healing;
+            public const string Weapons = ConfigSections.Weapons;
+            public const string Movement = ConfigSections.Movement;
+            public const string Fov = ConfigSections.Fov;
+            public const string EspPlayers = ConfigSections.EspPlayers;
+            public const string Chams = ConfigSections.Chams;
+            public const string EspItems = ConfigSections.EspItems;
+            public const string EspQuests = ConfigSections.EspQuests;
+            public const string Visual = ConfigSections.Visual;
+            public const string Performance = ConfigSections.Performance;
+            public const string Ui = ConfigSections.Ui;
+            public const string Hotkeys = ConfigSections.Hotkeys;
         }
 
         /// <summary>

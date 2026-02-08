@@ -1,3 +1,4 @@
+using MasterTool.Core;
 using UnityEngine;
 
 namespace MasterTool.ESP
@@ -42,7 +43,7 @@ namespace MasterTool.ESP
         /// </summary>
         internal static bool IsOnScreen(float x, float y, float screenWidth, float screenHeight, float margin)
         {
-            return x >= -margin && x <= screenWidth + margin && y >= -margin && y <= screenHeight + margin;
+            return ScreenLogic.IsOnScreen(x, y, screenWidth, screenHeight, margin);
         }
     }
 }
