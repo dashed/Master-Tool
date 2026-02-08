@@ -5,7 +5,7 @@
     <Version>2.1.2</Version>
     <Authors>M4st3rzzz</Authors>
     <Description>Advanced SPT Mod Menu - A BepInEx plugin for Single Player Tarkov</Description>
-    <RepositoryUrl>https://github.com/M4st3rzzz/Master-Tool</RepositoryUrl>
+    <RepositoryUrl>https://github.com/dashed/Master-Tool</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 </Project>

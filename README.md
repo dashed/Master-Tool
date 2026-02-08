@@ -14,7 +14,7 @@ An advanced BepInEx mod menu for **Single Player Tarkov (SPT)** featuring combat
 
 ## Installation
 
-1. Download the latest `MasterTool.dll` from the [Releases](https://github.com/M4st3rzzz/Master-Tool/releases) page.
+1. Download the latest `MasterTool.dll` from the [Releases](https://github.com/dashed/Master-Tool/releases) page.
 2. Copy `MasterTool.dll` into your SPT installation:
    ```
    SPT\BepInEx\plugins\MasterTool.dll
@@ -26,7 +26,7 @@ An advanced BepInEx mod menu for **Single Player Tarkov (SPT)** featuring combat
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/M4st3rzzz/Master-Tool.git
+git clone https://github.com/dashed/Master-Tool.git
 cd Master-Tool
 ```
 
@@ -62,7 +62,7 @@ The compiled `MasterTool.dll` will be in `src/MasterTool/bin/Debug/net472/`.
 | Feature | Description |
 |---------|-------------|
 | **God Mode** | Immunity to all damage sources including bullets, explosions, and fall damage. |
-| **Teleport Enemies** | Teleport all enemies to your position. |
+| **Teleport Enemies** | Teleport all enemies to 3 meters in front of you. |
 
 ### Movement
 
@@ -95,9 +95,9 @@ The compiled `MasterTool.dll` will be in `src/MasterTool/bin/Debug/net472/`.
 
 | Feature | Description |
 |---------|-------------|
-| **Unlock All Doors** | Instantly unlocks every locked door and container on the map. No keys required. |
+| **Unlock All Doors** | Instantly unlocks every locked door on the map. No keys required. |
 | **Performance Culling** | Disables distant meshes for a performance boost. Note: bots may appear suddenly when entering the configured range. |
-| **Teleport Items** | Teleports nearby loot items to your position. |
+| **Teleport Items** | Teleports all loose loot matching the item ESP filter to your position. If no filter is set, all loose loot is teleported. |
 
 ### UI
 
@@ -144,12 +144,18 @@ Settings are saved automatically when changed through the mod menu and are loade
 
 ```
 Master-Tool/
+├── .editorconfig                  # C# coding conventions
+├── .gitignore
 ├── Directory.Build.props          # Shared build properties (TFM, version, metadata)
+├── Makefile                       # Build, test, lint, and format targets
 ├── MasterTool.sln                 # Solution file
 ├── libs/                          # Game & BepInEx assemblies (not checked in)
 ├── src/
 │   └── MasterTool/
 │       ├── MasterTool.csproj      # Main plugin project
+│       ├── Plugin/
+│       │   ├── MasterToolPlugin.cs # BepInEx entry point and orchestrator
+│       │   └── GameState.cs       # Cached game references with periodic refresh
 │       ├── Config/
 │       │   └── PluginConfig.cs    # BepInEx configuration bindings
 │       ├── Models/
@@ -183,22 +189,44 @@ Master-Tool/
 │       │   ├── QuestEsp.cs        # Quest objective ESP
 │       │   └── ChamsManager.cs    # Chams material manager
 │       └── UI/
+│           ├── ModMenu.cs         # Main mod menu window (7 tabs)
 │           ├── GuiStyles.cs       # IMGUI style definitions
 │           ├── ColorPicker.cs     # RGB color picker widget
 │           └── StatusWindow.cs    # Status overlay window
 └── tests/
     └── MasterTool.Tests/
-        └── MasterTool.Tests.csproj  # Unit tests (NUnit, net9.0)
+        ├── MasterTool.Tests.csproj  # Unit tests (NUnit, net9.0)
+        └── Tests/
+            ├── Models/
+            │   └── EspTargetTests.cs
+            └── Utils/
+                ├── FovMappingTests.cs
+                ├── PlayerTagTests.cs
+                └── ReflectionUtilsTests.cs
 ```
 
 ---
 
 ## Development
 
+A `Makefile` is provided for common tasks. Run `make help` to see all targets:
+
+```bash
+make test           # Run unit tests
+make format         # Auto-format code with CSharpier
+make format-check   # Check formatting (CI-safe, no changes)
+make lint           # Check code style against .editorconfig
+make lint-fix       # Auto-fix code style issues
+make build          # Build plugin DLL (requires libs/)
+make clean          # Remove build artifacts
+make all            # format-check + lint + test
+make ci             # Full CI pipeline
+```
+
 ### Building
 
 ```bash
-dotnet build
+make build    # or: dotnet build
 ```
 
 ### Running Tests
@@ -206,7 +234,7 @@ dotnet build
 Tests cover pure logic only (models, utilities, config defaults). Game-dependent code requires Unity/EFT assemblies and cannot be unit-tested.
 
 ```bash
-dotnet test
+make test     # or: dotnet test
 ```
 
 ### Contributing
