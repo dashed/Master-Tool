@@ -1,8 +1,11 @@
 using System;
 using EFT;
 using MasterTool.Config;
+using MasterTool.Core;
 using MasterTool.Plugin;
+using MasterTool.Utils;
 using UnityEngine;
+using KeyCode = UnityEngine.KeyCode;
 
 namespace MasterTool.Features.FlyMode
 {
@@ -42,9 +45,9 @@ namespace MasterTool.Features.FlyMode
                 float inputDown = Input.GetKey(KeyCode.LeftControl) ? 1f : 0f;
 
                 var camTransform = mainCamera.transform;
-                Vector3 move = CalculateFlyMovement(
-                    camTransform.forward,
-                    camTransform.right,
+                var coreMove = MovementLogic.CalculateFlyMovement(
+                    camTransform.forward.ToVec3(),
+                    camTransform.right.ToVec3(),
                     inputH,
                     inputV,
                     inputUp,
@@ -52,8 +55,7 @@ namespace MasterTool.Features.FlyMode
                     PluginConfig.FlySpeed.Value,
                     Time.deltaTime
                 );
-
-                localPlayer.Transform.position += move;
+                localPlayer.Transform.position += coreMove.ToVector3();
             }
             catch (Exception ex)
             {
@@ -75,23 +77,6 @@ namespace MasterTool.Features.FlyMode
             catch { }
             _cachedController = null;
             _modForced = false;
-        }
-
-        internal static Vector3 CalculateFlyMovement(
-            Vector3 forward,
-            Vector3 right,
-            float inputH,
-            float inputV,
-            float inputUp,
-            float inputDown,
-            float speed,
-            float deltaTime
-        )
-        {
-            Vector3 move = forward * inputV + right * inputH + Vector3.up * (inputUp - inputDown);
-            if (move.sqrMagnitude < 0.001f)
-                return Vector3.zero;
-            return move.normalized * speed * deltaTime;
         }
     }
 }

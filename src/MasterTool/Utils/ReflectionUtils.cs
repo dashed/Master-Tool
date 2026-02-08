@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using EFT.Quests;
+using MasterTool.Core;
 
 namespace MasterTool.Utils
 {
@@ -79,40 +80,7 @@ namespace MasterTool.Utils
         /// <returns>True if at least one string was extracted; otherwise false.</returns>
         public static bool TryExtractStrings(object value, List<string> items)
         {
-            if (value == null)
-                return false;
-
-            if (value is string[] strArray)
-            {
-                items.AddRange(strArray);
-                return items.Count > 0;
-            }
-
-            if (value is IEnumerable<string> strEnumerable)
-            {
-                items.AddRange(strEnumerable);
-                return items.Count > 0;
-            }
-
-            if (value is System.Collections.IEnumerable enumerable)
-            {
-                foreach (var item in enumerable)
-                {
-                    if (item is string str)
-                    {
-                        items.Add(str);
-                    }
-                }
-                return items.Count > 0;
-            }
-
-            if (value is string singleStr && !string.IsNullOrEmpty(singleStr))
-            {
-                items.Add(singleStr);
-                return true;
-            }
-
-            return false;
+            return StringExtraction.TryExtractStrings(value, items);
         }
     }
 }

@@ -4,6 +4,7 @@ using EFT;
 using EFT.HealthSystem;
 using HarmonyLib;
 using MasterTool.Config;
+using MasterTool.Core;
 using MasterTool.Plugin;
 
 namespace MasterTool.Features.GodMode
@@ -128,7 +129,7 @@ namespace MasterTool.Features.GodMode
 
         private static bool BlockDamagePrefix_Player(Player __instance)
         {
-            return !PluginConfig.GodModeEnabled.Value || !__instance.IsYourPlayer;
+            return !DamageLogic.ShouldBlockForPlayer(PluginConfig.GodModeEnabled.Value, __instance?.IsYourPlayer);
         }
 
         private static bool BlockDamagePrefix_ActiveHealthController(
@@ -141,59 +142,26 @@ namespace MasterTool.Features.GodMode
             // --- LOCAL PLAYER ---
             if (___Player != null && ___Player.IsYourPlayer)
             {
-                // 1. GodMode: zero all damage
-                if (PluginConfig.GodModeEnabled.Value)
-                {
-                    damage = 0f;
-                    return true;
-                }
-
-                // 2. Headshot ignore: zero head damage entirely
-                if (bodyPart == EBodyPart.Head && PluginConfig.IgnoreHeadshots.Value)
-                {
-                    damage = 0f;
-                    return true;
-                }
-
-                // 3. Head-specific damage percentage
-                if (bodyPart == EBodyPart.Head && PluginConfig.HeadDamagePercent.Value < 100)
-                {
-                    damage *= PluginConfig.HeadDamagePercent.Value / 100f;
-                }
-
-                // 4. Global damage reduction percentage
-                if (PluginConfig.DamageReductionPercent.Value < 100)
-                {
-                    damage *= PluginConfig.DamageReductionPercent.Value / 100f;
-                }
-
-                // 5. Keep 1 Health: prevent lethal damage
-                if (PluginConfig.Keep1HealthEnabled.Value)
-                {
-                    var currentHealth = __instance.GetBodyPartHealth(bodyPart, false);
-                    bool shouldProtect =
-                        PluginConfig.Keep1HealthSelection.Value == "All"
-                        || (
-                            PluginConfig.Keep1HealthSelection.Value == "Head And Thorax"
-                            && (bodyPart == EBodyPart.Head || bodyPart == EBodyPart.Chest)
-                        );
-
-                    if (shouldProtect && (currentHealth.Current - damage) < 3f)
-                    {
-                        damage = Math.Max(0f, currentHealth.Current - 3f);
-                    }
-                }
-
+                var currentHealth = __instance.GetBodyPartHealth(bodyPart, false);
+                damage = DamageLogic.ComputeLocalPlayerDamage(
+                    damage,
+                    PluginConfig.GodModeEnabled.Value,
+                    bodyPart == EBodyPart.Head,
+                    PluginConfig.IgnoreHeadshots.Value,
+                    PluginConfig.HeadDamagePercent.Value,
+                    PluginConfig.DamageReductionPercent.Value,
+                    PluginConfig.Keep1HealthEnabled.Value,
+                    PluginConfig.Keep1HealthSelection.Value,
+                    currentHealth.Current,
+                    bodyPart == EBodyPart.Chest
+                );
                 return true;
             }
 
             // --- ENEMY PLAYER ---
             if (___Player != null && !___Player.IsYourPlayer)
             {
-                if (PluginConfig.EnemyDamageMultiplier.Value > 1f)
-                {
-                    damage *= PluginConfig.EnemyDamageMultiplier.Value;
-                }
+                damage = DamageLogic.ComputeEnemyDamage(damage, PluginConfig.EnemyDamageMultiplier.Value);
             }
 
             return true;
@@ -201,42 +169,22 @@ namespace MasterTool.Features.GodMode
 
         private static bool BlockKillPrefix(Player ___Player)
         {
-            if (___Player == null || !___Player.IsYourPlayer)
-            {
-                return true;
-            }
-
-            return !PluginConfig.GodModeEnabled.Value;
+            return !DamageLogic.ShouldBlockForPlayer(PluginConfig.GodModeEnabled.Value, ___Player?.IsYourPlayer);
         }
 
         private static bool BlockDestroyBodyPartPrefix(Player ___Player)
         {
-            if (___Player == null || !___Player.IsYourPlayer)
-            {
-                return true;
-            }
-
-            return !PluginConfig.GodModeEnabled.Value;
+            return !DamageLogic.ShouldBlockForPlayer(PluginConfig.GodModeEnabled.Value, ___Player?.IsYourPlayer);
         }
 
         private static bool BlockDoFracturePrefix(Player ___Player)
         {
-            if (___Player == null || !___Player.IsYourPlayer)
-            {
-                return true;
-            }
-
-            return !PluginConfig.GodModeEnabled.Value;
+            return !DamageLogic.ShouldBlockForPlayer(PluginConfig.GodModeEnabled.Value, ___Player?.IsYourPlayer);
         }
 
         private static bool BlockDoBleedPrefix(Player ___Player)
         {
-            if (___Player == null || !___Player.IsYourPlayer)
-            {
-                return true;
-            }
-
-            return !PluginConfig.GodModeEnabled.Value;
+            return !DamageLogic.ShouldBlockForPlayer(PluginConfig.GodModeEnabled.Value, ___Player?.IsYourPlayer);
         }
     }
 }

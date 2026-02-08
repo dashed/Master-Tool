@@ -33,7 +33,7 @@ namespace MasterTool.ESP
 
         public void Update(GameWorld gameWorld, Camera mainCamera)
         {
-            if (_wasChamsEnabled && !PluginConfig.ChamsEnabled.Value)
+            if (ChamsLogic.ShouldResetOnToggle(_wasChamsEnabled, PluginConfig.ChamsEnabled.Value))
             {
                 ResetAllPlayerChams();
             }
@@ -97,7 +97,7 @@ namespace MasterTool.ESP
 
         public void UpdateLootChams(GameWorld gameWorld, Camera mainCamera, Player localPlayer)
         {
-            if (_wasLootChamsEnabled && !PluginConfig.LootChamsEnabled.Value)
+            if (ChamsLogic.ShouldResetOnToggle(_wasLootChamsEnabled, PluginConfig.LootChamsEnabled.Value))
             {
                 ResetAllLootChams();
             }
@@ -240,9 +240,9 @@ namespace MasterTool.ESP
 
             renderer.material.SetInt("_Cull", cullMode);
 
-            float intensity = Mathf.Clamp(PluginConfig.ChamsIntensity.Value, 0.1f, 1f);
-            float opacity = Mathf.Clamp(PluginConfig.ChamsOpacity.Value, 0.1f, 1f);
-            Color adjusted = new Color(color.r * intensity, color.g * intensity, color.b * intensity, opacity);
+            Color adjusted = ChamsLogic
+                .ApplyIntensityAndOpacity(color.ToCoreColor(), PluginConfig.ChamsIntensity.Value, PluginConfig.ChamsOpacity.Value)
+                .ToUnityColor();
             renderer.material.SetColor("_Color", adjusted);
         }
 
@@ -254,9 +254,9 @@ namespace MasterTool.ESP
                 var outlineRenderer = existing.GetComponent<Renderer>();
                 if (outlineRenderer != null && outlineRenderer.material != null)
                 {
-                    float intensity = Mathf.Clamp(PluginConfig.ChamsIntensity.Value, 0.1f, 1f);
-                    float opacity = Mathf.Clamp(PluginConfig.ChamsOpacity.Value, 0.1f, 1f);
-                    Color adjusted = new Color(color.r * intensity, color.g * intensity, color.b * intensity, opacity);
+                    Color adjusted = ChamsLogic
+                        .ApplyIntensityAndOpacity(color.ToCoreColor(), PluginConfig.ChamsIntensity.Value, PluginConfig.ChamsOpacity.Value)
+                        .ToUnityColor();
                     outlineRenderer.material.SetColor("_Color", adjusted);
 
                     float scale = Mathf.Clamp(PluginConfig.OutlineScale.Value, 1.01f, 1.15f);
@@ -281,9 +281,9 @@ namespace MasterTool.ESP
                 var outlineRenderer = outline.GetComponent<Renderer>();
                 if (outlineRenderer != null && outlineRenderer.material != null)
                 {
-                    float intensity = Mathf.Clamp(PluginConfig.ChamsIntensity.Value, 0.1f, 1f);
-                    float opacity = Mathf.Clamp(PluginConfig.ChamsOpacity.Value, 0.1f, 1f);
-                    Color adjusted = new Color(color.r * intensity, color.g * intensity, color.b * intensity, opacity);
+                    Color adjusted = ChamsLogic
+                        .ApplyIntensityAndOpacity(color.ToCoreColor(), PluginConfig.ChamsIntensity.Value, PluginConfig.ChamsOpacity.Value)
+                        .ToUnityColor();
                     outlineRenderer.material.SetColor("_Color", adjusted);
                 }
 

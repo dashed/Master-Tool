@@ -28,5 +28,16 @@ jobs:
       - name: Install CSharpier
         run: dotnet tool install --global csharpier
 
+      - name: Verify version sync
+        run: |
+          CHANGELOG_VER=$(grep -m1 -oP '## \[\K[0-9]+\.[0-9]+\.[0-9]+' CHANGELOG.md)
+          PLUGIN_VER=$(grep -oP 'BepInPlugin\("com\.master\.tools",\s*"[^"]*",\s*"\K[0-9]+\.[0-9]+\.[0-9]+' src/MasterTool/Plugin/MasterToolPlugin.cs)
+          echo "CHANGELOG version: $CHANGELOG_VER"
+          echo "Plugin version:    $PLUGIN_VER"
+          if [ "$CHANGELOG_VER" != "$PLUGIN_VER" ]; then
+            echo "::error::Version mismatch! CHANGELOG=$CHANGELOG_VER Plugin=$PLUGIN_VER"
+            exit 1
+          fi
+
       - name: Run CI
         run: make ci

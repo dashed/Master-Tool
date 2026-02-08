@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using EFT;
 using MasterTool.Config;
+using MasterTool.Core;
 using MasterTool.Models;
 using MasterTool.Utils;
 using UnityEngine;
+using Color = UnityEngine.Color;
 
 namespace MasterTool.ESP
 {
@@ -22,20 +24,11 @@ namespace MasterTool.ESP
             if (_losLayerMask != -1)
                 return;
 
-            int mask = 0;
             int hp = LayerMask.NameToLayer("HighPolyCollider");
             int lp = LayerMask.NameToLayer("LowPolyCollider");
             int terrain = LayerMask.NameToLayer("Terrain");
 
-            if (hp >= 0)
-                mask |= 1 << hp;
-            if (lp >= 0)
-                mask |= 1 << lp;
-            if (terrain >= 0)
-                mask |= 1 << terrain;
-
-            // Fallback: known EFT collision layer bitmask
-            _losLayerMask = mask != 0 ? mask : 0x02251800;
+            _losLayerMask = EspLogic.ComputeLayerMask(hp, lp, terrain);
         }
 
         /// <summary>
@@ -68,9 +61,7 @@ namespace MasterTool.ESP
         /// </summary>
         internal static Vector3 GetEspWorldPosition(Vector3? headBonePos, Vector3 transformPos)
         {
-            if (headBonePos.HasValue)
-                return headBonePos.Value + Vector3.up * 0.2f;
-            return transformPos + Vector3.up * 1.8f;
+            return EspLogic.GetEspWorldPosition(headBonePos.ToVec3Nullable(), transformPos.ToVec3()).ToVector3();
         }
 
         /// <summary>

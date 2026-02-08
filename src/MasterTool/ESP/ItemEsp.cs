@@ -5,8 +5,11 @@ using EFT;
 using EFT.Interactive;
 using EFT.InventoryLogic;
 using MasterTool.Config;
+using MasterTool.Core;
 using MasterTool.Models;
+using MasterTool.Utils;
 using UnityEngine;
+using Color = UnityEngine.Color;
 
 namespace MasterTool.ESP
 {
@@ -126,7 +129,7 @@ namespace MasterTool.ESP
             if (!matches)
                 return;
 
-            Vector3 screenPos = mainCamera.WorldToScreenPoint(pos + Vector3.up * 0.5f);
+            Vector3 screenPos = mainCamera.WorldToScreenPoint(EspLogic.GetItemEspWorldPosition(pos.ToVec3()).ToVector3());
             if (screenPos.z > 0)
             {
                 screenPos.y = Screen.height - screenPos.y;

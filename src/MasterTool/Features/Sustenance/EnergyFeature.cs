@@ -1,5 +1,6 @@
 using System;
 using EFT;
+using MasterTool.Core;
 using MasterTool.Plugin;
 
 namespace MasterTool.Features.Sustenance
@@ -20,8 +21,9 @@ namespace MasterTool.Features.Sustenance
             try
             {
                 var energy = localPlayer.ActiveHealthController.Energy;
-                if (energy.Current < energy.Maximum)
-                    localPlayer.ActiveHealthController.ChangeEnergy(energy.Maximum);
+                float newValue = SustenanceLogic.ComputeNewValue(energy.Current, energy.Maximum, true);
+                if (newValue != energy.Current)
+                    localPlayer.ActiveHealthController.ChangeEnergy(newValue);
             }
             catch (Exception ex)
             {

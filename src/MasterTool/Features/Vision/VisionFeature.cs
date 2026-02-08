@@ -4,6 +4,7 @@ using BSG.CameraEffects;
 using EFT;
 using EFT.InventoryLogic;
 using MasterTool.Config;
+using MasterTool.Core;
 using UnityEngine;
 
 namespace MasterTool.Features.Vision
@@ -85,12 +86,14 @@ namespace MasterTool.Features.Vision
             if (mainCamera == null || localPlayer == null)
                 return;
 
-            if (!PluginConfig.WeaponFovEnabled.Value)
+            if (
+                !VisionLogic.ShouldOverrideFov(
+                    PluginConfig.WeaponFovEnabled.Value,
+                    IsPlayerAiming(localPlayer),
+                    PluginConfig.FovOverrideAds.Value
+                )
+            )
                 return;
-
-            // Detect ADS via reflection on ProceduralWeaponAnimation.IsAiming
-            if (IsPlayerAiming(localPlayer) && !PluginConfig.FovOverrideAds.Value)
-                return; // Let game handle ADS zoom
 
             float targetFov = GetFovForCurrentWeapon(localPlayer);
             mainCamera.fieldOfView = targetFov;
@@ -153,40 +156,33 @@ namespace MasterTool.Features.Vision
             if (item == null)
                 return PluginConfig.FovDefault.Value;
 
+            string weaponClass = null;
+            bool isMelee = false;
+
             if (item is Weapon weapon)
             {
                 var weaponTemplate = weapon.Template;
                 if (weaponTemplate == null)
                     return PluginConfig.FovDefault.Value;
 
-                var weaponType = weaponTemplate.weapClass;
-
-                switch (weaponType?.ToLower())
-                {
-                    case "pistol":
-                        return PluginConfig.FovPistol.Value;
-                    case "smg":
-                        return PluginConfig.FovSMG.Value;
-                    case "assaultrifle":
-                    case "assaultcarbine":
-                        return PluginConfig.FovAssaultRifle.Value;
-                    case "shotgun":
-                        return PluginConfig.FovShotgun.Value;
-                    case "marksmanrifle":
-                    case "sniperrifle":
-                        return PluginConfig.FovSniper.Value;
-                    case "machinegun":
-                        return PluginConfig.FovAssaultRifle.Value;
-                    default:
-                        return PluginConfig.FovDefault.Value;
-                }
+                weaponClass = weaponTemplate.weapClass;
+            }
+            else if (item.GetType().Name.IndexOf("Knife", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                isMelee = true;
             }
 
-            // Melee items (knives) are not Weapon type in EFT
-            if (item.GetType().Name.IndexOf("Knife", StringComparison.OrdinalIgnoreCase) >= 0)
-                return PluginConfig.FovMelee.Value;
-
-            return PluginConfig.FovDefault.Value;
+            return VisionLogic.MapWeaponClassToFov(
+                weaponClass,
+                isMelee,
+                PluginConfig.FovPistol.Value,
+                PluginConfig.FovSMG.Value,
+                PluginConfig.FovAssaultRifle.Value,
+                PluginConfig.FovShotgun.Value,
+                PluginConfig.FovSniper.Value,
+                PluginConfig.FovDefault.Value,
+                PluginConfig.FovMelee.Value
+            );
         }
     }
 }

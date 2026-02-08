@@ -1,5 +1,6 @@
 using System;
 using EFT;
+using MasterTool.Core;
 using MasterTool.Plugin;
 
 namespace MasterTool.Features.Sustenance
@@ -20,8 +21,9 @@ namespace MasterTool.Features.Sustenance
             try
             {
                 var hydration = localPlayer.ActiveHealthController.Hydration;
-                if (hydration.Current < hydration.Maximum)
-                    localPlayer.ActiveHealthController.ChangeHydration(hydration.Maximum);
+                float newValue = SustenanceLogic.ComputeNewValue(hydration.Current, hydration.Maximum, true);
+                if (newValue != hydration.Current)
+                    localPlayer.ActiveHealthController.ChangeHydration(newValue);
             }
             catch (Exception ex)
             {

@@ -1,5 +1,7 @@
 using EFT;
 using MasterTool.Config;
+using MasterTool.Core;
+using MasterTool.Utils;
 using UnityEngine;
 
 namespace MasterTool.Features.Speedhack
@@ -23,7 +25,8 @@ namespace MasterTool.Features.Speedhack
                 localPlayer.Transform.rotation
                 * new Vector3(localPlayer.MovementContext.MovementDirection.x, 0, localPlayer.MovementContext.MovementDirection.y);
 
-            localPlayer.Transform.position += moveDir * (PluginConfig.SpeedMultiplier.Value * Time.deltaTime * 5f);
+            var coreDisplacement = SpeedhackLogic.ComputeDisplacement(moveDir.ToVec3(), PluginConfig.SpeedMultiplier.Value, Time.deltaTime);
+            localPlayer.Transform.position += coreDisplacement.ToVector3();
         }
     }
 }

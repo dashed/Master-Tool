@@ -1,6 +1,8 @@
 using System;
 using EFT;
+using MasterTool.Core;
 using MasterTool.Plugin;
+using MasterTool.Utils;
 using UnityEngine;
 
 namespace MasterTool.Features.Teleport
@@ -42,7 +44,7 @@ namespace MasterTool.Features.Teleport
                 return;
             try
             {
-                Vector3 origin = CalculateRayOrigin(localPlayer.Transform.position);
+                Vector3 origin = MovementLogic.CalculateRayOrigin(localPlayer.Transform.position.ToVec3()).ToVector3();
                 if (Physics.Raycast(origin, Vector3.down, out RaycastHit hit, 1000f))
                 {
                     localPlayer.Transform.position = hit.point + Vector3.up * 0.5f;
@@ -52,11 +54,6 @@ namespace MasterTool.Features.Teleport
             {
                 MasterToolPlugin.Log?.LogWarning($"[Teleport] Failed to teleport to surface: {ex.Message}");
             }
-        }
-
-        internal static Vector3 CalculateRayOrigin(Vector3 playerPosition)
-        {
-            return new Vector3(playerPosition.x, playerPosition.y + 500f, playerPosition.z);
         }
 
         internal static void ClearSavedPosition()

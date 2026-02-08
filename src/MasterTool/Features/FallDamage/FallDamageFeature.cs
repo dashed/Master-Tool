@@ -1,5 +1,6 @@
 using System;
 using EFT;
+using MasterTool.Core;
 using MasterTool.Plugin;
 
 namespace MasterTool.Features.FallDamage
@@ -25,12 +26,12 @@ namespace MasterTool.Features.FallDamage
             {
                 if (enabled)
                 {
-                    localPlayer.ActiveHealthController.FallSafeHeight = 999999f;
+                    localPlayer.ActiveHealthController.FallSafeHeight = FallDamageDefaults.SafeHeight;
                     _modForced = true;
                 }
                 else if (_modForced)
                 {
-                    localPlayer.ActiveHealthController.FallSafeHeight = 1.8f;
+                    localPlayer.ActiveHealthController.FallSafeHeight = FallDamageDefaults.DefaultHeight;
                     _modForced = false;
                 }
             }

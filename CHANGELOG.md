@@ -6,6 +6,33 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [2.21.0] - 2026-02-08
+
+### Changed
+
+- **Plugin now delegates to MasterTool.Core** — 13 plugin source files refactored to call Core methods instead of inline logic, ensuring the tested code IS the running code (single source of truth):
+  - `DamagePatches.cs`: delegates full damage chain to `DamageLogic.ComputeLocalPlayerDamage`, block decisions to `ShouldBlockForPlayer`, enemy damage to `ComputeEnemyDamage`
+  - `NoWeightFeature.cs`: delegates to `WeightLogic.ComputeWeight`
+  - `FallDamageFeature.cs`: uses `FallDamageDefaults.SafeHeight`/`DefaultHeight` constants
+  - `VisionFeature.cs`: delegates FOV mapping to `VisionLogic.MapWeaponClassToFov` and override check to `ShouldOverrideFov`
+  - `EnergyFeature.cs` / `HydrationFeature.cs`: delegate to `SustenanceLogic.ComputeNewValue`
+  - `ReflectionUtils.cs`: delegates to `StringExtraction.TryExtractStrings`
+  - `FlyModeFeature.cs`: delegates to `MovementLogic.CalculateFlyMovement` via Vec3 conversion
+  - `PlayerTeleportFeature.cs`: delegates to `MovementLogic.CalculateRayOrigin` via Vec3 conversion
+  - `SpeedhackFeature.cs`: delegates to `SpeedhackLogic.ComputeDisplacement` via Vec3 conversion
+  - `ChamsManager.cs`: delegates to `ChamsLogic.CycleMode`, `ApplyIntensityAndOpacity`, `ShouldResetOnToggle` via Color conversion
+  - `PlayerEsp.cs`: delegates to `EspLogic.ComputeLayerMask`, `GetEspWorldPosition` via Vec3 conversion
+  - `ItemEsp.cs`: delegates to `EspLogic.GetItemEspWorldPosition` via Vec3 conversion
+- Net -73 lines of inline logic removed from plugin source files
+
+### Added
+
+- `CoreConversions` utility class (`Vec3`↔`Vector3`, `Color`↔`UnityEngine.Color` extension methods) enabling plugin files to call Core methods that use Core types
+- Version sync CI check: verifies BepInPlugin version matches CHANGELOG version on every push/PR, preventing version drift
+- `make version-check` target for local version sync verification
+- Dedicated `SpeedhackTests.cs` (10 tests) for speedhack displacement calculation edge cases
+- TODO audit: only 1 TODO found (CodMode effect removal blocked on SPT version-specific obfuscated types)
+
 ## [2.20.0] - 2026-02-08
 
 ### Added

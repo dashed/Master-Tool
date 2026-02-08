@@ -3,6 +3,7 @@ using System.Reflection;
 using EFT.InventoryLogic;
 using HarmonyLib;
 using MasterTool.Config;
+using MasterTool.Core;
 using MasterTool.Plugin;
 
 namespace MasterTool.Features.NoWeight
@@ -41,9 +42,10 @@ namespace MasterTool.Features.NoWeight
 
         private static bool WeightPrefix(ref float __result)
         {
-            if (PluginConfig.NoWeightEnabled.Value)
+            var newWeight = WeightLogic.ComputeWeight(__result, PluginConfig.NoWeightEnabled.Value, PluginConfig.WeightPercent.Value);
+            if (newWeight.HasValue)
             {
-                __result *= PluginConfig.WeightPercent.Value / 100f;
+                __result = newWeight.Value;
                 return false;
             }
 

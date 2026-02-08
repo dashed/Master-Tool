@@ -16,7 +16,7 @@ TEST_DIR     := tests
 LIBS_DIR     := libs
 
 .DEFAULT_GOAL := help
-.PHONY: help all ci restore build build-tests test clean format format-check lint lint-fix
+.PHONY: help all ci version-check restore build build-tests test clean format format-check lint lint-fix
 
 # ─── Meta ─────────────────────────────────────────────────────────────
 
@@ -28,7 +28,17 @@ help: ## Show available targets
 
 all: format-check lint test ## Run format-check, lint, and test
 
-ci: restore format-check lint build-tests test ## Full CI pipeline
+ci: version-check restore format-check lint build-tests test ## Full CI pipeline
+
+version-check: ## Verify CHANGELOG and plugin versions match
+	@CHANGELOG_VER=$$(grep -m1 -oP '## \[\K[0-9]+\.[0-9]+\.[0-9]+' CHANGELOG.md); \
+	PLUGIN_VER=$$(grep -oP 'BepInPlugin\("com\.master\.tools",\s*"[^"]*",\s*"\K[0-9]+\.[0-9]+\.[0-9]+' src/MasterTool/Plugin/MasterToolPlugin.cs); \
+	echo "CHANGELOG version: $$CHANGELOG_VER"; \
+	echo "Plugin version:    $$PLUGIN_VER"; \
+	if [ "$$CHANGELOG_VER" != "$$PLUGIN_VER" ]; then \
+		echo "Error: Version mismatch! CHANGELOG=$$CHANGELOG_VER Plugin=$$PLUGIN_VER"; \
+		exit 1; \
+	fi
 
 # ─── Build ────────────────────────────────────────────────────────────
 
