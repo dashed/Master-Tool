@@ -1,7 +1,6 @@
 using System;
 using BepInEx;
 using BepInEx.Logging;
-using EFT.InventoryLogic;
 using HarmonyLib;
 using MasterTool.Config;
 using MasterTool.ESP;
@@ -28,7 +27,7 @@ namespace MasterTool.Plugin
     /// Main BepInEx plugin entry point. Initializes config, applies Harmony patches,
     /// and orchestrates per-frame updates for all feature and ESP modules.
     /// </summary>
-    [BepInPlugin("com.master.tools", "Advanced SPT Mod Menu", "2.10.0")]
+    [BepInPlugin("com.master.tools", "Advanced SPT Mod Menu", "2.11.0")]
     public sealed class MasterToolPlugin : BaseUnityPlugin
     {
         internal static MasterToolPlugin Instance;
@@ -129,14 +128,17 @@ namespace MasterTool.Plugin
 
             if (gameWorld != null)
                 BigHeadFeature.Apply(gameWorld);
+        }
 
-            if (localPlayer.HandsController != null)
-                _vision.UpdateWeaponFov(mainCamera, localPlayer);
+        private void LateUpdate()
+        {
+            var localPlayer = _gameState.LocalPlayer;
+            var mainCamera = _gameState.MainCamera;
 
-            if (localPlayer.HandsController == null)
+            if (localPlayer == null || mainCamera == null)
                 return;
-            if (!(localPlayer.HandsController.Item is Weapon))
-                return;
+
+            _vision.UpdateWeaponFov(mainCamera, localPlayer);
         }
 
         private void OnGUI()

@@ -6,6 +6,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [2.11.0] - 2026-02-07
+
+### Fixed
+
+- FOV changer no longer resets during crouch, stand, or ADS transitions — moved FOV update from `Update()` to `LateUpdate()` for correct frame ordering and uses direct assignment instead of lerp to prevent visible snap-back
+- Removed stale `_originalFov` capture that could cache incorrect base FOV values across stance changes
+
+### Added
+
+- "Override FOV During ADS" toggle (default OFF) — when disabled, ADS uses the game's native zoom; when enabled, custom FOV is maintained even while aiming down sights
+- ADS detection via `ProceduralWeaponAnimation.IsAiming` reflection with cached PropertyInfo for performance
+- Unit tests for FOV override decision logic, ADS skip behavior, and LateUpdate frame ordering (15 tests)
+
+### Changed
+
+- FOV update moved from `Update()` to `LateUpdate()` to run after the game's camera system applies stance and ADS FOV changes
+- Removed lerp-based FOV transition — direct assignment eliminates the visible "reset then snap back" during game state changes
+
 ## [2.10.0] - 2026-02-07
 
 ### Added

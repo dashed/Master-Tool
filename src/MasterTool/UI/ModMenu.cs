@@ -208,6 +208,7 @@ namespace MasterTool.UI
                 DrawFovSlider("Assault Rifle FOV", PluginConfig.FovAssaultRifle);
                 DrawFovSlider("Shotgun FOV", PluginConfig.FovShotgun);
                 DrawFovSlider("Sniper FOV", PluginConfig.FovSniper);
+                PluginConfig.FovOverrideAds.Value = GUILayout.Toggle(PluginConfig.FovOverrideAds.Value, " Override FOV During ADS");
             }
         }
 

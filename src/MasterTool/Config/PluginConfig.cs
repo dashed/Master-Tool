@@ -121,6 +121,7 @@ namespace MasterTool.Config
         public static ConfigEntry<float> FovSniper;
         public static ConfigEntry<float> FovMelee;
         public static ConfigEntry<float> FovDefault;
+        public static ConfigEntry<bool> FovOverrideAds;
 
         // --- Performance Settings ---
         public static ConfigEntry<bool> PerformanceMode;
@@ -374,6 +375,12 @@ namespace MasterTool.Config
                 "Melee FOV",
                 60f,
                 new ConfigDescription("FOV for melee weapons.", new AcceptableValueRange<float>(50f, 120f))
+            );
+            FovOverrideAds = config.Bind(
+                "FOV Settings",
+                "Override FOV During ADS",
+                false,
+                "Keep custom FOV even when aiming down sights. When OFF, ADS uses the game's native zoom."
             );
 
             // Performance

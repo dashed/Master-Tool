@@ -101,7 +101,7 @@ The compiled `MasterTool.dll` will be in `build/`.
 | **Thermal Vision** | Toggles thermal imaging overlay. Does not interfere with vanilla thermal goggles when disabled. |
 | **Night Vision** | Toggles night vision overlay. Does not interfere with vanilla NVGs when disabled. |
 | **Big Head Mode** | Scales enemy head bones for easier target acquisition. Only resets heads the mod scaled. |
-| **Weapon FOV** | Per-weapon-category FOV adjustment (pistol, SMG, assault rifle, shotgun, sniper, machinegun, melee). Smoothly lerps between values on weapon switch. |
+| **Weapon FOV** | Per-weapon-category FOV adjustment (pistol, SMG, assault rifle, shotgun, sniper, machinegun, melee). Applied in LateUpdate for flicker-free operation during stance changes and ADS. Configurable "Override FOV During ADS" toggle (default OFF) lets ADS use native game zoom. |
 
 ### Utility
 
@@ -237,6 +237,7 @@ Master-Tool/
             │   ├── EnergyHydrationTests.cs
             │   ├── FallDamageStateTests.cs
             │   ├── FlyModeTests.cs
+            │   ├── FovOverrideTests.cs
             │   ├── GodModePrefixTests.cs
             │   ├── NoWeightPrefixTests.cs
             │   ├── PlayerTeleportTests.cs
@@ -283,7 +284,7 @@ make build    # or: dotnet build
 
 ### Running Tests
 
-306 tests cover pure logic: models, utilities, feature state machines, ESP extraction, and config defaults. Game-dependent code requires Unity/EFT assemblies and cannot be unit-tested — tests duplicate the pure logic with fake types.
+321 tests cover pure logic: models, utilities, feature state machines, ESP extraction, and config defaults. Game-dependent code requires Unity/EFT assemblies and cannot be unit-tested — tests duplicate the pure logic with fake types.
 
 ```bash
 make test     # or: dotnet test

@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using BSG.CameraEffects;
 using EFT;
 using EFT.InventoryLogic;
@@ -13,10 +14,11 @@ namespace MasterTool.Features.Vision
     /// </summary>
     public class VisionFeature
     {
-        private float _originalFov = 75f;
-        private bool _fovInitialized;
         private bool _modForcedNvOn;
         private bool _modForcedThermalOn;
+
+        private static PropertyInfo _isAimingProp;
+        private static bool _isAimingSearched;
 
         /// <summary>
         /// Manages the thermal vision camera effect. When the mod toggle is ON, forces thermal
@@ -73,8 +75,8 @@ namespace MasterTool.Features.Vision
         }
 
         /// <summary>
-        /// Smoothly adjusts the camera FOV based on the currently equipped weapon category.
-        /// Restores the original FOV when the feature is disabled.
+        /// Sets the camera FOV based on the currently equipped weapon category.
+        /// Should be called in LateUpdate to run after the game's camera updates.
         /// </summary>
         /// <param name="mainCamera">The active game camera.</param>
         /// <param name="localPlayer">The local player whose equipped weapon determines the target FOV.</param>
@@ -83,24 +85,56 @@ namespace MasterTool.Features.Vision
             if (mainCamera == null || localPlayer == null)
                 return;
 
-            if (PluginConfig.WeaponFovEnabled.Value)
+            if (!PluginConfig.WeaponFovEnabled.Value)
+                return;
+
+            // Detect ADS via reflection on ProceduralWeaponAnimation.IsAiming
+            if (IsPlayerAiming(localPlayer) && !PluginConfig.FovOverrideAds.Value)
+                return; // Let game handle ADS zoom
+
+            float targetFov = GetFovForCurrentWeapon(localPlayer);
+            mainCamera.fieldOfView = targetFov;
+        }
+
+        /// <summary>
+        /// Detects if the player is aiming down sights via ProceduralWeaponAnimation.IsAiming.
+        /// Uses reflection since the exact type may vary across game versions.
+        /// </summary>
+        internal static bool IsPlayerAiming(Player player)
+        {
+            try
             {
-                if (!_fovInitialized)
+                if (!_isAimingSearched)
                 {
-                    _originalFov = mainCamera.fieldOfView;
-                    _fovInitialized = true;
+                    _isAimingSearched = true;
+                    var pwaField = typeof(Player).GetField(
+                        "ProceduralWeaponAnimation",
+                        BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic
+                    );
+                    if (pwaField != null)
+                    {
+                        var pwaType = pwaField.FieldType;
+                        _isAimingProp = pwaType.GetProperty(
+                            "IsAiming",
+                            BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic
+                        );
+                    }
                 }
 
-                float targetFov = GetFovForCurrentWeapon(localPlayer);
-                if (Mathf.Abs(mainCamera.fieldOfView - targetFov) > 0.1f)
-                {
-                    mainCamera.fieldOfView = Mathf.Lerp(mainCamera.fieldOfView, targetFov, Time.deltaTime * 10f);
-                }
+                if (_isAimingProp == null)
+                    return false;
+
+                var pwa = typeof(Player)
+                    .GetField("ProceduralWeaponAnimation", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                    ?.GetValue(player);
+                if (pwa == null)
+                    return false;
+
+                return (bool)_isAimingProp.GetValue(pwa);
             }
-            else if (_fovInitialized)
+            catch
             {
-                mainCamera.fieldOfView = _originalFov;
-                _fovInitialized = false;
+                return false;
             }
         }
 
