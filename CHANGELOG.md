@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [2.13.0] - 2026-02-08
+
+### Added
+
+- Chams Opacity: configurable transparency slider (0.1–1.0, default 1.0 fully opaque) for both player and loot chams. Uses alpha blending (`SrcAlpha`/`OneMinusSrcAlpha` blend mode) on the chams shader material. Slider in mod menu ESP Players tab alongside existing intensity slider
+- Config entry `Chams Opacity` in ESP Players section
+- Unit tests for opacity clamping, alpha override, intensity+opacity combination (10 tests)
+
 ## [2.12.1] - 2026-02-08
 
 ### Fixed

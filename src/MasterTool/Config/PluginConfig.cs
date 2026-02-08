@@ -81,6 +81,7 @@ namespace MasterTool.Config
         public static ConfigEntry<Color> ColorBoss;
         public static ConfigEntry<bool> ChamsEnabled;
         public static ConfigEntry<float> ChamsIntensity;
+        public static ConfigEntry<float> ChamsOpacity;
         public static ConfigEntry<KeyboardShortcut> ToggleChamsHotkey;
         public static ConfigEntry<bool> LootChamsEnabled;
         public static ConfigEntry<Color> LootChamsColor;
@@ -297,6 +298,12 @@ namespace MasterTool.Config
 
             ChamsEnabled = config.Bind("ESP Players", "Chams Enabled", false, "Enable colored models.");
             ChamsIntensity = config.Bind("ESP Players", "Chams Intensity", 0.5f, "Brightness of Chams colors (0.1 to 1.0).");
+            ChamsOpacity = config.Bind(
+                "ESP Players",
+                "Chams Opacity",
+                1f,
+                "Opacity/transparency of Chams (0.1 = nearly invisible, 1.0 = fully opaque)."
+            );
             ToggleChamsHotkey = config.Bind("Hotkeys", "13. Toggle Chams", new KeyboardShortcut(KeyCode.K), "Hotkey to toggle Chams.");
 
             LootChamsEnabled = config.Bind(

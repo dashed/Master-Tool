@@ -166,11 +166,14 @@ namespace MasterTool.ESP
                     renderer.material.shader = _chamsShader;
                     renderer.material.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.Always);
                     renderer.material.SetInt("_ZWrite", 0);
+                    renderer.material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+                    renderer.material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
                     renderer.material.renderQueue = 4000;
                 }
 
                 float intensity = Mathf.Clamp(PluginConfig.ChamsIntensity.Value, 0.1f, 1f);
-                Color adjusted = new Color(color.r * intensity, color.g * intensity, color.b * intensity, color.a);
+                float opacity = Mathf.Clamp(PluginConfig.ChamsOpacity.Value, 0.1f, 1f);
+                Color adjusted = new Color(color.r * intensity, color.g * intensity, color.b * intensity, opacity);
                 renderer.material.SetColor("_Color", adjusted);
             }
         }
@@ -288,11 +291,14 @@ namespace MasterTool.ESP
                     renderer.material.shader = _chamsShader;
                     renderer.material.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.Always);
                     renderer.material.SetInt("_ZWrite", 0);
+                    renderer.material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+                    renderer.material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
                     renderer.material.renderQueue = 4000;
                 }
 
                 float intensity = Mathf.Clamp(PluginConfig.ChamsIntensity.Value, 0.1f, 1f);
-                Color adjusted = new Color(color.r * intensity, color.g * intensity, color.b * intensity, color.a);
+                float opacity = Mathf.Clamp(PluginConfig.ChamsOpacity.Value, 0.1f, 1f);
+                Color adjusted = new Color(color.r * intensity, color.g * intensity, color.b * intensity, opacity);
                 renderer.material.SetColor("_Color", adjusted);
             }
         }

@@ -239,6 +239,11 @@ namespace MasterTool.UI
                 $" Enable Player Chams (Models) [{PluginConfig.ToggleChamsHotkey.Value}]"
             );
 
+            GUILayout.Label($"Chams Intensity: {PluginConfig.ChamsIntensity.Value:F1}");
+            PluginConfig.ChamsIntensity.Value = GUILayout.HorizontalSlider(PluginConfig.ChamsIntensity.Value, 0.1f, 1f);
+            GUILayout.Label($"Chams Opacity: {PluginConfig.ChamsOpacity.Value:F1}");
+            PluginConfig.ChamsOpacity.Value = GUILayout.HorizontalSlider(PluginConfig.ChamsOpacity.Value, 0.1f, 1f);
+
             GUILayout.Space(5);
             GUILayout.Label("<b>--- COLORS & TRANSPARENCY (RGB) ---</b>");
             PluginConfig.ColorBear.Value = ColorPicker.Draw("BEAR", PluginConfig.ColorBear.Value);
