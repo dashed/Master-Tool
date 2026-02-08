@@ -116,11 +116,14 @@ The compiled `MasterTool.dll` will be in `build/`.
 | Feature | Description |
 |---------|-------------|
 | **Mod Menu** | Full in-game GUI with 7 tabs for configuring all features. |
+| **Hotkey Rebinding** | In-game hotkey configuration — click [Rebind], press any key, done. All 22 hotkeys are customizable from the Hotkeys tab. Press Escape to cancel, [Clear] to unbind. Changes persist to the BepInEx config file. |
 | **Status Window** | Compact overlay showing active feature toggles and current settings. |
 
 ---
 
 ## Hotkey Reference
+
+All hotkeys below are defaults and can be rebound in-game from the **Hotkeys** tab in the mod menu.
 
 | Key | Action |
 |-----|--------|
@@ -246,6 +249,8 @@ Master-Tool/
             │   ├── EspPositionTests.cs
             │   ├── LineOfSightTests.cs
             │   └── QuestZoneExtractionTests.cs
+            ├── UI/
+            │   └── HotkeyRebindTests.cs
             └── GameStateRefreshTests.cs
 ```
 
@@ -275,7 +280,7 @@ make build    # or: dotnet build
 
 ### Running Tests
 
-255 tests cover pure logic: models, utilities, feature state machines, ESP extraction, and config defaults. Game-dependent code requires Unity/EFT assemblies and cannot be unit-tested — tests duplicate the pure logic with fake types.
+275 tests cover pure logic: models, utilities, feature state machines, ESP extraction, and config defaults. Game-dependent code requires Unity/EFT assemblies and cannot be unit-tested — tests duplicate the pure logic with fake types.
 
 ```bash
 make test     # or: dotnet test

@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [2.9.0] - 2026-02-07
+
+### Added
+
+- In-game hotkey rebinding: the "Configs" tab (now "Hotkeys") shows all 22 configurable hotkeys with interactive [Rebind], [Clear], and [Cancel] buttons. Click Rebind, press any key to assign it. Press Escape to cancel. Changes are saved to the BepInEx config file automatically
+- Unit tests for hotkey rebind state machine and key acceptance logic (20 tests)
+
+### Changed
+
+- Mod menu "Configs" tab renamed to "Hotkeys" — now shows all hotkeys (previously only listed 10 as read-only text)
+
 ## [2.8.1] - 2026-02-07
 
 ### Fixed

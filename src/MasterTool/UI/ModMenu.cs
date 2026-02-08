@@ -1,3 +1,4 @@
+using BepInEx.Configuration;
 using EFT;
 using MasterTool.Config;
 using MasterTool.Features.DoorUnlock;
@@ -7,15 +8,27 @@ using UnityEngine;
 namespace MasterTool.UI
 {
     /// <summary>
+    /// Pairs a human-readable label with a BepInEx hotkey config entry for the rebind UI.
+    /// </summary>
+    internal struct HotkeyBinding
+    {
+        public string Label;
+        public ConfigEntry<KeyboardShortcut> Entry;
+    }
+
+    /// <summary>
     /// Draws the main IMGUI mod menu window with tabbed sections for general settings,
-    /// ESP configuration, visual toggles, and hotkey display. Supports window resizing.
+    /// ESP configuration, visual toggles, and hotkey rebinding. Supports window resizing.
     /// </summary>
     public class ModMenu
     {
         private int _selectedTab;
-        private readonly string[] _tabNames = { "Geral", "ESP Players", "ESP Itens", "ESP Quest/Wish", "Visual", "Troll", "Configs" };
+        private readonly string[] _tabNames = { "Geral", "ESP Players", "ESP Itens", "ESP Quest/Wish", "Visual", "Troll", "Hotkeys" };
         private Vector2 _mainScroll;
         private Vector2 _itemFilterScroll;
+
+        private ConfigEntry<KeyboardShortcut> _rebindingEntry;
+        private HotkeyBinding[] _hotkeyBindings;
 
         private bool _isResizing;
         private Vector2 _resizeStartMouse;
@@ -338,17 +351,94 @@ namespace MasterTool.UI
         private void DrawConfigsTab()
         {
             GUILayout.Space(20);
-            GUILayout.Label("<b>--- HOTKEYS (Customizable in .cfg) ---</b>");
-            GUILayout.Label($"Menu: {PluginConfig.ToggleUiHotkey.Value}");
-            GUILayout.Label($"Status Window: {PluginConfig.ToggleStatusHotkey.Value}");
-            GUILayout.Label($"GodMode: {PluginConfig.ToggleGodModeHotkey.Value}");
-            GUILayout.Label($"Stamina: {PluginConfig.ToggleStaminaHotkey.Value}");
-            GUILayout.Label($"Weight: {PluginConfig.ToggleWeightHotkey.Value}");
-            GUILayout.Label($"Player ESP: {PluginConfig.ToggleEspHotkey.Value}");
-            GUILayout.Label($"Item ESP: {PluginConfig.ToggleItemEspHotkey.Value}");
-            GUILayout.Label($"Container ESP: {PluginConfig.ToggleContainerEspHotkey.Value}");
-            GUILayout.Label($"Culling: {PluginConfig.ToggleCullingHotkey.Value}");
-            GUILayout.Label($"Unlock Doors: {PluginConfig.ToggleUnlockDoorsHotkey.Value}");
+            GUILayout.Label("<b>--- HOTKEY CONFIGURATION ---</b>");
+            GUILayout.Label("Click [Rebind] then press any key. [Clear] to unbind.");
+            GUILayout.Space(5);
+
+            if (_rebindingEntry != null)
+            {
+                Event e = Event.current;
+                if (e.type == EventType.KeyDown && e.keyCode != KeyCode.None)
+                {
+                    if (e.keyCode == KeyCode.Escape)
+                    {
+                        _rebindingEntry = null;
+                    }
+                    else
+                    {
+                        _rebindingEntry.Value = new KeyboardShortcut(e.keyCode);
+                        _rebindingEntry = null;
+                    }
+                    e.Use();
+                }
+            }
+
+            if (_hotkeyBindings == null)
+                _hotkeyBindings = BuildHotkeyBindings();
+
+            foreach (var binding in _hotkeyBindings)
+            {
+                GUILayout.BeginHorizontal();
+
+                bool isRebinding = _rebindingEntry == binding.Entry;
+                string keyText = isRebinding ? "[ Press any key... ]" : binding.Entry.Value.MainKey.ToString();
+
+                GUILayout.Label(binding.Label, GUILayout.Width(160));
+                GUILayout.Label(keyText, GUILayout.Width(130));
+
+                if (!isRebinding)
+                {
+                    if (GUILayout.Button("Rebind", GUILayout.Width(60)))
+                        _rebindingEntry = binding.Entry;
+                    if (GUILayout.Button("Clear", GUILayout.Width(50)))
+                        binding.Entry.Value = new KeyboardShortcut(KeyCode.None);
+                }
+                else
+                {
+                    if (GUILayout.Button("Cancel", GUILayout.Width(60)))
+                        _rebindingEntry = null;
+                }
+
+                GUILayout.EndHorizontal();
+            }
+        }
+
+        internal static HotkeyBinding[] BuildHotkeyBindings()
+        {
+            return new[]
+            {
+                new HotkeyBinding { Label = "Menu", Entry = PluginConfig.ToggleUiHotkey },
+                new HotkeyBinding { Label = "Status Window", Entry = PluginConfig.ToggleStatusHotkey },
+                new HotkeyBinding { Label = "God Mode", Entry = PluginConfig.ToggleGodModeHotkey },
+                new HotkeyBinding { Label = "Stamina", Entry = PluginConfig.ToggleStaminaHotkey },
+                new HotkeyBinding { Label = "Weight", Entry = PluginConfig.ToggleWeightHotkey },
+                new HotkeyBinding { Label = "Energy", Entry = PluginConfig.ToggleEnergyHotkey },
+                new HotkeyBinding { Label = "Hydration", Entry = PluginConfig.ToggleHydrationHotkey },
+                new HotkeyBinding { Label = "No Fall Damage", Entry = PluginConfig.ToggleFallDamageHotkey },
+                new HotkeyBinding { Label = "COD Mode", Entry = PluginConfig.ToggleCodModeHotkey },
+                new HotkeyBinding { Label = "Reload Speed", Entry = PluginConfig.ToggleReloadSpeedHotkey },
+                new HotkeyBinding { Label = "Fly Mode", Entry = PluginConfig.ToggleFlyModeHotkey },
+                new HotkeyBinding { Label = "Player ESP", Entry = PluginConfig.ToggleEspHotkey },
+                new HotkeyBinding { Label = "Item ESP", Entry = PluginConfig.ToggleItemEspHotkey },
+                new HotkeyBinding { Label = "Container ESP", Entry = PluginConfig.ToggleContainerEspHotkey },
+                new HotkeyBinding { Label = "Quest ESP", Entry = PluginConfig.ToggleQuestEspHotkey },
+                new HotkeyBinding { Label = "Chams", Entry = PluginConfig.ToggleChamsHotkey },
+                new HotkeyBinding { Label = "Culling", Entry = PluginConfig.ToggleCullingHotkey },
+                new HotkeyBinding { Label = "Unlock Doors", Entry = PluginConfig.ToggleUnlockDoorsHotkey },
+                new HotkeyBinding { Label = "Weapon Info", Entry = PluginConfig.ToggleWeaponInfoHotkey },
+                new HotkeyBinding { Label = "Save Position", Entry = PluginConfig.SavePositionHotkey },
+                new HotkeyBinding { Label = "Load Position", Entry = PluginConfig.LoadPositionHotkey },
+                new HotkeyBinding { Label = "Teleport Surface", Entry = PluginConfig.SurfaceTeleportHotkey },
+            };
+        }
+
+        /// <summary>
+        /// Determines whether a key event should be accepted during hotkey rebinding.
+        /// Returns true when actively rebinding and a valid (non-None) key is pressed.
+        /// </summary>
+        internal static bool ShouldAcceptKey(bool isRebinding, bool isKeyDown, int keyCode)
+        {
+            return isRebinding && isKeyDown && keyCode != 0;
         }
 
         private static void DrawFovSlider(string label, BepInEx.Configuration.ConfigEntry<float> config)
