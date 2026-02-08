@@ -20,6 +20,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - Renamed Portuguese tab names to English: "Geral" → "General", "ESP Itens" → "ESP Items", "ESP Quest/Wish" → "ESP Quests"
 - Removed bold section headers ("--- GENERAL ---", etc.) from sub-tabbed content — sub-tabs replace the need for in-content separators
+- Main tab bar uses `SelectionGrid` (4 columns, 2 rows) instead of single-row `Toolbar` to prevent overlap at narrow window widths
+
+### Fixed
+
+- Main tab buttons no longer overlap each other horizontally (7 tabs too wide for single row)
+- Tab grid no longer overlaps content below — content area offset computed dynamically via `GUILayoutUtility.GetLastRect()` instead of hardcoded pixel value
 
 ## [2.15.0] - 2026-02-08
 
