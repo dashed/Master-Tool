@@ -62,7 +62,7 @@ The compiled `MasterTool.dll` will be in `build/`.
 
 | Feature | Description |
 |---------|-------------|
-| **God Mode** | Immunity to all damage sources including bullets, explosions, and fall damage. |
+| **God Mode** | Comprehensive immunity: blocks damage, instant kills, limb destruction, fractures, and bleeds across 7 Harmony patches on both Player and ActiveHealthController. |
 | **Teleport Enemies** | Teleport all enemies to 3 meters in front of you. |
 
 ### Movement
@@ -245,7 +245,7 @@ make build    # or: dotnet build
 
 ### Running Tests
 
-125 tests cover pure logic: models, utilities, feature state machines, ESP extraction, and config defaults. Game-dependent code requires Unity/EFT assemblies and cannot be unit-tested — tests duplicate the pure logic with fake types.
+136 tests cover pure logic: models, utilities, feature state machines, ESP extraction, and config defaults. Game-dependent code requires Unity/EFT assemblies and cannot be unit-tested — tests duplicate the pure logic with fake types.
 
 ```bash
 make test     # or: dotnet test

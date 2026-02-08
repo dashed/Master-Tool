@@ -6,6 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [2.4.0] - 2026-02-07
+
+### Changed
+
+- God Mode now patches 7 damage vectors instead of 3 — inspired by [Deminvincibility](https://github.com/hazelify/Deminvincibility) mod:
+  - `ActiveHealthController.Kill` — blocks instant kills (headshots, fall death, out-of-bounds)
+  - `ActiveHealthController.DestroyBodyPart` — blocks limb blacking (head/chest destruction = death)
+  - `ActiveHealthController.DoFracture` — blocks fracture status effects
+  - `ActiveHealthController.DoBleed` — blocks bleed status effects
+- Improved player identification in ActiveHealthController patches: uses Harmony `___Player` private field injection instead of `ReferenceEquals` with cached health controller
+- ApplyDamage patch now zeroes damage and lets original method run (better compatibility) instead of skipping the method entirely
+
+### Added
+
+- Unit tests for GodMode prefix decision logic (11 tests)
+
 ## [2.3.4] - 2026-02-07
 
 ### Fixed

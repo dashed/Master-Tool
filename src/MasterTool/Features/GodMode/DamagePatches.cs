@@ -20,9 +20,33 @@ namespace MasterTool.Features.GodMode
         /// <param name="harmony">The Harmony instance used to install patches.</param>
         public static void PatchAll(Harmony harmony)
         {
+            // Player-level belt-and-suspenders patches
             TryPatchDamageMethod(harmony, typeof(Player), "ApplyDamageInfo", nameof(BlockDamagePrefix_Player));
             TryPatchDamageMethod(harmony, typeof(Player), "ApplyDamage", nameof(BlockDamagePrefix_Player));
-            TryPatchDamageMethod(harmony, typeof(ActiveHealthController), "ApplyDamage", nameof(BlockDamagePrefix_ActiveHealthController));
+
+            // ActiveHealthController patches
+            TryPatchDamageMethod(
+                harmony,
+                typeof(ActiveHealthController),
+                nameof(ActiveHealthController.ApplyDamage),
+                nameof(BlockDamagePrefix_ActiveHealthController)
+            );
+            TryPatchDamageMethod(harmony, typeof(ActiveHealthController), nameof(ActiveHealthController.Kill), nameof(BlockKillPrefix));
+            TryPatchDamageMethod(
+                harmony,
+                typeof(ActiveHealthController),
+                nameof(ActiveHealthController.DestroyBodyPart),
+                nameof(BlockDestroyBodyPartPrefix)
+            );
+            TryPatchDamageMethod(
+                harmony,
+                typeof(ActiveHealthController),
+                nameof(ActiveHealthController.DoFracture),
+                nameof(BlockDoFracturePrefix)
+            );
+
+            // DoBleed is private, so we need AccessTools
+            TryPatchDamageMethod(harmony, AccessTools.Method(typeof(ActiveHealthController), "DoBleed"), nameof(BlockDoBleedPrefix));
         }
 
         private static void TryPatchDamageMethod(Harmony harmony, Type type, string methodName, string prefixMethodName)
@@ -43,23 +67,81 @@ namespace MasterTool.Features.GodMode
             }
         }
 
+        private static void TryPatchDamageMethod(Harmony harmony, MethodBase method, string prefixMethodName)
+        {
+            try
+            {
+                if (method == null)
+                    return;
+                var prefix = new HarmonyMethod(
+                    typeof(DamagePatches).GetMethod(prefixMethodName, BindingFlags.Static | BindingFlags.NonPublic)
+                );
+                harmony.Patch(method, prefix: prefix);
+            }
+            catch (Exception ex)
+            {
+                MasterToolPlugin.Log?.LogWarning($"[GodMode] Failed to patch {method?.DeclaringType?.Name}.{method?.Name}: {ex.Message}");
+            }
+        }
+
         private static bool BlockDamagePrefix_Player(Player __instance)
         {
             return !PluginConfig.GodModeEnabled.Value || !__instance.IsYourPlayer;
         }
 
-        private static bool BlockDamagePrefix_ActiveHealthController(ActiveHealthController __instance, ref float __result)
+        private static bool BlockDamagePrefix_ActiveHealthController(Player ___Player, ref float damage)
         {
-            if (
-                PluginConfig.GodModeEnabled.Value
-                && PluginConfig.LocalActiveHealthController != null
-                && ReferenceEquals(__instance, PluginConfig.LocalActiveHealthController)
-            )
+            if (___Player == null || !___Player.IsYourPlayer)
             {
-                __result = 0f;
-                return false;
+                return true;
             }
+
+            if (PluginConfig.GodModeEnabled.Value)
+            {
+                damage = 0f;
+            }
+
             return true;
+        }
+
+        private static bool BlockKillPrefix(Player ___Player)
+        {
+            if (___Player == null || !___Player.IsYourPlayer)
+            {
+                return true;
+            }
+
+            return !PluginConfig.GodModeEnabled.Value;
+        }
+
+        private static bool BlockDestroyBodyPartPrefix(Player ___Player)
+        {
+            if (___Player == null || !___Player.IsYourPlayer)
+            {
+                return true;
+            }
+
+            return !PluginConfig.GodModeEnabled.Value;
+        }
+
+        private static bool BlockDoFracturePrefix(Player ___Player)
+        {
+            if (___Player == null || !___Player.IsYourPlayer)
+            {
+                return true;
+            }
+
+            return !PluginConfig.GodModeEnabled.Value;
+        }
+
+        private static bool BlockDoBleedPrefix(Player ___Player)
+        {
+            if (___Player == null || !___Player.IsYourPlayer)
+            {
+                return true;
+            }
+
+            return !PluginConfig.GodModeEnabled.Value;
         }
     }
 }
