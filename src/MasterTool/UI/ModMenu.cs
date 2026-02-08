@@ -59,7 +59,7 @@ namespace MasterTool.UI
         /// <param name="localPlayer">The local player, passed to tabs that need it.</param>
         public void Draw(int id, Rect windowRect, GameWorld gameWorld, Player localPlayer)
         {
-            _selectedTab = GUILayout.Toolbar(_selectedTab, TabNames);
+            _selectedTab = GUILayout.SelectionGrid(_selectedTab, TabNames, 4);
             GUILayout.Space(10);
 
             GUI.DragWindow(new Rect(0, 0, windowRect.width, DragBarHeight));
