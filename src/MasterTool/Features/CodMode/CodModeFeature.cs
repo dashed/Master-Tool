@@ -10,6 +10,8 @@ namespace MasterTool.Features.CodMode
 {
     public static class CodModeFeature
     {
+        private const int HealCycleFrames = 60;
+
         private static float _timeSinceLastHit;
         private static int _frameCount;
         private static bool _errorLogged;
@@ -35,7 +37,7 @@ namespace MasterTool.Features.CodMode
                 _timeSinceLastHit += Time.unscaledDeltaTime;
                 _frameCount++;
 
-                if (_frameCount < 60)
+                if (_frameCount < HealCycleFrames)
                 {
                     return;
                 }
@@ -104,7 +106,10 @@ namespace MasterTool.Features.CodMode
                     _subscribedPlayer.BeingHitAction -= OnBeingHit;
                     _subscribedPlayer.OnPlayerDeadOrUnspawn -= OnPlayerDeadOrUnspawn;
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    MasterToolPlugin.Log?.LogDebug($"[CodMode] Unsubscribe error: {ex.Message}");
+                }
 
                 _subscribedPlayer = null;
             }

@@ -9,6 +9,8 @@ namespace MasterTool.ESP
     /// </summary>
     public static class EspRenderer
     {
+        private static readonly GUIContent _sharedContent = new GUIContent();
+
         /// <summary>
         /// Draws a text label at the given screen position with a 1-pixel black shadow offset behind it.
         /// </summary>
@@ -18,7 +20,8 @@ namespace MasterTool.ESP
         /// <param name="style">The <see cref="GUIStyle"/> controlling font, size, and alignment.</param>
         public static void DrawTextWithShadow(Vector3 pos, string text, Color color, GUIStyle style)
         {
-            Vector2 size = style.CalcSize(new GUIContent(text));
+            _sharedContent.text = text;
+            Vector2 size = style.CalcSize(_sharedContent);
             Rect rect = new Rect(pos.x - size.x / 2, pos.y - size.y / 2, size.x, size.y);
             style.normal.textColor = Color.black;
             GUI.Label(new Rect(rect.x + 1, rect.y + 1, rect.width, rect.height), text, style);

@@ -5,6 +5,7 @@ using EFT;
 using EFT.InventoryLogic;
 using MasterTool.Config;
 using MasterTool.Core;
+using MasterTool.Plugin;
 using UnityEngine;
 
 namespace MasterTool.Features.Vision
@@ -19,6 +20,7 @@ namespace MasterTool.Features.Vision
         private bool _modForcedThermalOn;
 
         private static PropertyInfo _isAimingProp;
+        private static FieldInfo _pwaField;
         private static bool _isAimingSearched;
 
         /// <summary>
@@ -110,13 +112,13 @@ namespace MasterTool.Features.Vision
                 if (!_isAimingSearched)
                 {
                     _isAimingSearched = true;
-                    var pwaField = typeof(Player).GetField(
+                    _pwaField = typeof(Player).GetField(
                         "ProceduralWeaponAnimation",
                         BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic
                     );
-                    if (pwaField != null)
+                    if (_pwaField != null)
                     {
-                        var pwaType = pwaField.FieldType;
+                        var pwaType = _pwaField.FieldType;
                         _isAimingProp = pwaType.GetProperty(
                             "IsAiming",
                             BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic
@@ -124,19 +126,18 @@ namespace MasterTool.Features.Vision
                     }
                 }
 
-                if (_isAimingProp == null)
+                if (_pwaField == null || _isAimingProp == null)
                     return false;
 
-                var pwa = typeof(Player)
-                    .GetField("ProceduralWeaponAnimation", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
-                    ?.GetValue(player);
+                var pwa = _pwaField.GetValue(player);
                 if (pwa == null)
                     return false;
 
                 return (bool)_isAimingProp.GetValue(pwa);
             }
-            catch
+            catch (Exception ex)
             {
+                MasterToolPlugin.Log?.LogDebug($"[Vision] ADS detection error: {ex.Message}");
                 return false;
             }
         }

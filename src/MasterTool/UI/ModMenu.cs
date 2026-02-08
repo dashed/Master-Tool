@@ -492,20 +492,19 @@ namespace MasterTool.UI
             GUILayout.Label("Press [Rebind] to capture a key, or [Type] to enter a combo (e.g. ctrl + b).");
             GUILayout.Space(5);
 
-            if (_rebindingEntry != null && Time.frameCount > _rebindStartFrame)
+            if (_rebindingEntry != null && RebindLogic.IsFrameReadyForInput(Time.frameCount, _rebindStartFrame))
             {
                 Event e = Event.current;
-                if (e.type == EventType.KeyDown && e.keyCode != KeyCode.None)
+                var outcome = RebindLogic.GetRebindOutcome(true, e.type == EventType.KeyDown, (int)e.keyCode);
+                if (outcome == RebindOutcome.Cancel)
                 {
-                    if (e.keyCode == KeyCode.Escape)
-                    {
-                        _rebindingEntry = null;
-                    }
-                    else
-                    {
-                        _pendingChanges[_rebindingEntry] = new KeyboardShortcut(e.keyCode);
-                        _rebindingEntry = null;
-                    }
+                    _rebindingEntry = null;
+                    e.Use();
+                }
+                else if (outcome == RebindOutcome.Accept)
+                {
+                    _pendingChanges[_rebindingEntry] = new KeyboardShortcut(e.keyCode);
+                    _rebindingEntry = null;
                     e.Use();
                 }
             }
@@ -646,7 +645,7 @@ namespace MasterTool.UI
         /// </summary>
         internal static bool ShouldAcceptKey(bool isRebinding, bool isKeyDown, int keyCode)
         {
-            return isRebinding && isKeyDown && keyCode != 0;
+            return RebindLogic.ShouldAcceptKey(isRebinding, isKeyDown, keyCode);
         }
 
         private static void DrawFovSlider(string label, BepInEx.Configuration.ConfigEntry<float> config)

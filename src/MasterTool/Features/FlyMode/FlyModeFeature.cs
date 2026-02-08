@@ -74,7 +74,10 @@ namespace MasterTool.Features.FlyMode
                 if (_cachedController != null)
                     _cachedController.enabled = true;
             }
-            catch { }
+            catch (Exception ex)
+            {
+                MasterToolPlugin.Log?.LogDebug($"[FlyMode] Restore error: {ex.Message}");
+            }
             _cachedController = null;
             _modForced = false;
         }

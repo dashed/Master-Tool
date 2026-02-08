@@ -15,6 +15,8 @@ namespace MasterTool.ESP
     {
         private readonly Dictionary<Renderer, Shader> _originalShaders = new Dictionary<Renderer, Shader>();
         private readonly Dictionary<Renderer, GameObject> _outlineDuplicates = new Dictionary<Renderer, GameObject>();
+        private readonly Dictionary<int, Renderer[]> _cachedPlayerRenderers = new Dictionary<int, Renderer[]>();
+        private readonly Dictionary<int, Renderer[]> _cachedLootRenderers = new Dictionary<int, Renderer[]>();
         private static Shader _chamsShader;
         private float _nextCleanup;
         private const float CleanupIntervalSeconds = 30f;
@@ -151,6 +153,28 @@ namespace MasterTool.ESP
             }
         }
 
+        private Renderer[] GetCachedPlayerRenderers(Player player)
+        {
+            int id = player.GetInstanceID();
+            if (!_cachedPlayerRenderers.TryGetValue(id, out var renderers))
+            {
+                renderers = player.GetComponentsInChildren<SkinnedMeshRenderer>();
+                _cachedPlayerRenderers[id] = renderers;
+            }
+            return renderers;
+        }
+
+        private Renderer[] GetCachedLootRenderers(GameObject obj)
+        {
+            int id = obj.GetInstanceID();
+            if (!_cachedLootRenderers.TryGetValue(id, out var renderers))
+            {
+                renderers = obj.GetComponentsInChildren<MeshRenderer>();
+                _cachedLootRenderers[id] = renderers;
+            }
+            return renderers;
+        }
+
         private void ApplyChams(Player player, Color color)
         {
             if (player == null)
@@ -158,7 +182,7 @@ namespace MasterTool.ESP
 
             ChamsMode mode = PluginConfig.ChamsRenderMode.Value;
 
-            foreach (var renderer in player.GetComponentsInChildren<SkinnedMeshRenderer>())
+            foreach (var renderer in GetCachedPlayerRenderers(player))
             {
                 if (renderer == null || renderer.material == null)
                     continue;
@@ -193,7 +217,7 @@ namespace MasterTool.ESP
 
             ChamsMode mode = PluginConfig.LootChamsRenderMode.Value;
 
-            foreach (var renderer in obj.GetComponentsInChildren<MeshRenderer>())
+            foreach (var renderer in GetCachedLootRenderers(obj))
             {
                 if (renderer == null || renderer.material == null)
                     continue;
@@ -385,7 +409,7 @@ namespace MasterTool.ESP
         {
             if (obj == null)
                 return;
-            foreach (var renderer in obj.GetComponentsInChildren<MeshRenderer>())
+            foreach (var renderer in GetCachedLootRenderers(obj))
             {
                 if (renderer.gameObject.name == OutlineObjectName)
                     continue;
@@ -432,6 +456,46 @@ namespace MasterTool.ESP
             {
                 _outlineDuplicates.Remove(r);
             }
+
+            var deadPlayerIds = new List<int>();
+            foreach (var kv in _cachedPlayerRenderers)
+            {
+                bool allNull = true;
+                foreach (var r in kv.Value)
+                {
+                    if (r != null)
+                    {
+                        allNull = false;
+                        break;
+                    }
+                }
+                if (allNull)
+                    deadPlayerIds.Add(kv.Key);
+            }
+            foreach (var id in deadPlayerIds)
+            {
+                _cachedPlayerRenderers.Remove(id);
+            }
+
+            var deadLootIds = new List<int>();
+            foreach (var kv in _cachedLootRenderers)
+            {
+                bool allNull = true;
+                foreach (var r in kv.Value)
+                {
+                    if (r != null)
+                    {
+                        allNull = false;
+                        break;
+                    }
+                }
+                if (allNull)
+                    deadLootIds.Add(kv.Key);
+            }
+            foreach (var id in deadLootIds)
+            {
+                _cachedLootRenderers.Remove(id);
+            }
         }
 
         private void ResetAllPlayerChams()
@@ -464,6 +528,7 @@ namespace MasterTool.ESP
             }
 
             DestroyOutlineDuplicatesByType<SkinnedMeshRenderer>();
+            _cachedPlayerRenderers.Clear();
         }
 
         private void ResetAllLootChams()
@@ -496,13 +561,14 @@ namespace MasterTool.ESP
             }
 
             DestroyOutlineDuplicatesByType<MeshRenderer>();
+            _cachedLootRenderers.Clear();
         }
 
         private void ResetChams(Player player)
         {
             if (player == null)
                 return;
-            foreach (var renderer in player.GetComponentsInChildren<SkinnedMeshRenderer>())
+            foreach (var renderer in GetCachedPlayerRenderers(player))
             {
                 if (renderer.gameObject.name == OutlineObjectName)
                     continue;

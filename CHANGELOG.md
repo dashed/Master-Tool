@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [2.22.0] - 2026-02-08
+
+### Changed
+
+- **Performance**: Cached `GetComponentsInChildren` calls in `ChamsManager` (player and loot renderers), cached `FindObjectsOfType<TriggerWithId>` in `QuestEsp` (30s TTL), reused `GUIContent` in `EspRenderer`, cached `FieldInfo` reflection in `VisionFeature`, cached status string per frame in `StatusWindow`
+- **Exception handling**: Replaced bare `catch {}` blocks with logged catches in `FlyModeFeature`, `CodModeFeature`, `DamagePatches`, and `MasterToolPlugin.OnDestroy`
+- **Magic numbers**: Extracted `HealCycleFrames = 60` constant in `CodModeFeature`
+- **ModMenu rebind**: Delegated inline rebind logic to `RebindLogic.GetRebindOutcome` and `IsFrameReadyForInput` (single source of truth with Core)
+
+### Added
+
+- `MathTypesTests.cs` — dedicated tests for `Vec3`, `Vec2`, and `Color` structs (operators, magnitude, normalization, equality)
+
 ## [2.21.0] - 2026-02-08
 
 ### Changed

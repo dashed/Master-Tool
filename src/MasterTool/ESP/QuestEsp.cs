@@ -21,6 +21,8 @@ namespace MasterTool.ESP
         public List<QuestEspTarget> Targets { get; } = new List<QuestEspTarget>();
         private float _nextUpdate;
         private bool _errorLogged;
+        private TriggerWithId[] _cachedTriggers;
+        private float _nextTriggerRefresh;
 
         /// <summary>
         /// Builds the set of quest-relevant item template IDs from the player's active quests,
@@ -210,7 +212,13 @@ namespace MasterTool.ESP
 
         private void ScanZones(Camera mainCamera, Player localPlayer, HashSet<string> questZoneIds)
         {
-            var triggers = UnityEngine.Object.FindObjectsOfType<TriggerWithId>();
+            if (Time.time >= _nextTriggerRefresh || _cachedTriggers == null)
+            {
+                _cachedTriggers = UnityEngine.Object.FindObjectsOfType<TriggerWithId>();
+                _nextTriggerRefresh = Time.time + 30f;
+            }
+
+            var triggers = _cachedTriggers;
             if (triggers == null)
                 return;
 

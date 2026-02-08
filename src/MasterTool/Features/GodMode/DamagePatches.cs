@@ -74,8 +74,9 @@ namespace MasterTool.Features.GodMode
                             harmony.Patch(method, prefix: prefix);
                             patched++;
                         }
-                        catch (Exception)
+                        catch (Exception ex)
                         {
+                            MasterToolPlugin.Log?.LogDebug($"[GodMode] Patch failed for {method.Name}: {ex.Message}");
                             failed++;
                         }
                     }
