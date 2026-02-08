@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [2.2.2] - 2026-02-07
+
+### Fixed
+
+- Big head mode no longer forces head scale to 1x on all players when toggled OFF (previously overrode any non-standard bone scaling every frame — same root cause as NV and culling bugs)
+
+### Added
+
+- Unit tests for big head state machine logic (11 tests)
+
 ## [2.2.1] - 2026-02-07
 
 ### Fixed
