@@ -1,3 +1,4 @@
+using EFT;
 using MasterTool.Core;
 using UnityEngine;
 using CoreColor = MasterTool.Core.Color;
@@ -34,6 +35,11 @@ namespace MasterTool.Utils
         public static UnityColor ToUnityColor(this CoreColor c)
         {
             return new UnityColor(c.R, c.G, c.B, c.A);
+        }
+
+        public static BodyPart ToBodyPart(this EBodyPart part)
+        {
+            return (BodyPart)(int)part;
         }
     }
 }

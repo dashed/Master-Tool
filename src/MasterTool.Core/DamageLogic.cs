@@ -48,23 +48,33 @@ public static class DamageLogic
     /// <summary>
     /// Computes the modified damage for the local player with all damage reduction features.
     /// </summary>
+    /// <param name="originalDamage">Raw incoming damage.</param>
+    /// <param name="godMode">Whether god mode is enabled (zeroes all damage).</param>
+    /// <param name="bodyPart">Which body part is being hit.</param>
+    /// <param name="ignoreHeadshots">Whether headshot damage is fully blocked.</param>
+    /// <param name="headDamagePercent">Percentage of head damage to apply (0-100).</param>
+    /// <param name="damageReductionPercent">Global damage reduction percentage (0-100).</param>
+    /// <param name="keep1Health">Whether Keep 1 Health clamping is enabled.</param>
+    /// <param name="shouldProtectPart">Whether this specific body part is protected (pre-computed via BodyPartProtection.ShouldProtect).</param>
+    /// <param name="bodyPartCurrentHp">Current HP of the body part being damaged.</param>
     public static float ComputeLocalPlayerDamage(
         float originalDamage,
         bool godMode,
-        bool isHead,
+        BodyPart bodyPart,
         bool ignoreHeadshots,
         int headDamagePercent,
         int damageReductionPercent,
         bool keep1Health,
-        string keep1Selection,
-        float bodyPartCurrentHp,
-        bool isChest
+        bool shouldProtectPart,
+        float bodyPartCurrentHp
     )
     {
         if (godMode)
         {
             return 0f;
         }
+
+        bool isHead = bodyPart == BodyPart.Head;
 
         if (isHead && ignoreHeadshots)
         {
@@ -83,14 +93,9 @@ public static class DamageLogic
             damage *= damageReductionPercent / 100f;
         }
 
-        if (keep1Health)
+        if (keep1Health && shouldProtectPart && (bodyPartCurrentHp - damage) < 3f)
         {
-            bool shouldProtect = keep1Selection == "All" || (keep1Selection == "Head And Thorax" && (isHead || isChest));
-
-            if (shouldProtect && (bodyPartCurrentHp - damage) < 3f)
-            {
-                damage = (float)Math.Max(0.0, bodyPartCurrentHp - 3f);
-            }
+            damage = (float)Math.Max(0.0, bodyPartCurrentHp - 3f);
         }
 
         return damage;

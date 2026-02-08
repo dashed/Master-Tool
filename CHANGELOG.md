@@ -6,6 +6,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [2.23.0] - 2026-02-08
+
+### Added
+
+- **Fine-grained body part protection** for Keep 1 Health — selection expanded from 2 to 4 modes:
+  - **All** (default) — protects all 7 body parts
+  - **Head And Thorax** — protects only Head and Chest
+  - **Vitals** — protects Head, Chest, and Stomach
+  - **Custom** — per-body-part toggles (Head, Chest, Stomach, Left Arm, Right Arm, Left Leg, Right Leg)
+- `BodyPart` enum in MasterTool.Core mirroring EFT.EBodyPart for testable pure logic
+- `BodyPartProtection` static class with `ShouldProtect()` and `CycleSelection()` methods
+- 7 new BepInEx config entries for Custom mode per-body-part protection
+- `BodyPartProtectionTests.cs` — 23 tests covering all 4 selection modes, custom array edge cases, and cycle logic
+- `ToBodyPart()` extension method in CoreConversions for EBodyPart → BodyPart mapping
+
+### Changed
+
+- `DamageLogic.ComputeLocalPlayerDamage` API refactored: replaced `isHead`+`isChest`+`keep1Selection` parameters with `BodyPart bodyPart`+`shouldProtectPart` for cleaner separation of concerns
+- ModMenu cycles through 4 protection modes with a button; Custom mode reveals 7 individual body part toggles
+- Updated DamageReductionTests and FeatureConflictTests for new API signature
+
 ## [2.22.0] - 2026-02-08
 
 ### Changed

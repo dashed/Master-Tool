@@ -161,9 +161,19 @@ namespace MasterTool.UI
                 GUILayout.Label("Protect: ", GUILayout.Width(60));
                 if (GUILayout.Button(PluginConfig.Keep1HealthSelection.Value))
                 {
-                    PluginConfig.Keep1HealthSelection.Value = PluginConfig.Keep1HealthSelection.Value == "All" ? "Head And Thorax" : "All";
+                    PluginConfig.Keep1HealthSelection.Value = BodyPartProtection.CycleSelection(PluginConfig.Keep1HealthSelection.Value);
                 }
                 GUILayout.EndHorizontal();
+                if (PluginConfig.Keep1HealthSelection.Value == BodyPartProtection.SelectionCustom)
+                {
+                    PluginConfig.ProtectHead.Value = GUILayout.Toggle(PluginConfig.ProtectHead.Value, " Head");
+                    PluginConfig.ProtectChest.Value = GUILayout.Toggle(PluginConfig.ProtectChest.Value, " Chest (Thorax)");
+                    PluginConfig.ProtectStomach.Value = GUILayout.Toggle(PluginConfig.ProtectStomach.Value, " Stomach");
+                    PluginConfig.ProtectLeftArm.Value = GUILayout.Toggle(PluginConfig.ProtectLeftArm.Value, " Left Arm");
+                    PluginConfig.ProtectRightArm.Value = GUILayout.Toggle(PluginConfig.ProtectRightArm.Value, " Right Arm");
+                    PluginConfig.ProtectLeftLeg.Value = GUILayout.Toggle(PluginConfig.ProtectLeftLeg.Value, " Left Leg");
+                    PluginConfig.ProtectRightLeg.Value = GUILayout.Toggle(PluginConfig.ProtectRightLeg.Value, " Right Leg");
+                }
             }
             PluginConfig.IgnoreHeadshots.Value = GUILayout.Toggle(PluginConfig.IgnoreHeadshots.Value, " Ignore Headshot Damage");
             if (!PluginConfig.IgnoreHeadshots.Value)

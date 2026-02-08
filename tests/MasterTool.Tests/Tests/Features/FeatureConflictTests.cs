@@ -24,14 +24,13 @@ public class FeatureConflictTests
         float result = DamageLogic.ComputeLocalPlayerDamage(
             100f,
             godMode: true,
-            isHead: true,
+            bodyPart: BodyPart.Head,
             ignoreHeadshots: true,
             headDamagePercent: 50,
             damageReductionPercent: 50,
             keep1Health: true,
-            keep1Selection: "All",
-            bodyPartCurrentHp: 10f,
-            isChest: false
+            shouldProtectPart: true,
+            bodyPartCurrentHp: 10f
         );
         Assert.That(result, Is.EqualTo(0f));
     }
@@ -43,14 +42,13 @@ public class FeatureConflictTests
         float result = DamageLogic.ComputeLocalPlayerDamage(
             100f,
             godMode: false,
-            isHead: true,
+            bodyPart: BodyPart.Head,
             ignoreHeadshots: true,
             headDamagePercent: 50,
             damageReductionPercent: 100,
             keep1Health: false,
-            keep1Selection: "All",
-            bodyPartCurrentHp: 35f,
-            isChest: false
+            shouldProtectPart: false,
+            bodyPartCurrentHp: 35f
         );
         Assert.That(result, Is.EqualTo(0f));
     }
@@ -62,14 +60,13 @@ public class FeatureConflictTests
         float result = DamageLogic.ComputeLocalPlayerDamage(
             100f,
             godMode: false,
-            isHead: true,
+            bodyPart: BodyPart.Head,
             ignoreHeadshots: false,
             headDamagePercent: 50,
             damageReductionPercent: 50,
             keep1Health: false,
-            keep1Selection: "All",
-            bodyPartCurrentHp: 35f,
-            isChest: false
+            shouldProtectPart: false,
+            bodyPartCurrentHp: 35f
         );
         Assert.That(result, Is.EqualTo(25f));
     }
@@ -82,14 +79,13 @@ public class FeatureConflictTests
         float result = DamageLogic.ComputeLocalPlayerDamage(
             100f,
             godMode: false,
-            isHead: false,
+            bodyPart: BodyPart.Stomach,
             ignoreHeadshots: false,
             headDamagePercent: 100,
             damageReductionPercent: 50,
             keep1Health: true,
-            keep1Selection: "All",
-            bodyPartCurrentHp: 20f,
-            isChest: false
+            shouldProtectPart: true,
+            bodyPartCurrentHp: 20f
         );
         Assert.That(result, Is.EqualTo(17f));
     }
@@ -97,18 +93,17 @@ public class FeatureConflictTests
     [Test]
     public void Full_Chain_With_Head_GodMode_Blocks_Everything()
     {
-        // All features ON + head hit → GodMode short-circuits to 0
+        // All features ON + head hit -> GodMode short-circuits to 0
         float result = DamageLogic.ComputeLocalPlayerDamage(
             200f,
             godMode: true,
-            isHead: true,
+            bodyPart: BodyPart.Head,
             ignoreHeadshots: true,
             headDamagePercent: 25,
             damageReductionPercent: 10,
             keep1Health: true,
-            keep1Selection: "All",
-            bodyPartCurrentHp: 5f,
-            isChest: false
+            shouldProtectPart: true,
+            bodyPartCurrentHp: 5f
         );
         Assert.That(result, Is.EqualTo(0f));
     }
@@ -121,14 +116,13 @@ public class FeatureConflictTests
         float result = DamageLogic.ComputeLocalPlayerDamage(
             100f,
             godMode: false,
-            isHead: false,
+            bodyPart: BodyPart.Stomach,
             ignoreHeadshots: true,
             headDamagePercent: 10,
             damageReductionPercent: 50,
             keep1Health: false,
-            keep1Selection: "All",
-            bodyPartCurrentHp: 100f,
-            isChest: false
+            shouldProtectPart: false,
+            bodyPartCurrentHp: 100f
         );
         Assert.That(result, Is.EqualTo(50f));
     }
@@ -139,14 +133,13 @@ public class FeatureConflictTests
         float result = DamageLogic.ComputeLocalPlayerDamage(
             75f,
             godMode: false,
-            isHead: false,
+            bodyPart: BodyPart.Stomach,
             ignoreHeadshots: false,
             headDamagePercent: 100,
             damageReductionPercent: 100,
             keep1Health: false,
-            keep1Selection: "All",
-            bodyPartCurrentHp: 100f,
-            isChest: false
+            shouldProtectPart: false,
+            bodyPartCurrentHp: 100f
         );
         Assert.That(result, Is.EqualTo(75f));
     }
@@ -158,14 +151,13 @@ public class FeatureConflictTests
         float playerDmg = DamageLogic.ComputeLocalPlayerDamage(
             100f,
             godMode: true,
-            isHead: false,
+            bodyPart: BodyPart.Stomach,
             ignoreHeadshots: false,
             headDamagePercent: 100,
             damageReductionPercent: 100,
             keep1Health: false,
-            keep1Selection: "All",
-            bodyPartCurrentHp: 100f,
-            isChest: false
+            shouldProtectPart: false,
+            bodyPartCurrentHp: 100f
         );
         // Enemy damage is multiplied independently
         float enemyDmg = DamageLogic.ComputeEnemyDamage(100f, 5f);
@@ -181,7 +173,7 @@ public class FeatureConflictTests
     [Test]
     public void CodMode_ShouldHeal_Independent_Of_GodMode()
     {
-        // ShouldHeal only checks timer vs delay — GodMode state is irrelevant
+        // ShouldHeal only checks timer vs delay -- GodMode state is irrelevant
         bool godModeOn = true;
         _ = godModeOn; // GodMode state exists but does not affect heal logic
         Assert.That(HealingLogic.ShouldHeal(15f, 10f), Is.True);
@@ -280,14 +272,13 @@ public class FeatureConflictTests
         float result = DamageLogic.ComputeLocalPlayerDamage(
             100f,
             godMode: false,
-            isHead: false,
+            bodyPart: BodyPart.Stomach,
             ignoreHeadshots: false,
             headDamagePercent: 100,
             damageReductionPercent: 75,
             keep1Health: true,
-            keep1Selection: "All",
-            bodyPartCurrentHp: 10f,
-            isChest: false
+            shouldProtectPart: true,
+            bodyPartCurrentHp: 10f
         );
         Assert.That(result, Is.EqualTo(7f));
     }
@@ -296,18 +287,17 @@ public class FeatureConflictTests
     public void Keep1Health_Allows_Non_Lethal_After_Reduction()
     {
         // 100 * 0.5 (reduction) = 50 damage on body part with 100 HP
-        // 100 - 50 = 50 remaining, well above 3 → no clamping
+        // 100 - 50 = 50 remaining, well above 3 -> no clamping
         float result = DamageLogic.ComputeLocalPlayerDamage(
             100f,
             godMode: false,
-            isHead: false,
+            bodyPart: BodyPart.Stomach,
             ignoreHeadshots: false,
             headDamagePercent: 100,
             damageReductionPercent: 50,
             keep1Health: true,
-            keep1Selection: "All",
-            bodyPartCurrentHp: 100f,
-            isChest: false
+            shouldProtectPart: true,
+            bodyPartCurrentHp: 100f
         );
         Assert.That(result, Is.EqualTo(50f));
     }
@@ -315,19 +305,18 @@ public class FeatureConflictTests
     [Test]
     public void Keep1Health_HeadAndThorax_Does_Not_Protect_Stomach()
     {
-        // Stomach (isHead=false, isChest=false) with "Head And Thorax" selection
-        // 50 damage on 10 HP → would be lethal, but NOT protected
+        // Stomach with "Head And Thorax" selection -> NOT protected
+        // 50 damage on 10 HP -> would be lethal, but NOT protected
         float result = DamageLogic.ComputeLocalPlayerDamage(
             50f,
             godMode: false,
-            isHead: false,
+            bodyPart: BodyPart.Stomach,
             ignoreHeadshots: false,
             headDamagePercent: 100,
             damageReductionPercent: 100,
             keep1Health: true,
-            keep1Selection: "Head And Thorax",
-            bodyPartCurrentHp: 10f,
-            isChest: false
+            shouldProtectPart: false,
+            bodyPartCurrentHp: 10f
         );
         Assert.That(result, Is.EqualTo(50f));
     }

@@ -29,6 +29,16 @@ namespace MasterTool.Config
         public static ConfigEntry<int> DamageReductionPercent;
         public static ConfigEntry<bool> Keep1HealthEnabled;
         public static ConfigEntry<string> Keep1HealthSelection;
+
+        // Per-body-part protection for Custom mode
+        public static ConfigEntry<bool> ProtectHead;
+        public static ConfigEntry<bool> ProtectChest;
+        public static ConfigEntry<bool> ProtectStomach;
+        public static ConfigEntry<bool> ProtectLeftArm;
+        public static ConfigEntry<bool> ProtectRightArm;
+        public static ConfigEntry<bool> ProtectLeftLeg;
+        public static ConfigEntry<bool> ProtectRightLeg;
+
         public static ConfigEntry<bool> IgnoreHeadshots;
         public static ConfigEntry<int> HeadDamagePercent;
         public static ConfigEntry<float> EnemyDamageMultiplier;
@@ -216,8 +226,18 @@ namespace MasterTool.Config
                 Sections.Damage,
                 "Keep 1 Health Selection",
                 "All",
-                new ConfigDescription("Which body parts to protect.", new AcceptableValueList<string>("All", "Head And Thorax"))
+                new ConfigDescription(
+                    "Which body parts to protect.",
+                    new AcceptableValueList<string>("All", "Head And Thorax", "Vitals", "Custom")
+                )
             );
+            ProtectHead = config.Bind(Sections.Damage, "Protect Head", true, "Protect Head in Custom mode.");
+            ProtectChest = config.Bind(Sections.Damage, "Protect Chest", true, "Protect Chest (Thorax) in Custom mode.");
+            ProtectStomach = config.Bind(Sections.Damage, "Protect Stomach", true, "Protect Stomach in Custom mode.");
+            ProtectLeftArm = config.Bind(Sections.Damage, "Protect Left Arm", true, "Protect Left Arm in Custom mode.");
+            ProtectRightArm = config.Bind(Sections.Damage, "Protect Right Arm", true, "Protect Right Arm in Custom mode.");
+            ProtectLeftLeg = config.Bind(Sections.Damage, "Protect Left Leg", true, "Protect Left Leg in Custom mode.");
+            ProtectRightLeg = config.Bind(Sections.Damage, "Protect Right Leg", true, "Protect Right Leg in Custom mode.");
             IgnoreHeadshots = config.Bind(Sections.Damage, "Ignore Headshots", false, "Completely ignore headshot damage.");
             HeadDamagePercent = config.Bind(
                 Sections.Damage,
@@ -514,6 +534,20 @@ namespace MasterTool.Config
                 new KeyboardShortcut(KeyCode.None),
                 hotkeyDesc
             );
+        }
+
+        public static bool[] GetCustomProtectionArray()
+        {
+            return new bool[]
+            {
+                ProtectHead.Value,
+                ProtectChest.Value,
+                ProtectStomach.Value,
+                ProtectLeftArm.Value,
+                ProtectRightArm.Value,
+                ProtectLeftLeg.Value,
+                ProtectRightLeg.Value,
+            };
         }
 
         private static void DrawOpenModMenuButton(ConfigEntryBase entry)

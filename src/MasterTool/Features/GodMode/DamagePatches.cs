@@ -6,6 +6,7 @@ using HarmonyLib;
 using MasterTool.Config;
 using MasterTool.Core;
 using MasterTool.Plugin;
+using MasterTool.Utils;
 
 namespace MasterTool.Features.GodMode
 {
@@ -144,17 +145,22 @@ namespace MasterTool.Features.GodMode
             if (___Player != null && ___Player.IsYourPlayer)
             {
                 var currentHealth = __instance.GetBodyPartHealth(bodyPart, false);
+                var corePart = bodyPart.ToBodyPart();
+                bool shouldProtect = BodyPartProtection.ShouldProtect(
+                    PluginConfig.Keep1HealthSelection.Value,
+                    corePart,
+                    PluginConfig.GetCustomProtectionArray()
+                );
                 damage = DamageLogic.ComputeLocalPlayerDamage(
                     damage,
                     PluginConfig.GodModeEnabled.Value,
-                    bodyPart == EBodyPart.Head,
+                    corePart,
                     PluginConfig.IgnoreHeadshots.Value,
                     PluginConfig.HeadDamagePercent.Value,
                     PluginConfig.DamageReductionPercent.Value,
                     PluginConfig.Keep1HealthEnabled.Value,
-                    PluginConfig.Keep1HealthSelection.Value,
-                    currentHealth.Current,
-                    bodyPart == EBodyPart.Chest
+                    shouldProtect,
+                    currentHealth.Current
                 );
                 return true;
             }
