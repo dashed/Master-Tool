@@ -97,9 +97,11 @@ namespace MasterTool.Config
         public static ConfigEntry<float> ChamsIntensity;
         public static ConfigEntry<float> ChamsOpacity;
         public static ConfigEntry<float> OutlineScale;
+        public static ConfigEntry<float> ChamsMaxDistance;
         public static ConfigEntry<bool> LootChamsEnabled;
         public static ConfigEntry<ChamsMode> LootChamsRenderMode;
         public static ConfigEntry<Color> LootChamsColor;
+        public static ConfigEntry<float> LootChamsMaxDistance;
 
         // --- 09. ESP Items ---
         public static ConfigEntry<bool> ItemEspEnabled;
@@ -418,6 +420,7 @@ namespace MasterTool.Config
                     new AcceptableValueRange<float>(1.01f, 1.15f)
                 )
             );
+            ChamsMaxDistance = config.Bind(Sections.Chams, "Chams Max Distance", 300f, "Max distance for player chams.");
             LootChamsEnabled = config.Bind(
                 Sections.Chams,
                 "Loot Chams Enabled",
@@ -431,6 +434,7 @@ namespace MasterTool.Config
                 "Rendering mode for loot chams: Solid (flat color), CullFront (hollow silhouette), Outline (normal model + colored edge)."
             );
             LootChamsColor = config.Bind(Sections.Chams, "Loot Chams Color", Color.green, "Color for loot item chams.");
+            LootChamsMaxDistance = config.Bind(Sections.Chams, "Loot Chams Max Distance", 100f, "Max distance for loot chams.");
 
             // --- 09. ESP Items ---
             ItemEspEnabled = config.Bind(Sections.EspItems, "Enabled", false, "Show loose loot.");

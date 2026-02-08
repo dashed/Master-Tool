@@ -63,11 +63,13 @@ namespace MasterTool.ESP
                     {
                         float dist = Vector3.Distance(mainCamera.transform.position, playerClass.Transform.position);
 
-                        bool shouldChams =
-                            PluginConfig.ChamsEnabled.Value
-                            && !playerClass.IsYourPlayer
-                            && playerClass.HealthController.IsAlive
-                            && dist <= PluginConfig.EspMaxDistance.Value;
+                        bool shouldChams = ChamsLogic.ShouldApplyPlayerChams(
+                            PluginConfig.ChamsEnabled.Value,
+                            playerClass.IsYourPlayer,
+                            playerClass.HealthController.IsAlive,
+                            dist,
+                            PluginConfig.ChamsMaxDistance.Value
+                        );
 
                         if (shouldChams)
                         {
@@ -121,7 +123,7 @@ namespace MasterTool.ESP
 
             try
             {
-                float maxDistSq = PluginConfig.ItemEspMaxDistance.Value * PluginConfig.ItemEspMaxDistance.Value;
+                float maxDistSq = PluginConfig.LootChamsMaxDistance.Value * PluginConfig.LootChamsMaxDistance.Value;
                 Vector3 playerPos = localPlayer.Transform.position;
 
                 for (int i = 0; i < lootItems.Count; i++)

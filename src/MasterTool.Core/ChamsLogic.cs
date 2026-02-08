@@ -57,6 +57,14 @@ public static class ChamsLogic
     }
 
     /// <summary>
+    /// Determines whether player chams should be applied based on state and distance.
+    /// </summary>
+    public static bool ShouldApplyPlayerChams(bool chamsEnabled, bool isYourPlayer, bool isAlive, float distance, float maxDistance)
+    {
+        return chamsEnabled && !isYourPlayer && isAlive && distance <= maxDistance;
+    }
+
+    /// <summary>
     /// Determines whether loot chams should be applied based on distance.
     /// </summary>
     public static bool ShouldApplyLootChams(bool lootChamsEnabled, float distanceSq, float maxDistance)

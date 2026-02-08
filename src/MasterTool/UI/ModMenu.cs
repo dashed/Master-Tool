@@ -348,6 +348,8 @@ namespace MasterTool.UI
                 GUILayout.Label($"Outline Scale: {PluginConfig.OutlineScale.Value:F2}");
                 PluginConfig.OutlineScale.Value = GUILayout.HorizontalSlider(PluginConfig.OutlineScale.Value, 1.01f, 1.15f);
             }
+            GUILayout.Label($"Chams Distance: {PluginConfig.ChamsMaxDistance.Value:F0}m");
+            PluginConfig.ChamsMaxDistance.Value = GUILayout.HorizontalSlider(PluginConfig.ChamsMaxDistance.Value, 50f, 1000f);
         }
 
         private void DrawColorsSubTab()
@@ -382,6 +384,8 @@ namespace MasterTool.UI
                     PluginConfig.LootChamsRenderMode.Value = (ChamsMode)(((int)PluginConfig.LootChamsRenderMode.Value + 1) % 3);
                 }
                 PluginConfig.LootChamsColor.Value = ColorPicker.Draw("Loot Chams", PluginConfig.LootChamsColor.Value);
+                GUILayout.Label($"Loot Chams Distance: {PluginConfig.LootChamsMaxDistance.Value:F0}m");
+                PluginConfig.LootChamsMaxDistance.Value = GUILayout.HorizontalSlider(PluginConfig.LootChamsMaxDistance.Value, 5f, 500f);
             }
             GUILayout.Label("Filter (Name or ID, comma separated):");
 

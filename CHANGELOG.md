@@ -6,6 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [2.24.0] - 2026-02-08
+
+### Added
+
+- **Dedicated chams distance controls** — player chams and loot chams now have independent max distance settings, separate from ESP text distances:
+  - `Chams Max Distance` (default 300m, slider 50-1000m) — controls player chams render range independently from player ESP labels
+  - `Loot Chams Max Distance` (default 100m, slider 5-500m) — controls loot chams render range independently from item ESP labels
+- `ShouldApplyPlayerChams` method in ChamsLogic (Core) for testable player chams distance/state logic
+- `ChamsDistanceTests.cs` — 13 tests covering player and loot chams distance boundaries, disabled states, and edge cases
+
+### Changed
+
+- ChamsManager delegates player chams eligibility check to `ChamsLogic.ShouldApplyPlayerChams` instead of inline boolean chain
+- Player chams no longer piggyback on `EspMaxDistance`; loot chams no longer piggyback on `ItemEspMaxDistance`
+
 ## [2.23.0] - 2026-02-08
 
 ### Added
