@@ -6,6 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [2.16.0] - 2026-02-08
+
+### Added
+
+- Sub-tabs for crowded mod menu tabs:
+  - **General** tab: "Damage", "Survival", "Weapons", "Utility" sub-tabs
+  - **ESP Players** tab: "ESP", "Chams", "Colors" sub-tabs
+  - **Troll** tab: "Movement", "Teleport", "Fun" sub-tabs
+- Unit tests for sub-tab structure: tab counts, naming, uniqueness, conciseness (32 tests)
+
+### Changed
+
+- Renamed Portuguese tab names to English: "Geral" → "General", "ESP Itens" → "ESP Items", "ESP Quest/Wish" → "ESP Quests"
+- Removed bold section headers ("--- GENERAL ---", etc.) from sub-tabbed content — sub-tabs replace the need for in-content separators
+
 ## [2.15.0] - 2026-02-08
 
 ### Changed

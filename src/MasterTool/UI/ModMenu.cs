@@ -24,9 +24,18 @@ namespace MasterTool.UI
     public class ModMenu
     {
         private int _selectedTab;
-        private readonly string[] _tabNames = { "Geral", "ESP Players", "ESP Itens", "ESP Quest/Wish", "Visual", "Troll", "Hotkeys" };
+        internal static readonly string[] TabNames = { "General", "ESP Players", "ESP Items", "ESP Quests", "Visual", "Troll", "Hotkeys" };
         private Vector2 _mainScroll;
         private Vector2 _itemFilterScroll;
+
+        private int _generalSubTab;
+        internal static readonly string[] GeneralSubTabNames = { "Damage", "Survival", "Weapons", "Utility" };
+
+        private int _espPlayersSubTab;
+        internal static readonly string[] EspPlayersSubTabNames = { "ESP", "Chams", "Colors" };
+
+        private int _trollSubTab;
+        internal static readonly string[] TrollSubTabNames = { "Movement", "Teleport", "Fun" };
 
         private ConfigEntry<KeyboardShortcut> _rebindingEntry;
         private int _rebindStartFrame = -1;
@@ -50,7 +59,7 @@ namespace MasterTool.UI
         /// <param name="localPlayer">The local player, passed to tabs that need it.</param>
         public void Draw(int id, Rect windowRect, GameWorld gameWorld, Player localPlayer)
         {
-            _selectedTab = GUILayout.Toolbar(_selectedTab, _tabNames);
+            _selectedTab = GUILayout.Toolbar(_selectedTab, TabNames);
             GUILayout.Space(10);
 
             GUI.DragWindow(new Rect(0, 0, windowRect.width, DragBarHeight));
@@ -90,8 +99,29 @@ namespace MasterTool.UI
 
         private void DrawGeneralTab()
         {
-            GUILayout.Space(20);
-            GUILayout.Label("<b>--- GENERAL ---</b>");
+            _generalSubTab = GUILayout.Toolbar(_generalSubTab, GeneralSubTabNames);
+            GUILayout.Space(5);
+
+            switch (_generalSubTab)
+            {
+                case 0:
+                    DrawGeneralDamageSubTab();
+                    break;
+                case 1:
+                    DrawGeneralSurvivalSubTab();
+                    break;
+                case 2:
+                    DrawGeneralWeaponsSubTab();
+                    break;
+                case 3:
+                    DrawGeneralUtilitySubTab();
+                    break;
+            }
+        }
+
+        private void DrawGeneralDamageSubTab()
+        {
+            GUILayout.Space(10);
             PluginConfig.GodModeEnabled.Value = GUILayout.Toggle(
                 PluginConfig.GodModeEnabled.Value,
                 $" GodMode [{PluginConfig.ToggleGodModeHotkey.Value}]"
@@ -121,6 +151,29 @@ namespace MasterTool.UI
             }
             GUILayout.Label($"Enemy Damage: {PluginConfig.EnemyDamageMultiplier.Value:F1}x");
             PluginConfig.EnemyDamageMultiplier.Value = GUILayout.HorizontalSlider(PluginConfig.EnemyDamageMultiplier.Value, 1f, 20f);
+
+            GUILayout.Space(10);
+            GUILayout.Label("<b>--- COD MODE ---</b>");
+            PluginConfig.CodModeEnabled.Value = GUILayout.Toggle(
+                PluginConfig.CodModeEnabled.Value,
+                $" COD Mode (Auto-Heal) [{PluginConfig.ToggleCodModeHotkey.Value}]"
+            );
+            if (PluginConfig.CodModeEnabled.Value)
+            {
+                GUILayout.Label($"Heal Rate: {PluginConfig.CodModeHealRate.Value:F0} HP/cycle");
+                PluginConfig.CodModeHealRate.Value = GUILayout.HorizontalSlider(PluginConfig.CodModeHealRate.Value, 1f, 100f);
+                GUILayout.Label($"Heal Delay: {PluginConfig.CodModeHealDelay.Value:F0}s");
+                PluginConfig.CodModeHealDelay.Value = GUILayout.HorizontalSlider(PluginConfig.CodModeHealDelay.Value, 0f, 600f);
+                PluginConfig.CodModeRemoveEffects.Value = GUILayout.Toggle(
+                    PluginConfig.CodModeRemoveEffects.Value,
+                    " Remove Effects (experimental)"
+                );
+            }
+        }
+
+        private void DrawGeneralSurvivalSubTab()
+        {
+            GUILayout.Space(10);
             PluginConfig.InfiniteStaminaEnabled.Value = GUILayout.Toggle(
                 PluginConfig.InfiniteStaminaEnabled.Value,
                 $" Infinite Stamina [{PluginConfig.ToggleStaminaHotkey.Value}]"
@@ -146,36 +199,10 @@ namespace MasterTool.UI
                 PluginConfig.NoFallDamageEnabled.Value,
                 $" No Fall Damage [{PluginConfig.ToggleFallDamageHotkey.Value}]"
             );
-            PluginConfig.StatusWindowEnabled.Value = GUILayout.Toggle(
-                PluginConfig.StatusWindowEnabled.Value,
-                $" Show Status Window [{PluginConfig.ToggleStatusHotkey.Value}]"
-            );
-            PluginConfig.ShowWeaponInfo.Value = GUILayout.Toggle(
-                PluginConfig.ShowWeaponInfo.Value,
-                $" Show Weapon Info in Status [{PluginConfig.ToggleWeaponInfoHotkey.Value}]"
-            );
-            GUILayout.Space(10);
-            if (GUILayout.Button($"Unlock All Doors in Raid [{PluginConfig.ToggleUnlockDoorsHotkey.Value}]"))
-                DoorUnlockFeature.UnlockAll();
+        }
 
-            GUILayout.Space(10);
-            GUILayout.Label("<b>--- COD MODE ---</b>");
-            PluginConfig.CodModeEnabled.Value = GUILayout.Toggle(
-                PluginConfig.CodModeEnabled.Value,
-                $" COD Mode (Auto-Heal) [{PluginConfig.ToggleCodModeHotkey.Value}]"
-            );
-            if (PluginConfig.CodModeEnabled.Value)
-            {
-                GUILayout.Label($"Heal Rate: {PluginConfig.CodModeHealRate.Value:F0} HP/cycle");
-                PluginConfig.CodModeHealRate.Value = GUILayout.HorizontalSlider(PluginConfig.CodModeHealRate.Value, 1f, 100f);
-                GUILayout.Label($"Heal Delay: {PluginConfig.CodModeHealDelay.Value:F0}s");
-                PluginConfig.CodModeHealDelay.Value = GUILayout.HorizontalSlider(PluginConfig.CodModeHealDelay.Value, 0f, 600f);
-                PluginConfig.CodModeRemoveEffects.Value = GUILayout.Toggle(
-                    PluginConfig.CodModeRemoveEffects.Value,
-                    " Remove Effects (experimental)"
-                );
-            }
-
+        private void DrawGeneralWeaponsSubTab()
+        {
             GUILayout.Space(10);
             GUILayout.Label("<b>--- RELOAD SPEED ---</b>");
             PluginConfig.ReloadSpeedEnabled.Value = GUILayout.Toggle(
@@ -189,15 +216,6 @@ namespace MasterTool.UI
                 GUILayout.Label($"Unload Time: {PluginConfig.ReloadUnloadTime.Value:F2} (default 0.30)");
                 PluginConfig.ReloadUnloadTime.Value = GUILayout.HorizontalSlider(PluginConfig.ReloadUnloadTime.Value, 0.01f, 2f);
             }
-
-            GUILayout.Space(10);
-            GUILayout.Label("<b>--- PERFORMANCE ---</b>");
-            PluginConfig.PerformanceMode.Value = GUILayout.Toggle(
-                PluginConfig.PerformanceMode.Value,
-                $" Enable Bot Distance Culling [{PluginConfig.ToggleCullingHotkey.Value}]"
-            );
-            GUILayout.Label($"Bot Render Distance: {PluginConfig.BotRenderDistance.Value:F0}m");
-            PluginConfig.BotRenderDistance.Value = GUILayout.HorizontalSlider(PluginConfig.BotRenderDistance.Value, 50f, 1000f);
 
             GUILayout.Space(10);
             GUILayout.Label("<b>--- FOV BY WEAPON ---</b>");
@@ -214,10 +232,53 @@ namespace MasterTool.UI
             }
         }
 
+        private void DrawGeneralUtilitySubTab()
+        {
+            GUILayout.Space(10);
+            PluginConfig.StatusWindowEnabled.Value = GUILayout.Toggle(
+                PluginConfig.StatusWindowEnabled.Value,
+                $" Show Status Window [{PluginConfig.ToggleStatusHotkey.Value}]"
+            );
+            PluginConfig.ShowWeaponInfo.Value = GUILayout.Toggle(
+                PluginConfig.ShowWeaponInfo.Value,
+                $" Show Weapon Info in Status [{PluginConfig.ToggleWeaponInfoHotkey.Value}]"
+            );
+            GUILayout.Space(10);
+            if (GUILayout.Button($"Unlock All Doors in Raid [{PluginConfig.ToggleUnlockDoorsHotkey.Value}]"))
+                DoorUnlockFeature.UnlockAll();
+
+            GUILayout.Space(10);
+            GUILayout.Label("<b>--- PERFORMANCE ---</b>");
+            PluginConfig.PerformanceMode.Value = GUILayout.Toggle(
+                PluginConfig.PerformanceMode.Value,
+                $" Enable Bot Distance Culling [{PluginConfig.ToggleCullingHotkey.Value}]"
+            );
+            GUILayout.Label($"Bot Render Distance: {PluginConfig.BotRenderDistance.Value:F0}m");
+            PluginConfig.BotRenderDistance.Value = GUILayout.HorizontalSlider(PluginConfig.BotRenderDistance.Value, 50f, 1000f);
+        }
+
         private void DrawPlayerEspTab()
         {
-            GUILayout.Space(20);
-            GUILayout.Label("<b>--- PLAYER ESP ---</b>");
+            _espPlayersSubTab = GUILayout.Toolbar(_espPlayersSubTab, EspPlayersSubTabNames);
+            GUILayout.Space(5);
+
+            switch (_espPlayersSubTab)
+            {
+                case 0:
+                    DrawEspTextSubTab();
+                    break;
+                case 1:
+                    DrawChamsSubTab();
+                    break;
+                case 2:
+                    DrawColorsSubTab();
+                    break;
+            }
+        }
+
+        private void DrawEspTextSubTab()
+        {
+            GUILayout.Space(10);
             PluginConfig.EspEnabled.Value = GUILayout.Toggle(
                 PluginConfig.EspEnabled.Value,
                 $" Enable Player ESP (Text) [{PluginConfig.ToggleEspHotkey.Value}]"
@@ -231,10 +292,12 @@ namespace MasterTool.UI
             GUILayout.Label($"Update Rate (FPS): {1f / PluginConfig.EspUpdateInterval.Value:F0}");
             float pFps = GUILayout.HorizontalSlider(1f / PluginConfig.EspUpdateInterval.Value, 1f, 60f);
             PluginConfig.EspUpdateInterval.Value = 1f / pFps;
-
             PluginConfig.EspLineOfSightOnly.Value = GUILayout.Toggle(PluginConfig.EspLineOfSightOnly.Value, " Line of Sight Only");
+        }
 
-            GUILayout.Label("<b>--- CHAMS SETTINGS ---</b>");
+        private void DrawChamsSubTab()
+        {
+            GUILayout.Space(10);
             PluginConfig.ChamsEnabled.Value = GUILayout.Toggle(
                 PluginConfig.ChamsEnabled.Value,
                 $" Enable Player Chams (Models) [{PluginConfig.ToggleChamsHotkey.Value}]"
@@ -253,9 +316,11 @@ namespace MasterTool.UI
                 GUILayout.Label($"Outline Scale: {PluginConfig.OutlineScale.Value:F2}");
                 PluginConfig.OutlineScale.Value = GUILayout.HorizontalSlider(PluginConfig.OutlineScale.Value, 1.01f, 1.15f);
             }
+        }
 
-            GUILayout.Space(5);
-            GUILayout.Label("<b>--- COLORS & TRANSPARENCY (RGB) ---</b>");
+        private void DrawColorsSubTab()
+        {
+            GUILayout.Space(10);
             PluginConfig.ColorBear.Value = ColorPicker.Draw("BEAR", PluginConfig.ColorBear.Value);
             PluginConfig.ColorUsec.Value = ColorPicker.Draw("USEC", PluginConfig.ColorUsec.Value);
             PluginConfig.ColorSavage.Value = ColorPicker.Draw("SAVAGE / SCAV", PluginConfig.ColorSavage.Value);
@@ -333,7 +398,26 @@ namespace MasterTool.UI
 
         private void DrawTrollTab(GameWorld gameWorld, Player localPlayer)
         {
-            GUILayout.Space(20);
+            _trollSubTab = GUILayout.Toolbar(_trollSubTab, TrollSubTabNames);
+            GUILayout.Space(5);
+
+            switch (_trollSubTab)
+            {
+                case 0:
+                    DrawTrollMovementSubTab();
+                    break;
+                case 1:
+                    DrawTrollTeleportSubTab(gameWorld, localPlayer);
+                    break;
+                case 2:
+                    DrawTrollFunSubTab();
+                    break;
+            }
+        }
+
+        private void DrawTrollMovementSubTab()
+        {
+            GUILayout.Space(10);
             PluginConfig.SpeedhackEnabled.Value = GUILayout.Toggle(PluginConfig.SpeedhackEnabled.Value, " Speedhack");
             if (PluginConfig.SpeedhackEnabled.Value)
             {
@@ -341,7 +425,6 @@ namespace MasterTool.UI
                 PluginConfig.SpeedMultiplier.Value = GUILayout.HorizontalSlider(PluginConfig.SpeedMultiplier.Value, 1f, 10f);
             }
             GUILayout.Space(10);
-            GUILayout.Label("<b>--- FLY MODE (NOCLIP) ---</b>");
             PluginConfig.FlyModeEnabled.Value = GUILayout.Toggle(
                 PluginConfig.FlyModeEnabled.Value,
                 $" Fly Mode [{PluginConfig.ToggleFlyModeHotkey.Value}]"
@@ -352,13 +435,15 @@ namespace MasterTool.UI
                 PluginConfig.FlySpeed.Value = GUILayout.HorizontalSlider(PluginConfig.FlySpeed.Value, 1f, 50f);
                 GUILayout.Label("Controls: WASD + Space(up) + Ctrl(down)");
             }
+        }
 
+        private void DrawTrollTeleportSubTab(GameWorld gameWorld, Player localPlayer)
+        {
             GUILayout.Space(10);
-            GUILayout.Label("<b>--- TELEPORT & SPAWN ---</b>");
             if (GUILayout.Button("Teleport All Enemies to Me"))
                 TeleportFeature.TeleportEnemiesToPlayer(gameWorld, localPlayer);
 
-            GUILayout.Space(5);
+            GUILayout.Space(10);
             GUILayout.Label("<b>--- PLAYER TELEPORT ---</b>");
             if (GUILayout.Button("Save Position"))
                 PlayerTeleportFeature.SavePosition(localPlayer);
@@ -366,9 +451,11 @@ namespace MasterTool.UI
                 PlayerTeleportFeature.LoadPosition(localPlayer);
             if (GUILayout.Button("Teleport to Surface (Rescue)"))
                 PlayerTeleportFeature.TeleportToSurface(localPlayer);
+        }
 
-            GUILayout.Label("<b>--- FUN ---</b>");
-
+        private void DrawTrollFunSubTab()
+        {
+            GUILayout.Space(10);
             PluginConfig.BigHeadModeEnabled.Value = GUILayout.Toggle(PluginConfig.BigHeadModeEnabled.Value, " Big Head Mode");
             if (PluginConfig.BigHeadModeEnabled.Value)
             {
