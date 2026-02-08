@@ -227,6 +227,8 @@ Master-Tool/
     └── MasterTool.Tests/
         ├── MasterTool.Tests.csproj  # Unit tests (NUnit, net9.0)
         └── Tests/
+            ├── Config/
+            │   └── ConfigSectionTests.cs
             ├── Models/
             │   └── EspTargetTests.cs
             ├── Utils/
@@ -289,7 +291,7 @@ make build    # or: dotnet build
 
 ### Running Tests
 
-367 tests cover pure logic: models, utilities, feature state machines, ESP extraction, and config defaults. Game-dependent code requires Unity/EFT assemblies and cannot be unit-tested — tests duplicate the pure logic with fake types.
+424 tests cover pure logic: models, utilities, feature state machines, ESP extraction, and config defaults. Game-dependent code requires Unity/EFT assemblies and cannot be unit-tested — tests duplicate the pure logic with fake types.
 
 ```bash
 make test     # or: dotnet test

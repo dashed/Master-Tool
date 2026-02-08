@@ -8,6 +8,9 @@ namespace MasterTool.Config
     /// <summary>
     /// Central configuration store holding all BepInEx config entries for the plugin.
     /// All fields are populated during <see cref="Initialize"/> and read by feature modules at runtime.
+    ///
+    /// Sections use numbered prefixes ("01. Damage", "02. Survival", etc.) to control
+    /// display order in the BepInEx F12 configuration manager, which sorts alphabetically.
     /// </summary>
     public static class PluginConfig
     {
@@ -17,37 +20,105 @@ namespace MasterTool.Config
         /// </summary>
         public static ActiveHealthController LocalActiveHealthController;
 
-        // --- General Settings ---
+        // --- 01. Damage ---
         public static ConfigEntry<bool> GodModeEnabled;
-        public static ConfigEntry<bool> InfiniteStaminaEnabled;
-        public static ConfigEntry<bool> NoWeightEnabled;
-        public static ConfigEntry<bool> InfiniteEnergyEnabled;
-        public static ConfigEntry<bool> InfiniteHydrationEnabled;
-        public static ConfigEntry<bool> NoFallDamageEnabled;
-        public static ConfigEntry<bool> CodModeEnabled;
-        public static ConfigEntry<float> CodModeHealRate;
-        public static ConfigEntry<float> CodModeHealDelay;
-        public static ConfigEntry<bool> CodModeRemoveEffects;
-        public static ConfigEntry<bool> ReloadSpeedEnabled;
-        public static ConfigEntry<float> ReloadLoadTime;
-        public static ConfigEntry<float> ReloadUnloadTime;
-
-        // --- Fly Mode ---
-        public static ConfigEntry<bool> FlyModeEnabled;
-        public static ConfigEntry<float> FlySpeed;
-
         public static ConfigEntry<int> DamageReductionPercent;
         public static ConfigEntry<bool> Keep1HealthEnabled;
         public static ConfigEntry<string> Keep1HealthSelection;
         public static ConfigEntry<bool> IgnoreHeadshots;
         public static ConfigEntry<int> HeadDamagePercent;
         public static ConfigEntry<float> EnemyDamageMultiplier;
+
+        // --- 02. Survival ---
+        public static ConfigEntry<bool> InfiniteStaminaEnabled;
+        public static ConfigEntry<bool> NoWeightEnabled;
         public static ConfigEntry<int> WeightPercent;
+        public static ConfigEntry<bool> InfiniteEnergyEnabled;
+        public static ConfigEntry<bool> InfiniteHydrationEnabled;
+        public static ConfigEntry<bool> NoFallDamageEnabled;
+
+        // --- 03. Healing ---
+        public static ConfigEntry<bool> CodModeEnabled;
+        public static ConfigEntry<float> CodModeHealRate;
+        public static ConfigEntry<float> CodModeHealDelay;
+        public static ConfigEntry<bool> CodModeRemoveEffects;
+
+        // --- 04. Weapons ---
+        public static ConfigEntry<bool> ReloadSpeedEnabled;
+        public static ConfigEntry<float> ReloadLoadTime;
+        public static ConfigEntry<float> ReloadUnloadTime;
+
+        // --- 05. Movement ---
+        public static ConfigEntry<bool> SpeedhackEnabled;
+        public static ConfigEntry<float> SpeedMultiplier;
+        public static ConfigEntry<bool> FlyModeEnabled;
+        public static ConfigEntry<float> FlySpeed;
+
+        // --- 06. FOV ---
+        public static ConfigEntry<bool> WeaponFovEnabled;
+        public static ConfigEntry<float> FovDefault;
+        public static ConfigEntry<float> FovPistol;
+        public static ConfigEntry<float> FovSMG;
+        public static ConfigEntry<float> FovAssaultRifle;
+        public static ConfigEntry<float> FovShotgun;
+        public static ConfigEntry<float> FovSniper;
+        public static ConfigEntry<float> FovMelee;
+        public static ConfigEntry<bool> FovOverrideAds;
+
+        // --- 07. ESP Players ---
+        public static ConfigEntry<bool> EspEnabled;
+        public static ConfigEntry<float> EspUpdateInterval;
+        public static ConfigEntry<float> EspMaxDistance;
+        public static ConfigEntry<bool> EspLineOfSightOnly;
+        public static ConfigEntry<float> EspTextAlpha;
+        public static ConfigEntry<int> EspFontSize;
+        public static ConfigEntry<Color> ColorBear;
+        public static ConfigEntry<Color> ColorUsec;
+        public static ConfigEntry<Color> ColorSavage;
+        public static ConfigEntry<Color> ColorBoss;
+
+        // --- 08. Chams ---
+        public static ConfigEntry<bool> ChamsEnabled;
+        public static ConfigEntry<ChamsMode> ChamsRenderMode;
+        public static ConfigEntry<float> ChamsIntensity;
+        public static ConfigEntry<float> ChamsOpacity;
+        public static ConfigEntry<float> OutlineScale;
+        public static ConfigEntry<bool> LootChamsEnabled;
+        public static ConfigEntry<ChamsMode> LootChamsRenderMode;
+        public static ConfigEntry<Color> LootChamsColor;
+
+        // --- 09. ESP Items ---
+        public static ConfigEntry<bool> ItemEspEnabled;
+        public static ConfigEntry<bool> ContainerEspEnabled;
+        public static ConfigEntry<string> ItemEspFilter;
+        public static ConfigEntry<float> ItemEspMaxDistance;
+        public static ConfigEntry<float> ItemEspUpdateInterval;
+        public static ConfigEntry<Color> ColorItem;
+        public static ConfigEntry<Color> ColorContainer;
+        public static ConfigEntry<int> ItemEspFontSize;
+
+        // --- 10. ESP Quests ---
+        public static ConfigEntry<bool> QuestEspEnabled;
+        public static ConfigEntry<float> QuestEspMaxDistance;
+        public static ConfigEntry<Color> ColorQuestItem;
+        public static ConfigEntry<Color> ColorQuestZone;
+        public static ConfigEntry<int> QuestEspFps;
+
+        // --- 11. Visual ---
+        public static ConfigEntry<bool> ThermalVisionEnabled;
+        public static ConfigEntry<bool> NightVisionEnabled;
+        public static ConfigEntry<bool> BigHeadModeEnabled;
+        public static ConfigEntry<float> HeadSizeMultiplier;
+
+        // --- 12. Performance ---
+        public static ConfigEntry<bool> PerformanceMode;
+        public static ConfigEntry<float> BotRenderDistance;
+
+        // --- 13. UI ---
         public static ConfigEntry<bool> StatusWindowEnabled;
         public static ConfigEntry<bool> ShowWeaponInfo;
-        public static ConfigEntry<KeyboardShortcut> ToggleWeaponInfoHotkey;
 
-        // --- Hotkeys ---
+        // --- 14. Hotkeys ---
         public static ConfigEntry<KeyboardShortcut> ToggleUiHotkey;
         public static ConfigEntry<KeyboardShortcut> ToggleStatusHotkey;
         public static ConfigEntry<KeyboardShortcut> ToggleGodModeHotkey;
@@ -65,72 +136,33 @@ namespace MasterTool.Config
         public static ConfigEntry<KeyboardShortcut> ToggleCodModeHotkey;
         public static ConfigEntry<KeyboardShortcut> ToggleReloadSpeedHotkey;
         public static ConfigEntry<KeyboardShortcut> ToggleFlyModeHotkey;
+        public static ConfigEntry<KeyboardShortcut> ToggleWeaponInfoHotkey;
+        public static ConfigEntry<KeyboardShortcut> ToggleChamsHotkey;
         public static ConfigEntry<KeyboardShortcut> SavePositionHotkey;
         public static ConfigEntry<KeyboardShortcut> LoadPositionHotkey;
         public static ConfigEntry<KeyboardShortcut> SurfaceTeleportHotkey;
 
-        // --- Player ESP Settings ---
-        public static ConfigEntry<bool> EspEnabled;
-        public static ConfigEntry<float> EspUpdateInterval;
-        public static ConfigEntry<float> EspMaxDistance;
-        public static ConfigEntry<bool> EspLineOfSightOnly;
-        public static ConfigEntry<float> EspTextAlpha;
-        public static ConfigEntry<int> EspFontSize;
-        public static ConfigEntry<Color> ColorBear;
-        public static ConfigEntry<Color> ColorUsec;
-        public static ConfigEntry<Color> ColorSavage;
-        public static ConfigEntry<Color> ColorBoss;
-        public static ConfigEntry<bool> ChamsEnabled;
-        public static ConfigEntry<float> ChamsIntensity;
-        public static ConfigEntry<float> ChamsOpacity;
-        public static ConfigEntry<KeyboardShortcut> ToggleChamsHotkey;
-        public static ConfigEntry<bool> LootChamsEnabled;
-        public static ConfigEntry<Color> LootChamsColor;
-        public static ConfigEntry<ChamsMode> ChamsRenderMode;
-        public static ConfigEntry<ChamsMode> LootChamsRenderMode;
-        public static ConfigEntry<float> OutlineScale;
-
-        // --- Movement ---
-        public static ConfigEntry<bool> SpeedhackEnabled;
-        public static ConfigEntry<float> SpeedMultiplier;
-
-        // --- Visual ---
-        public static ConfigEntry<bool> ThermalVisionEnabled;
-        public static ConfigEntry<bool> NightVisionEnabled;
-        public static ConfigEntry<bool> BigHeadModeEnabled;
-        public static ConfigEntry<float> HeadSizeMultiplier;
-
-        // --- Item & Container ESP Settings ---
-        public static ConfigEntry<bool> ItemEspEnabled;
-        public static ConfigEntry<bool> ContainerEspEnabled;
-        public static ConfigEntry<string> ItemEspFilter;
-        public static ConfigEntry<float> ItemEspMaxDistance;
-        public static ConfigEntry<float> ItemEspUpdateInterval;
-        public static ConfigEntry<Color> ColorItem;
-        public static ConfigEntry<Color> ColorContainer;
-        public static ConfigEntry<int> ItemEspFontSize;
-
-        // --- Quest ESP Settings ---
-        public static ConfigEntry<bool> QuestEspEnabled;
-        public static ConfigEntry<float> QuestEspMaxDistance;
-        public static ConfigEntry<Color> ColorQuestItem;
-        public static ConfigEntry<Color> ColorQuestZone;
-        public static ConfigEntry<int> QuestEspFps;
-
-        // --- FOV by Weapon Category Settings ---
-        public static ConfigEntry<bool> WeaponFovEnabled;
-        public static ConfigEntry<float> FovPistol;
-        public static ConfigEntry<float> FovSMG;
-        public static ConfigEntry<float> FovAssaultRifle;
-        public static ConfigEntry<float> FovShotgun;
-        public static ConfigEntry<float> FovSniper;
-        public static ConfigEntry<float> FovMelee;
-        public static ConfigEntry<float> FovDefault;
-        public static ConfigEntry<bool> FovOverrideAds;
-
-        // --- Performance Settings ---
-        public static ConfigEntry<bool> PerformanceMode;
-        public static ConfigEntry<float> BotRenderDistance;
+        /// <summary>
+        /// Section name constants for BepInEx config organization.
+        /// Numbered prefixes control alphabetical sort order in the F12 config manager.
+        /// </summary>
+        public static class Sections
+        {
+            public const string Damage = "01. Damage";
+            public const string Survival = "02. Survival";
+            public const string Healing = "03. Healing";
+            public const string Weapons = "04. Weapons";
+            public const string Movement = "05. Movement";
+            public const string Fov = "06. FOV";
+            public const string EspPlayers = "07. ESP Players";
+            public const string Chams = "08. Chams";
+            public const string EspItems = "09. ESP Items";
+            public const string EspQuests = "10. ESP Quests";
+            public const string Visual = "11. Visual";
+            public const string Performance = "12. Performance";
+            public const string Ui = "13. UI";
+            public const string Hotkeys = "14. Hotkeys";
+        }
 
         /// <summary>
         /// Binds all configuration entries to the given BepInEx config file.
@@ -141,54 +173,10 @@ namespace MasterTool.Config
         {
             string hotkeyDesc = "Hotkey to toggle this feature. Use Unity KeyCode names (e.g., Keypad0, Keypad1, Insert, Home, PageUp).";
 
-            // General Binds
-            GodModeEnabled = config.Bind("General", "GodMode", false, "Player takes no damage.");
-            InfiniteStaminaEnabled = config.Bind("General", "Infinite Stamina", false, "Unlimited stamina and breath.");
-            NoWeightEnabled = config.Bind("General", "No Weight", false, "Removes weight penalties.");
-            InfiniteEnergyEnabled = config.Bind("General", "Infinite Energy", false, "Energy never drains.");
-            InfiniteHydrationEnabled = config.Bind("General", "Infinite Hydration", false, "Hydration never drains.");
-            NoFallDamageEnabled = config.Bind("General", "No Fall Damage", false, "Eliminates fall damage.");
-            CodModeEnabled = config.Bind("General", "COD Mode", false, "Auto-heal after not taking damage.");
-            CodModeHealRate = config.Bind(
-                "General",
-                "COD Mode Heal Rate",
-                10f,
-                new ConfigDescription("HP healed per cycle (every 60 frames).", new AcceptableValueRange<float>(1f, 100f))
-            );
-            CodModeHealDelay = config.Bind(
-                "General",
-                "COD Mode Heal Delay",
-                10f,
-                new ConfigDescription("Seconds after last damage before healing starts.", new AcceptableValueRange<float>(0f, 600f))
-            );
-            CodModeRemoveEffects = config.Bind(
-                "General",
-                "COD Mode Remove Effects",
-                false,
-                "Auto-remove bleeds and fractures during heal (experimental)."
-            );
-            ReloadSpeedEnabled = config.Bind("General", "Reload Speed", false, "Adjust magazine reload speed.");
-            ReloadLoadTime = config.Bind(
-                "General",
-                "Reload Load Time",
-                0.85f,
-                new ConfigDescription("Magazine load time (lower = faster, default 0.85).", new AcceptableValueRange<float>(0.01f, 2f))
-            );
-            ReloadUnloadTime = config.Bind(
-                "General",
-                "Reload Unload Time",
-                0.3f,
-                new ConfigDescription("Magazine unload time (lower = faster, default 0.3).", new AcceptableValueRange<float>(0.01f, 2f))
-            );
-            FlyModeEnabled = config.Bind("General", "Fly Mode", false, "Noclip flight mode — move freely through walls and terrain.");
-            FlySpeed = config.Bind(
-                "General",
-                "Fly Speed",
-                10f,
-                new ConfigDescription("Flight speed in fly mode.", new AcceptableValueRange<float>(1f, 50f))
-            );
+            // --- 01. Damage ---
+            GodModeEnabled = config.Bind(Sections.Damage, "GodMode", false, "Player takes no damage.");
             DamageReductionPercent = config.Bind(
-                "General",
+                Sections.Damage,
                 "Damage Reduction %",
                 100,
                 new ConfigDescription(
@@ -197,20 +185,20 @@ namespace MasterTool.Config
                 )
             );
             Keep1HealthEnabled = config.Bind(
-                "General",
+                Sections.Damage,
                 "Keep 1 Health",
                 false,
                 "Prevent body parts from being destroyed by clamping HP above 3."
             );
             Keep1HealthSelection = config.Bind(
-                "General",
+                Sections.Damage,
                 "Keep 1 Health Selection",
                 "All",
                 new ConfigDescription("Which body parts to protect.", new AcceptableValueList<string>("All", "Head And Thorax"))
             );
-            IgnoreHeadshots = config.Bind("General", "Ignore Headshots", false, "Completely ignore headshot damage.");
+            IgnoreHeadshots = config.Bind(Sections.Damage, "Ignore Headshots", false, "Completely ignore headshot damage.");
             HeadDamagePercent = config.Bind(
-                "General",
+                Sections.Damage,
                 "Head Damage %",
                 100,
                 new ConfigDescription(
@@ -219,7 +207,7 @@ namespace MasterTool.Config
                 )
             );
             EnemyDamageMultiplier = config.Bind(
-                "General",
+                Sections.Damage,
                 "Enemy Damage Multiplier",
                 1f,
                 new ConfigDescription(
@@ -227,8 +215,12 @@ namespace MasterTool.Config
                     new AcceptableValueRange<float>(1f, 20f)
                 )
             );
+
+            // --- 02. Survival ---
+            InfiniteStaminaEnabled = config.Bind(Sections.Survival, "Infinite Stamina", false, "Unlimited stamina and breath.");
+            NoWeightEnabled = config.Bind(Sections.Survival, "No Weight", false, "Removes weight penalties.");
             WeightPercent = config.Bind(
-                "General",
+                Sections.Survival,
                 "Weight Percent",
                 0,
                 new ConfigDescription(
@@ -236,102 +228,147 @@ namespace MasterTool.Config
                     new AcceptableValueRange<int>(0, 100)
                 )
             );
-            StatusWindowEnabled = config.Bind("General", "Status Window", true, "Show the mini status window.");
+            InfiniteEnergyEnabled = config.Bind(Sections.Survival, "Infinite Energy", false, "Energy never drains.");
+            InfiniteHydrationEnabled = config.Bind(Sections.Survival, "Infinite Hydration", false, "Hydration never drains.");
+            NoFallDamageEnabled = config.Bind(Sections.Survival, "No Fall Damage", false, "Eliminates fall damage.");
 
-            ShowWeaponInfo = config.Bind("General", "Show Weapon Info", true, "Show current weapon and ammo in status window.");
-            ToggleWeaponInfoHotkey = config.Bind(
-                "Hotkeys",
-                "12. Toggle Weapon Info",
-                new KeyboardShortcut(KeyCode.L),
-                "Hotkey to toggle weapon info display."
+            // --- 03. Healing ---
+            CodModeEnabled = config.Bind(Sections.Healing, "COD Mode", false, "Auto-heal after not taking damage.");
+            CodModeHealRate = config.Bind(
+                Sections.Healing,
+                "COD Mode Heal Rate",
+                10f,
+                new ConfigDescription("HP healed per cycle (every 60 frames).", new AcceptableValueRange<float>(1f, 100f))
+            );
+            CodModeHealDelay = config.Bind(
+                Sections.Healing,
+                "COD Mode Heal Delay",
+                10f,
+                new ConfigDescription("Seconds after last damage before healing starts.", new AcceptableValueRange<float>(0f, 600f))
+            );
+            CodModeRemoveEffects = config.Bind(
+                Sections.Healing,
+                "COD Mode Remove Effects",
+                false,
+                "Auto-remove bleeds and fractures during heal (experimental)."
             );
 
-            // Hotkeys
-            ToggleUiHotkey = config.Bind("Hotkeys", "01. Toggle UI", new KeyboardShortcut(KeyCode.Insert), hotkeyDesc);
-            ToggleStatusHotkey = config.Bind("Hotkeys", "02. Toggle Status Window", new KeyboardShortcut(KeyCode.Keypad0), hotkeyDesc);
-            ToggleGodModeHotkey = config.Bind("Hotkeys", "03. Toggle GodMode", new KeyboardShortcut(KeyCode.Keypad1), hotkeyDesc);
-            ToggleStaminaHotkey = config.Bind("Hotkeys", "04. Toggle Stamina", new KeyboardShortcut(KeyCode.Keypad2), hotkeyDesc);
-            ToggleWeightHotkey = config.Bind("Hotkeys", "06. Toggle Weight", new KeyboardShortcut(KeyCode.Keypad4), hotkeyDesc);
-            ToggleEspHotkey = config.Bind("Hotkeys", "07. Toggle Player ESP", new KeyboardShortcut(KeyCode.Keypad5), hotkeyDesc);
-            ToggleItemEspHotkey = config.Bind("Hotkeys", "08. Toggle Item ESP", new KeyboardShortcut(KeyCode.Keypad6), hotkeyDesc);
-            ToggleContainerEspHotkey = config.Bind(
-                "Hotkeys",
-                "09. Toggle Container ESP",
-                new KeyboardShortcut(KeyCode.Keypad7),
-                hotkeyDesc
+            // --- 04. Weapons ---
+            ReloadSpeedEnabled = config.Bind(Sections.Weapons, "Reload Speed", false, "Adjust magazine reload speed.");
+            ReloadLoadTime = config.Bind(
+                Sections.Weapons,
+                "Reload Load Time",
+                0.85f,
+                new ConfigDescription("Magazine load time (lower = faster, default 0.85).", new AcceptableValueRange<float>(0.01f, 2f))
             );
-            ToggleCullingHotkey = config.Bind("Hotkeys", "10. Toggle Culling", new KeyboardShortcut(KeyCode.Keypad8), hotkeyDesc);
-            ToggleUnlockDoorsHotkey = config.Bind("Hotkeys", "11. Unlock All Doors", new KeyboardShortcut(KeyCode.Keypad9), hotkeyDesc);
-            ToggleQuestEspHotkey = config.Bind("Hotkeys", "14. Toggle Quest ESP", new KeyboardShortcut(KeyCode.Keypad3), hotkeyDesc);
-            ToggleEnergyHotkey = config.Bind("Hotkeys", "15. Toggle Energy", new KeyboardShortcut(KeyCode.None), hotkeyDesc);
-            ToggleHydrationHotkey = config.Bind("Hotkeys", "16. Toggle Hydration", new KeyboardShortcut(KeyCode.None), hotkeyDesc);
-            ToggleFallDamageHotkey = config.Bind("Hotkeys", "17. Toggle Fall Damage", new KeyboardShortcut(KeyCode.None), hotkeyDesc);
-            ToggleCodModeHotkey = config.Bind("Hotkeys", "18. Toggle COD Mode", new KeyboardShortcut(KeyCode.None), hotkeyDesc);
-            ToggleReloadSpeedHotkey = config.Bind("Hotkeys", "19. Toggle Reload Speed", new KeyboardShortcut(KeyCode.None), hotkeyDesc);
-            ToggleFlyModeHotkey = config.Bind("Hotkeys", "20. Toggle Fly Mode", new KeyboardShortcut(KeyCode.None), hotkeyDesc);
-            SavePositionHotkey = config.Bind("Hotkeys", "21. Save Position", new KeyboardShortcut(KeyCode.None), hotkeyDesc);
-            LoadPositionHotkey = config.Bind("Hotkeys", "22. Load Position", new KeyboardShortcut(KeyCode.None), hotkeyDesc);
-            SurfaceTeleportHotkey = config.Bind("Hotkeys", "23. Teleport to Surface", new KeyboardShortcut(KeyCode.None), hotkeyDesc);
+            ReloadUnloadTime = config.Bind(
+                Sections.Weapons,
+                "Reload Unload Time",
+                0.3f,
+                new ConfigDescription("Magazine unload time (lower = faster, default 0.3).", new AcceptableValueRange<float>(0.01f, 2f))
+            );
 
-            // Movement
-            SpeedhackEnabled = config.Bind("Movement", "Speedhack", false, "Move faster.");
-            SpeedMultiplier = config.Bind("Movement", "Speed Multiplier", 2f, "Speed multiplier.");
+            // --- 05. Movement ---
+            SpeedhackEnabled = config.Bind(Sections.Movement, "Speedhack", false, "Move faster.");
+            SpeedMultiplier = config.Bind(Sections.Movement, "Speed Multiplier", 2f, "Speed multiplier.");
+            FlyModeEnabled = config.Bind(
+                Sections.Movement,
+                "Fly Mode",
+                false,
+                "Noclip flight mode — move freely through walls and terrain."
+            );
+            FlySpeed = config.Bind(
+                Sections.Movement,
+                "Fly Speed",
+                10f,
+                new ConfigDescription("Flight speed in fly mode.", new AcceptableValueRange<float>(1f, 50f))
+            );
 
-            // Visuals
-            ThermalVisionEnabled = config.Bind("Visuals", "Thermal Vision", false, "Thermal vision.");
-            NightVisionEnabled = config.Bind("Visuals", "Night Vision", false, "Toggle Night Vision.");
-            BigHeadModeEnabled = config.Bind("Visuals", "Big Head Mode", false, "Enlarge enemy heads.");
-            HeadSizeMultiplier = config.Bind("Visuals", "Head Size", 3f, "How big the heads should be.");
+            // --- 06. FOV ---
+            WeaponFovEnabled = config.Bind(Sections.Fov, "Enable Weapon FOV", false, "Automatically adjust FOV based on weapon type.");
+            FovDefault = config.Bind(
+                Sections.Fov,
+                "Default FOV",
+                75f,
+                new ConfigDescription("FOV when no weapon equipped.", new AcceptableValueRange<float>(50f, 120f))
+            );
+            FovPistol = config.Bind(
+                Sections.Fov,
+                "Pistol FOV",
+                65f,
+                new ConfigDescription("FOV for pistols.", new AcceptableValueRange<float>(50f, 120f))
+            );
+            FovSMG = config.Bind(
+                Sections.Fov,
+                "SMG FOV",
+                70f,
+                new ConfigDescription("FOV for SMGs.", new AcceptableValueRange<float>(50f, 120f))
+            );
+            FovAssaultRifle = config.Bind(
+                Sections.Fov,
+                "Assault Rifle FOV",
+                75f,
+                new ConfigDescription("FOV for assault rifles.", new AcceptableValueRange<float>(50f, 120f))
+            );
+            FovShotgun = config.Bind(
+                Sections.Fov,
+                "Shotgun FOV",
+                70f,
+                new ConfigDescription("FOV for shotguns.", new AcceptableValueRange<float>(50f, 120f))
+            );
+            FovSniper = config.Bind(
+                Sections.Fov,
+                "Sniper FOV",
+                80f,
+                new ConfigDescription("FOV for sniper/marksman rifles.", new AcceptableValueRange<float>(50f, 120f))
+            );
+            FovMelee = config.Bind(
+                Sections.Fov,
+                "Melee FOV",
+                60f,
+                new ConfigDescription("FOV for melee weapons.", new AcceptableValueRange<float>(50f, 120f))
+            );
+            FovOverrideAds = config.Bind(
+                Sections.Fov,
+                "Override FOV During ADS",
+                false,
+                "Keep custom FOV even when aiming down sights. When OFF, ADS uses the game's native zoom."
+            );
 
-            // Player ESP
-            EspEnabled = config.Bind("ESP Players", "Enabled", false, "Show players/bots.");
-            EspTextAlpha = config.Bind("ESP Players", "Text Alpha", 1.0f, "Text Alpha.");
-            EspFontSize = config.Bind("ESP Players", "Font Size", 12, "Text Size.");
-            EspUpdateInterval = config.Bind("ESP Players", "Update Interval", 0.05f, "Update rate for player ESP.");
-            EspMaxDistance = config.Bind("ESP Players", "Max Distance", 400f, "Max distance for players.");
+            // --- 07. ESP Players ---
+            EspEnabled = config.Bind(Sections.EspPlayers, "Enabled", false, "Show players/bots.");
+            EspTextAlpha = config.Bind(Sections.EspPlayers, "Text Alpha", 1.0f, "Text Alpha.");
+            EspFontSize = config.Bind(Sections.EspPlayers, "Font Size", 12, "Text Size.");
+            EspUpdateInterval = config.Bind(Sections.EspPlayers, "Update Interval", 0.05f, "Update rate for player ESP.");
+            EspMaxDistance = config.Bind(Sections.EspPlayers, "Max Distance", 400f, "Max distance for players.");
             EspLineOfSightOnly = config.Bind(
-                "ESP Players",
+                Sections.EspPlayers,
                 "Line of Sight Only",
                 false,
                 "Only show ESP labels for players you have direct line of sight to."
             );
-            ColorBear = config.Bind("ESP Players", "Color BEAR", Color.red, "Color for BEAR faction.");
-            ColorUsec = config.Bind("ESP Players", "Color USEC", Color.blue, "Color for USEC faction.");
-            ColorSavage = config.Bind("ESP Players", "Color Savage", Color.yellow, "Color for Scavs/Bots.");
-            ColorBoss = config.Bind("ESP Players", "Color Boss", new Color(0.5f, 0f, 0.5f), "Color for Bosses.");
+            ColorBear = config.Bind(Sections.EspPlayers, "Color BEAR", Color.red, "Color for BEAR faction.");
+            ColorUsec = config.Bind(Sections.EspPlayers, "Color USEC", Color.blue, "Color for USEC faction.");
+            ColorSavage = config.Bind(Sections.EspPlayers, "Color Savage", Color.yellow, "Color for Scavs/Bots.");
+            ColorBoss = config.Bind(Sections.EspPlayers, "Color Boss", new Color(0.5f, 0f, 0.5f), "Color for Bosses.");
 
-            ChamsEnabled = config.Bind("ESP Players", "Chams Enabled", false, "Enable colored models.");
-            ChamsIntensity = config.Bind("ESP Players", "Chams Intensity", 0.5f, "Brightness of Chams colors (0.1 to 1.0).");
+            // --- 08. Chams ---
+            ChamsEnabled = config.Bind(Sections.Chams, "Player Chams Enabled", false, "Enable colored models on players/bots.");
+            ChamsRenderMode = config.Bind(
+                Sections.Chams,
+                "Player Chams Mode",
+                ChamsMode.Solid,
+                "Rendering mode: Solid (flat color), CullFront (hollow silhouette), Outline (normal model + colored edge)."
+            );
+            ChamsIntensity = config.Bind(Sections.Chams, "Intensity", 0.5f, "Brightness of Chams colors (0.1 to 1.0).");
             ChamsOpacity = config.Bind(
-                "ESP Players",
-                "Chams Opacity",
+                Sections.Chams,
+                "Opacity",
                 1f,
                 "Opacity/transparency of Chams (0.1 = nearly invisible, 1.0 = fully opaque)."
             );
-            ToggleChamsHotkey = config.Bind("Hotkeys", "13. Toggle Chams", new KeyboardShortcut(KeyCode.K), "Hotkey to toggle Chams.");
-
-            LootChamsEnabled = config.Bind(
-                "ESP Items",
-                "Loot Chams Enabled",
-                false,
-                "Enable colored overlays on loot items for through-wall visibility."
-            );
-            LootChamsColor = config.Bind("ESP Items", "Loot Chams Color", Color.green, "Color for loot item chams.");
-
-            ChamsRenderMode = config.Bind(
-                "ESP Players",
-                "Chams Render Mode",
-                ChamsMode.Solid,
-                "Rendering mode for player chams: Solid (flat color), CullFront (hollow silhouette), Outline (normal model + colored edge)."
-            );
-            LootChamsRenderMode = config.Bind(
-                "ESP Items",
-                "Loot Chams Render Mode",
-                ChamsMode.Solid,
-                "Rendering mode for loot chams: Solid (flat color), CullFront (hollow silhouette), Outline (normal model + colored edge)."
-            );
             OutlineScale = config.Bind(
-                "ESP Players",
+                Sections.Chams,
                 "Outline Scale",
                 1.04f,
                 new ConfigDescription(
@@ -339,24 +376,37 @@ namespace MasterTool.Config
                     new AcceptableValueRange<float>(1.01f, 1.15f)
                 )
             );
+            LootChamsEnabled = config.Bind(
+                Sections.Chams,
+                "Loot Chams Enabled",
+                false,
+                "Enable colored overlays on loot items for through-wall visibility."
+            );
+            LootChamsRenderMode = config.Bind(
+                Sections.Chams,
+                "Loot Chams Mode",
+                ChamsMode.Solid,
+                "Rendering mode for loot chams: Solid (flat color), CullFront (hollow silhouette), Outline (normal model + colored edge)."
+            );
+            LootChamsColor = config.Bind(Sections.Chams, "Loot Chams Color", Color.green, "Color for loot item chams.");
 
-            // Item & Container ESP
-            ItemEspEnabled = config.Bind("ESP Items", "Enabled", false, "Show loose loot.");
-            ContainerEspEnabled = config.Bind("ESP Containers", "Enabled", false, "Show items inside containers.");
-            ItemEspFilter = config.Bind("ESP Items", "Filter", "", "Filter by name or ID (comma separated).");
-            ItemEspMaxDistance = config.Bind("ESP Items", "Max Distance", 100f, "Max distance for items.");
-            ItemEspUpdateInterval = config.Bind("ESP Items", "Update Interval", 0.5f, "Update rate for item ESP.");
-            ColorItem = config.Bind("ESP Items", "Color", Color.green, "Color for loose items.");
-            ColorContainer = config.Bind("ESP Containers", "Color", new Color(1f, 0.5f, 0f), "Color for container items.");
-            ItemEspFontSize = config.Bind("ESP Items", "Font Size", 10, "Itens Text Size.");
+            // --- 09. ESP Items ---
+            ItemEspEnabled = config.Bind(Sections.EspItems, "Enabled", false, "Show loose loot.");
+            ContainerEspEnabled = config.Bind(Sections.EspItems, "Container ESP Enabled", false, "Show items inside containers.");
+            ItemEspFilter = config.Bind(Sections.EspItems, "Filter", "", "Filter by name or ID (comma separated).");
+            ItemEspMaxDistance = config.Bind(Sections.EspItems, "Max Distance", 100f, "Max distance for items.");
+            ItemEspUpdateInterval = config.Bind(Sections.EspItems, "Update Interval", 0.5f, "Update rate for item ESP.");
+            ColorItem = config.Bind(Sections.EspItems, "Item Color", Color.green, "Color for loose items.");
+            ColorContainer = config.Bind(Sections.EspItems, "Container Color", new Color(1f, 0.5f, 0f), "Color for container items.");
+            ItemEspFontSize = config.Bind(Sections.EspItems, "Font Size", 10, "Item text size.");
 
-            // Quest ESP
-            QuestEspEnabled = config.Bind("ESP Quests", "Enabled", false, "Show quest items and objectives.");
-            QuestEspMaxDistance = config.Bind("ESP Quests", "Max Distance", 200f, "Max distance for quest ESP.");
-            ColorQuestItem = config.Bind("ESP Quests", "Quest Item Color", new Color(1f, 0.84f, 0f), "Color for quest items (gold).");
-            ColorQuestZone = config.Bind("ESP Quests", "Quest Zone Color", new Color(0f, 1f, 0.5f), "Color for quest zones (green).");
+            // --- 10. ESP Quests ---
+            QuestEspEnabled = config.Bind(Sections.EspQuests, "Enabled", false, "Show quest items and objectives.");
+            QuestEspMaxDistance = config.Bind(Sections.EspQuests, "Max Distance", 200f, "Max distance for quest ESP.");
+            ColorQuestItem = config.Bind(Sections.EspQuests, "Quest Item Color", new Color(1f, 0.84f, 0f), "Color for quest items (gold).");
+            ColorQuestZone = config.Bind(Sections.EspQuests, "Quest Zone Color", new Color(0f, 1f, 0.5f), "Color for quest zones (green).");
             QuestEspFps = config.Bind(
-                "ESP Quests",
+                Sections.EspQuests,
                 "Update FPS",
                 15,
                 new ConfigDescription(
@@ -365,60 +415,83 @@ namespace MasterTool.Config
                 )
             );
 
-            // FOV by Weapon Category
-            WeaponFovEnabled = config.Bind("FOV Settings", "Enable Weapon FOV", false, "Automatically adjust FOV based on weapon type.");
-            FovDefault = config.Bind(
-                "FOV Settings",
-                "Default FOV",
-                75f,
-                new ConfigDescription("FOV when no weapon equipped.", new AcceptableValueRange<float>(50f, 120f))
-            );
-            FovPistol = config.Bind(
-                "FOV Settings",
-                "Pistol FOV",
-                65f,
-                new ConfigDescription("FOV for pistols.", new AcceptableValueRange<float>(50f, 120f))
-            );
-            FovSMG = config.Bind(
-                "FOV Settings",
-                "SMG FOV",
-                70f,
-                new ConfigDescription("FOV for SMGs.", new AcceptableValueRange<float>(50f, 120f))
-            );
-            FovAssaultRifle = config.Bind(
-                "FOV Settings",
-                "Assault Rifle FOV",
-                75f,
-                new ConfigDescription("FOV for assault rifles.", new AcceptableValueRange<float>(50f, 120f))
-            );
-            FovShotgun = config.Bind(
-                "FOV Settings",
-                "Shotgun FOV",
-                70f,
-                new ConfigDescription("FOV for shotguns.", new AcceptableValueRange<float>(50f, 120f))
-            );
-            FovSniper = config.Bind(
-                "FOV Settings",
-                "Sniper FOV",
-                80f,
-                new ConfigDescription("FOV for sniper/marksman rifles.", new AcceptableValueRange<float>(50f, 120f))
-            );
-            FovMelee = config.Bind(
-                "FOV Settings",
-                "Melee FOV",
-                60f,
-                new ConfigDescription("FOV for melee weapons.", new AcceptableValueRange<float>(50f, 120f))
-            );
-            FovOverrideAds = config.Bind(
-                "FOV Settings",
-                "Override FOV During ADS",
-                false,
-                "Keep custom FOV even when aiming down sights. When OFF, ADS uses the game's native zoom."
-            );
+            // --- 11. Visual ---
+            ThermalVisionEnabled = config.Bind(Sections.Visual, "Thermal Vision", false, "Thermal vision.");
+            NightVisionEnabled = config.Bind(Sections.Visual, "Night Vision", false, "Toggle Night Vision.");
+            BigHeadModeEnabled = config.Bind(Sections.Visual, "Big Head Mode", false, "Enlarge enemy heads.");
+            HeadSizeMultiplier = config.Bind(Sections.Visual, "Head Size", 3f, "How big the heads should be.");
 
-            // Performance
-            PerformanceMode = config.Bind("Performance", "Enable Distance Culling", true, "Only render bots within distance.");
-            BotRenderDistance = config.Bind("Performance", "Bot Render Distance", 500f, "Distance to stop rendering bots.");
+            // --- 12. Performance ---
+            PerformanceMode = config.Bind(Sections.Performance, "Enable Distance Culling", true, "Only render bots within distance.");
+            BotRenderDistance = config.Bind(Sections.Performance, "Bot Render Distance", 500f, "Distance to stop rendering bots.");
+
+            // --- 13. UI ---
+            StatusWindowEnabled = config.Bind(Sections.Ui, "Status Window", true, "Show the mini status window.");
+            ShowWeaponInfo = config.Bind(Sections.Ui, "Show Weapon Info", true, "Show current weapon and ammo in status window.");
+
+            // --- 14. Hotkeys ---
+            ToggleUiHotkey = config.Bind(Sections.Hotkeys, "01. Toggle UI", new KeyboardShortcut(KeyCode.Insert), hotkeyDesc);
+            ToggleStatusHotkey = config.Bind(
+                Sections.Hotkeys,
+                "02. Toggle Status Window",
+                new KeyboardShortcut(KeyCode.Keypad0),
+                hotkeyDesc
+            );
+            ToggleGodModeHotkey = config.Bind(Sections.Hotkeys, "03. Toggle GodMode", new KeyboardShortcut(KeyCode.Keypad1), hotkeyDesc);
+            ToggleStaminaHotkey = config.Bind(Sections.Hotkeys, "04. Toggle Stamina", new KeyboardShortcut(KeyCode.Keypad2), hotkeyDesc);
+            ToggleWeightHotkey = config.Bind(Sections.Hotkeys, "06. Toggle Weight", new KeyboardShortcut(KeyCode.Keypad4), hotkeyDesc);
+            ToggleEspHotkey = config.Bind(Sections.Hotkeys, "07. Toggle Player ESP", new KeyboardShortcut(KeyCode.Keypad5), hotkeyDesc);
+            ToggleItemEspHotkey = config.Bind(Sections.Hotkeys, "08. Toggle Item ESP", new KeyboardShortcut(KeyCode.Keypad6), hotkeyDesc);
+            ToggleContainerEspHotkey = config.Bind(
+                Sections.Hotkeys,
+                "09. Toggle Container ESP",
+                new KeyboardShortcut(KeyCode.Keypad7),
+                hotkeyDesc
+            );
+            ToggleCullingHotkey = config.Bind(Sections.Hotkeys, "10. Toggle Culling", new KeyboardShortcut(KeyCode.Keypad8), hotkeyDesc);
+            ToggleUnlockDoorsHotkey = config.Bind(
+                Sections.Hotkeys,
+                "11. Unlock All Doors",
+                new KeyboardShortcut(KeyCode.Keypad9),
+                hotkeyDesc
+            );
+            ToggleWeaponInfoHotkey = config.Bind(
+                Sections.Hotkeys,
+                "12. Toggle Weapon Info",
+                new KeyboardShortcut(KeyCode.L),
+                "Hotkey to toggle weapon info display."
+            );
+            ToggleChamsHotkey = config.Bind(
+                Sections.Hotkeys,
+                "13. Toggle Chams",
+                new KeyboardShortcut(KeyCode.K),
+                "Hotkey to toggle Chams."
+            );
+            ToggleQuestEspHotkey = config.Bind(Sections.Hotkeys, "14. Toggle Quest ESP", new KeyboardShortcut(KeyCode.Keypad3), hotkeyDesc);
+            ToggleEnergyHotkey = config.Bind(Sections.Hotkeys, "15. Toggle Energy", new KeyboardShortcut(KeyCode.None), hotkeyDesc);
+            ToggleHydrationHotkey = config.Bind(Sections.Hotkeys, "16. Toggle Hydration", new KeyboardShortcut(KeyCode.None), hotkeyDesc);
+            ToggleFallDamageHotkey = config.Bind(
+                Sections.Hotkeys,
+                "17. Toggle Fall Damage",
+                new KeyboardShortcut(KeyCode.None),
+                hotkeyDesc
+            );
+            ToggleCodModeHotkey = config.Bind(Sections.Hotkeys, "18. Toggle COD Mode", new KeyboardShortcut(KeyCode.None), hotkeyDesc);
+            ToggleReloadSpeedHotkey = config.Bind(
+                Sections.Hotkeys,
+                "19. Toggle Reload Speed",
+                new KeyboardShortcut(KeyCode.None),
+                hotkeyDesc
+            );
+            ToggleFlyModeHotkey = config.Bind(Sections.Hotkeys, "20. Toggle Fly Mode", new KeyboardShortcut(KeyCode.None), hotkeyDesc);
+            SavePositionHotkey = config.Bind(Sections.Hotkeys, "21. Save Position", new KeyboardShortcut(KeyCode.None), hotkeyDesc);
+            LoadPositionHotkey = config.Bind(Sections.Hotkeys, "22. Load Position", new KeyboardShortcut(KeyCode.None), hotkeyDesc);
+            SurfaceTeleportHotkey = config.Bind(
+                Sections.Hotkeys,
+                "23. Teleport to Surface",
+                new KeyboardShortcut(KeyCode.None),
+                hotkeyDesc
+            );
         }
     }
 }

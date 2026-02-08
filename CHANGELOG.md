@@ -6,6 +6,30 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [2.15.0] - 2026-02-08
+
+### Changed
+
+- Reorganized BepInEx config sections from 6 crowded sections into 14 focused sections with numbered prefixes for correct F12 menu ordering:
+  - "General" (20+ entries) split into "01. Damage", "02. Survival", "03. Healing", "04. Weapons", "05. Movement"
+  - "FOV Settings" renamed to "06. FOV"
+  - "ESP Players" split into "07. ESP Players" (text ESP only) and "08. Chams" (all chams settings unified)
+  - "ESP Items" and "ESP Containers" merged into "09. ESP Items"
+  - "ESP Quests" renamed to "10. ESP Quests"
+  - "Visuals" renamed to "11. Visual"
+  - "Performance" renamed to "12. Performance"
+  - New "13. UI" section for StatusWindow and WeaponInfo toggles
+  - "Hotkeys" renamed to "14. Hotkeys"
+- Section names centralized in `PluginConfig.Sections` static class with `const string` fields
+
+### Added
+
+- Unit tests for config section organization: naming conventions, sequential numbering, alphabetical sorting, entry counts, invalid character validation, and logical grouping (28 tests)
+
+### Note
+
+- Users upgrading from previous versions should delete their old config file (`com.master.tools.cfg`) — section renames orphan old values and BepInEx will regenerate defaults on next launch
+
 ## [2.14.0] - 2026-02-08
 
 ### Added
