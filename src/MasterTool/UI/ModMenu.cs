@@ -81,6 +81,31 @@ namespace MasterTool.UI
                 PluginConfig.GodModeEnabled.Value,
                 $" GodMode [{PluginConfig.ToggleGodModeHotkey.Value}]"
             );
+            if (!PluginConfig.GodModeEnabled.Value)
+            {
+                GUILayout.Label($"Damage Received: {PluginConfig.DamageReductionPercent.Value}%");
+                PluginConfig.DamageReductionPercent.Value = (int)
+                    GUILayout.HorizontalSlider(PluginConfig.DamageReductionPercent.Value, 0f, 100f);
+            }
+            PluginConfig.Keep1HealthEnabled.Value = GUILayout.Toggle(PluginConfig.Keep1HealthEnabled.Value, " Keep 1 Health (Anti-Lethal)");
+            if (PluginConfig.Keep1HealthEnabled.Value)
+            {
+                GUILayout.BeginHorizontal();
+                GUILayout.Label("Protect: ", GUILayout.Width(60));
+                if (GUILayout.Button(PluginConfig.Keep1HealthSelection.Value))
+                {
+                    PluginConfig.Keep1HealthSelection.Value = PluginConfig.Keep1HealthSelection.Value == "All" ? "Head And Thorax" : "All";
+                }
+                GUILayout.EndHorizontal();
+            }
+            PluginConfig.IgnoreHeadshots.Value = GUILayout.Toggle(PluginConfig.IgnoreHeadshots.Value, " Ignore Headshot Damage");
+            if (!PluginConfig.IgnoreHeadshots.Value)
+            {
+                GUILayout.Label($"Head Damage: {PluginConfig.HeadDamagePercent.Value}%");
+                PluginConfig.HeadDamagePercent.Value = (int)GUILayout.HorizontalSlider(PluginConfig.HeadDamagePercent.Value, 0f, 100f);
+            }
+            GUILayout.Label($"Enemy Damage: {PluginConfig.EnemyDamageMultiplier.Value:F1}x");
+            PluginConfig.EnemyDamageMultiplier.Value = GUILayout.HorizontalSlider(PluginConfig.EnemyDamageMultiplier.Value, 1f, 20f);
             PluginConfig.InfiniteStaminaEnabled.Value = GUILayout.Toggle(
                 PluginConfig.InfiniteStaminaEnabled.Value,
                 $" Infinite Stamina [{PluginConfig.ToggleStaminaHotkey.Value}]"
@@ -89,6 +114,11 @@ namespace MasterTool.UI
                 PluginConfig.NoWeightEnabled.Value,
                 $" No Weight Penalties [{PluginConfig.ToggleWeightHotkey.Value}]"
             );
+            if (PluginConfig.NoWeightEnabled.Value)
+            {
+                GUILayout.Label($"Weight: {PluginConfig.WeightPercent.Value}%");
+                PluginConfig.WeightPercent.Value = (int)GUILayout.HorizontalSlider(PluginConfig.WeightPercent.Value, 0f, 100f);
+            }
             PluginConfig.InfiniteEnergyEnabled.Value = GUILayout.Toggle(
                 PluginConfig.InfiniteEnergyEnabled.Value,
                 $" Infinite Energy [{PluginConfig.ToggleEnergyHotkey.Value}]"

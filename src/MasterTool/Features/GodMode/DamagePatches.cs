@@ -89,16 +89,69 @@ namespace MasterTool.Features.GodMode
             return !PluginConfig.GodModeEnabled.Value || !__instance.IsYourPlayer;
         }
 
-        private static bool BlockDamagePrefix_ActiveHealthController(Player ___Player, ref float damage)
+        private static bool BlockDamagePrefix_ActiveHealthController(
+            ActiveHealthController __instance,
+            Player ___Player,
+            ref float damage,
+            EBodyPart bodyPart
+        )
         {
-            if (___Player == null || !___Player.IsYourPlayer)
+            // --- LOCAL PLAYER ---
+            if (___Player != null && ___Player.IsYourPlayer)
             {
+                // 1. GodMode: zero all damage
+                if (PluginConfig.GodModeEnabled.Value)
+                {
+                    damage = 0f;
+                    return true;
+                }
+
+                // 2. Headshot ignore: zero head damage entirely
+                if (bodyPart == EBodyPart.Head && PluginConfig.IgnoreHeadshots.Value)
+                {
+                    damage = 0f;
+                    return true;
+                }
+
+                // 3. Head-specific damage percentage
+                if (bodyPart == EBodyPart.Head && PluginConfig.HeadDamagePercent.Value < 100)
+                {
+                    damage *= PluginConfig.HeadDamagePercent.Value / 100f;
+                }
+
+                // 4. Global damage reduction percentage
+                if (PluginConfig.DamageReductionPercent.Value < 100)
+                {
+                    damage *= PluginConfig.DamageReductionPercent.Value / 100f;
+                }
+
+                // 5. Keep 1 Health: prevent lethal damage
+                if (PluginConfig.Keep1HealthEnabled.Value)
+                {
+                    var currentHealth = __instance.GetBodyPartHealth(bodyPart, false);
+                    bool shouldProtect =
+                        PluginConfig.Keep1HealthSelection.Value == "All"
+                        || (
+                            PluginConfig.Keep1HealthSelection.Value == "Head And Thorax"
+                            && (bodyPart == EBodyPart.Head || bodyPart == EBodyPart.Chest)
+                        );
+
+                    if (shouldProtect && (currentHealth.Current - damage) < 3f)
+                    {
+                        damage = Math.Max(0f, currentHealth.Current - 3f);
+                    }
+                }
+
                 return true;
             }
 
-            if (PluginConfig.GodModeEnabled.Value)
+            // --- ENEMY PLAYER ---
+            if (___Player != null && !___Player.IsYourPlayer)
             {
-                damage = 0f;
+                if (PluginConfig.EnemyDamageMultiplier.Value > 1f)
+                {
+                    damage *= PluginConfig.EnemyDamageMultiplier.Value;
+                }
             }
 
             return true;

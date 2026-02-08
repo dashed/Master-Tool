@@ -6,6 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [2.6.0] - 2026-02-07
+
+### Added
+
+- Percentage Damage Reduction: configurable slider (0–100%) that scales all incoming damage to the local player
+- Keep 1 Health: prevents lethal damage by clamping HP to 3 on protected body parts, with selection between "All" and "Head And Thorax"
+- Headshot Ignore: toggle to completely zero head damage
+- Head Damage Percentage: separate slider (0–100%) for fine-grained head damage scaling
+- Enemy Damage Multiplier: configurable multiplier (1–20x) applied to all damage dealt to non-local players
+- Weight Percentage Slider: replaces binary no-weight toggle with configurable weight scale (0–100%), default 0% (weightless)
+- 7 new config entries for all Phase 2 features with BepInEx validation ranges
+- Mod menu controls: sliders, toggles, and dropdown for all new damage/weight features in General tab
+- Status window: conditional damage reduction percentage indicator
+- Unit tests for damage reduction priority chain (22 tests) and weight percentage scaling (7 tests)
+
 ## [2.5.0] - 2026-02-07
 
 ### Added

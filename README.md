@@ -63,6 +63,10 @@ The compiled `MasterTool.dll` will be in `build/`.
 | Feature | Description |
 |---------|-------------|
 | **God Mode** | Comprehensive immunity: blocks damage, instant kills, limb destruction, fractures, and bleeds across 7 Harmony patches on both Player and ActiveHealthController. |
+| **Damage Reduction** | Configurable percentage slider (0–100%) that scales all incoming damage to the local player. |
+| **Keep 1 Health** | Prevents lethal damage by clamping HP to 3 on protected body parts. Selectable protection: "All" body parts or "Head And Thorax" only. |
+| **Headshot Protection** | Toggle to completely ignore head damage, plus a separate head damage percentage slider (0–100%) for fine-grained control. |
+| **Enemy Damage Multiplier** | Configurable multiplier (1–20x) applied to all damage dealt to non-local players (bots/AI). |
 | **Teleport Enemies** | Teleport all enemies to 3 meters in front of you. |
 
 ### Movement
@@ -72,7 +76,7 @@ The compiled `MasterTool.dll` will be in `build/`.
 | **Infinite Stamina** | Keeps leg stamina, arm stamina (aiming), and oxygen at 100% at all times. |
 | **Infinite Energy** | Keeps energy at maximum — no need to eat. Only calls `ChangeEnergy` when below max for zero unnecessary overhead. |
 | **Infinite Hydration** | Keeps hydration at maximum — no need to drink. Same efficiency guard as Energy. |
-| **No Weight Penalties** | Removes movement speed and stamina drain penalties from carrying heavy gear or loot. |
+| **No Weight Penalties** | Configurable weight scale (0–100%) — set to 0% for weightless, or fine-tune to reduce weight penalties without removing them entirely. |
 | **No Fall Damage** | Eliminates fall damage by setting safe fall height to an extreme value. State-tracked: only resets when the mod forced the change, never interferes with game defaults. |
 | **Speedhack** | Adjustable movement speed multiplier. |
 
@@ -259,7 +263,7 @@ make build    # or: dotnet build
 
 ### Running Tests
 
-155 tests cover pure logic: models, utilities, feature state machines, ESP extraction, and config defaults. Game-dependent code requires Unity/EFT assemblies and cannot be unit-tested — tests duplicate the pure logic with fake types.
+183 tests cover pure logic: models, utilities, feature state machines, ESP extraction, and config defaults. Game-dependent code requires Unity/EFT assemblies and cannot be unit-tested — tests duplicate the pure logic with fake types.
 
 ```bash
 make test     # or: dotnet test

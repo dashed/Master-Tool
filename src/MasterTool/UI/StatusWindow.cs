@@ -27,6 +27,10 @@ namespace MasterTool.UI
             string status = "<b>[ MOD STATUS ]</b>\n";
             status +=
                 $"GodMode: <color={(PluginConfig.GodModeEnabled.Value ? "green" : "red")}>{(PluginConfig.GodModeEnabled.Value ? "ON" : "OFF")}</color>\n";
+            if (!PluginConfig.GodModeEnabled.Value && PluginConfig.DamageReductionPercent.Value < 100)
+            {
+                status += $"Damage: <color=yellow>{PluginConfig.DamageReductionPercent.Value}%</color>\n";
+            }
             status +=
                 $"Stamina: <color={(PluginConfig.InfiniteStaminaEnabled.Value ? "green" : "red")}>{(PluginConfig.InfiniteStaminaEnabled.Value ? "ON" : "OFF")}</color>\n";
             status +=

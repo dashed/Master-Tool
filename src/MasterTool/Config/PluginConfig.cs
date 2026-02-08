@@ -23,6 +23,13 @@ namespace MasterTool.Config
         public static ConfigEntry<bool> InfiniteEnergyEnabled;
         public static ConfigEntry<bool> InfiniteHydrationEnabled;
         public static ConfigEntry<bool> NoFallDamageEnabled;
+        public static ConfigEntry<int> DamageReductionPercent;
+        public static ConfigEntry<bool> Keep1HealthEnabled;
+        public static ConfigEntry<string> Keep1HealthSelection;
+        public static ConfigEntry<bool> IgnoreHeadshots;
+        public static ConfigEntry<int> HeadDamagePercent;
+        public static ConfigEntry<float> EnemyDamageMultiplier;
+        public static ConfigEntry<int> WeightPercent;
         public static ConfigEntry<bool> StatusWindowEnabled;
         public static ConfigEntry<bool> ShowWeaponInfo;
         public static ConfigEntry<KeyboardShortcut> ToggleWeaponInfoHotkey;
@@ -115,6 +122,55 @@ namespace MasterTool.Config
             InfiniteEnergyEnabled = config.Bind("General", "Infinite Energy", false, "Energy never drains.");
             InfiniteHydrationEnabled = config.Bind("General", "Infinite Hydration", false, "Hydration never drains.");
             NoFallDamageEnabled = config.Bind("General", "No Fall Damage", false, "Eliminates fall damage.");
+            DamageReductionPercent = config.Bind(
+                "General",
+                "Damage Reduction %",
+                100,
+                new ConfigDescription(
+                    "Percentage of damage received (100 = full, 0 = none). Only applies when GodMode is off.",
+                    new AcceptableValueRange<int>(0, 100)
+                )
+            );
+            Keep1HealthEnabled = config.Bind(
+                "General",
+                "Keep 1 Health",
+                false,
+                "Prevent body parts from being destroyed by clamping HP above 3."
+            );
+            Keep1HealthSelection = config.Bind(
+                "General",
+                "Keep 1 Health Selection",
+                "All",
+                new ConfigDescription("Which body parts to protect.", new AcceptableValueList<string>("All", "Head And Thorax"))
+            );
+            IgnoreHeadshots = config.Bind("General", "Ignore Headshots", false, "Completely ignore headshot damage.");
+            HeadDamagePercent = config.Bind(
+                "General",
+                "Head Damage %",
+                100,
+                new ConfigDescription(
+                    "Percentage of headshot damage received (100 = full, 0 = none).",
+                    new AcceptableValueRange<int>(0, 100)
+                )
+            );
+            EnemyDamageMultiplier = config.Bind(
+                "General",
+                "Enemy Damage Multiplier",
+                1f,
+                new ConfigDescription(
+                    "Multiply damage dealt to enemies (1 = normal, 20 = 20x damage).",
+                    new AcceptableValueRange<float>(1f, 20f)
+                )
+            );
+            WeightPercent = config.Bind(
+                "General",
+                "Weight Percent",
+                0,
+                new ConfigDescription(
+                    "Weight percentage when No Weight is enabled (0 = weightless, 50 = half weight).",
+                    new AcceptableValueRange<int>(0, 100)
+                )
+            );
             StatusWindowEnabled = config.Bind("General", "Status Window", true, "Show the mini status window.");
 
             ShowWeaponInfo = config.Bind("General", "Show Weapon Info", true, "Show current weapon and ammo in status window.");

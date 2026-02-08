@@ -43,7 +43,7 @@ namespace MasterTool.Features.NoWeight
         {
             if (PluginConfig.NoWeightEnabled.Value)
             {
-                __result = 0f;
+                __result *= PluginConfig.WeightPercent.Value / 100f;
                 return false;
             }
 
