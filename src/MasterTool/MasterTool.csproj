@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AssemblyName>MasterTool</AssemblyName>
+    <RootNamespace>MasterTool</RootNamespace>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <!--
+    BepInEx and EFT game assemblies.
+    Copy the required DLLs into the libs/ folder from your SPT installation:
+      - BepInEx/core/BepInEx.dll
+      - EscapeFromTarkov_Data/Managed/Assembly-CSharp.dll
+      - EscapeFromTarkov_Data/Managed/UnityEngine.dll
+      - EscapeFromTarkov_Data/Managed/UnityEngine.CoreModule.dll
+      - EscapeFromTarkov_Data/Managed/UnityEngine.IMGUIModule.dll
+      - EscapeFromTarkov_Data/Managed/UnityEngine.PhysicsModule.dll
+      - EscapeFromTarkov_Data/Managed/Comfort.dll
+      - BepInEx/core/0Harmony.dll
+  -->
+  <ItemGroup>
+    <Reference Include="BepInEx" HintPath="..\..\libs\BepInEx.dll" Private="false" />
+    <Reference Include="0Harmony" HintPath="..\..\libs\0Harmony.dll" Private="false" />
+    <Reference Include="Assembly-CSharp" HintPath="..\..\libs\Assembly-CSharp.dll" Private="false" />
+    <Reference Include="UnityEngine" HintPath="..\..\libs\UnityEngine.dll" Private="false" />
+    <Reference Include="UnityEngine.CoreModule" HintPath="..\..\libs\UnityEngine.CoreModule.dll" Private="false" />
+    <Reference Include="UnityEngine.IMGUIModule" HintPath="..\..\libs\UnityEngine.IMGUIModule.dll" Private="false" />
+    <Reference Include="UnityEngine.PhysicsModule" HintPath="..\..\libs\UnityEngine.PhysicsModule.dll" Private="false" />
+    <Reference Include="Comfort" HintPath="..\..\libs\Comfort.dll" Private="false" />
+  </ItemGroup>
+
+</Project>
