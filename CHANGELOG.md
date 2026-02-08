@@ -1,0 +1,57 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
+
+## [Unreleased]
+
+## [2.1.2] - 2026-02-07
+
+### Added
+
+- Modular project structure with 25 source files replacing monolithic plugin
+- .NET solution with separate plugin and test projects
+- 45 unit tests (NUnit) for models, utils, and feature logic
+- Makefile with build, test, format, and lint targets
+- CSharpier code formatting integration
+- .editorconfig with C# coding conventions
+- CLAUDE.md project instructions
+- Comprehensive README with features, hotkeys, and build instructions
+- UnityEngine.TextRenderingModule assembly reference
+
+### Changed
+
+- Reorganized 1,343-line monolithic plugin into modular architecture:
+  - `Plugin/` — entry point and game state manager
+  - `Config/` — centralized BepInEx configuration bindings
+  - `Models/` — ESP data models
+  - `Utils/` — player and reflection helpers
+  - `Features/` — GodMode, Stamina, Speedhack, Vision, BigHead, DoorUnlock, Culling, Teleport
+  - `ESP/` — PlayerEsp, ItemEsp, QuestEsp, ChamsManager, EspRenderer
+  - `UI/` — ModMenu (7 tabs), StatusWindow, GuiStyles, ColorPicker
+- Build output redirected to repo-root `build/` directory
+
+### Fixed
+
+- Missing UnityEngine.TextRenderingModule reference (FontStyle/TextAnchor types)
+- Unused exception variable compiler warning (CS0168)
+
+## [2.1.1] - 2025
+
+- Added chams (colored material overlays on player models)
+- Added additional features (teleport, big head mode, door unlock, performance culling)
+- Various bug fixes and feature tweaks
+
+## [2.0.0] - 2025
+
+- Initial public release as monolithic BepInEx plugin
+- God Mode, Infinite Stamina, Speedhack
+- Player ESP with faction-based color coding
+- Item and Container ESP with filtering
+- Quest ESP
+- Thermal/Night Vision toggles
+- Weapon FOV adjustment
+- In-game mod menu with IMGUI
+- Status window overlay
+- Full hotkey support (Numpad + Insert)
