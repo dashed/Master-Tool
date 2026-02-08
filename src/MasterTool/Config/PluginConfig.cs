@@ -133,6 +133,9 @@ namespace MasterTool.Config
         public static ConfigEntry<bool> PerformanceMode;
         public static ConfigEntry<float> BotRenderDistance;
 
+        // --- 13. Bot Behavior ---
+        public static ConfigEntry<bool> PeacefulModeEnabled;
+
         // --- 13. UI ---
         public static ConfigEntry<bool> StatusWindowEnabled;
         public static ConfigEntry<bool> ShowWeaponInfo;
@@ -160,6 +163,7 @@ namespace MasterTool.Config
         public static ConfigEntry<KeyboardShortcut> SavePositionHotkey;
         public static ConfigEntry<KeyboardShortcut> LoadPositionHotkey;
         public static ConfigEntry<KeyboardShortcut> SurfaceTeleportHotkey;
+        public static ConfigEntry<KeyboardShortcut> TogglePeacefulModeHotkey;
 
         /// <summary>
         /// Section name constants for BepInEx config organization.
@@ -180,6 +184,7 @@ namespace MasterTool.Config
             public const string EspQuests = ConfigSections.EspQuests;
             public const string Visual = ConfigSections.Visual;
             public const string Performance = ConfigSections.Performance;
+            public const string BotBehavior = ConfigSections.BotBehavior;
             public const string Ui = ConfigSections.Ui;
             public const string Hotkeys = ConfigSections.Hotkeys;
         }
@@ -487,7 +492,10 @@ namespace MasterTool.Config
             PerformanceMode = config.Bind(Sections.Performance, "Enable Distance Culling", true, "Only render bots within distance.");
             BotRenderDistance = config.Bind(Sections.Performance, "Bot Render Distance", 500f, "Distance to stop rendering bots.");
 
-            // --- 13. UI ---
+            // --- 13. Bot Behavior ---
+            PeacefulModeEnabled = config.Bind(Sections.BotBehavior, "Peaceful Mode", false, "Bots ignore the local player entirely.");
+
+            // --- 14. UI ---
             StatusWindowEnabled = config.Bind(Sections.Ui, "Status Window", true, "Show the mini status window.");
             ShowWeaponInfo = config.Bind(Sections.Ui, "Show Weapon Info", true, "Show current weapon and ammo in status window.");
 
@@ -551,6 +559,12 @@ namespace MasterTool.Config
             SurfaceTeleportHotkey = config.Bind(
                 Sections.Hotkeys,
                 "23. Teleport to Surface",
+                new KeyboardShortcut(KeyCode.None),
+                hotkeyDesc
+            );
+            TogglePeacefulModeHotkey = config.Bind(
+                Sections.Hotkeys,
+                "24. Toggle Peaceful Mode",
                 new KeyboardShortcut(KeyCode.None),
                 hotkeyDesc
             );

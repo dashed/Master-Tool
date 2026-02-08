@@ -19,6 +19,7 @@ public static class ConfigSections
     public const string EspQuests = "10. ESP Quests";
     public const string Visual = "11. Visual";
     public const string Performance = "12. Performance";
-    public const string Ui = "13. UI";
-    public const string Hotkeys = "14. Hotkeys";
+    public const string BotBehavior = "13. Bot Behavior";
+    public const string Ui = "14. UI";
+    public const string Hotkeys = "15. Hotkeys";
 }

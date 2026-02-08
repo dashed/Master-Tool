@@ -27,6 +27,7 @@ public class ConfigSectionTests
         ConfigSections.EspQuests,
         ConfigSections.Visual,
         ConfigSections.Performance,
+        ConfigSections.BotBehavior,
         ConfigSections.Ui,
         ConfigSections.Hotkeys,
     };
@@ -49,8 +50,9 @@ public class ConfigSectionTests
         { ConfigSections.EspQuests, 5 },
         { ConfigSections.Visual, 4 },
         { ConfigSections.Performance, 2 },
+        { ConfigSections.BotBehavior, 1 },
         { ConfigSections.Ui, 2 },
-        { ConfigSections.Hotkeys, 22 },
+        { ConfigSections.Hotkeys, 23 },
     };
 
     // --- Section naming convention tests ---
@@ -109,15 +111,15 @@ public class ConfigSectionTests
     // --- Section count tests ---
 
     [Test]
-    public void TotalSectionCount_Is15()
+    public void TotalSectionCount_Is16()
     {
-        Assert.That(AllSections.Length, Is.EqualTo(15));
+        Assert.That(AllSections.Length, Is.EqualTo(16));
     }
 
     [Test]
     public void NoSectionExceedsMaxEntries()
     {
-        const int maxPerSection = 22; // Hotkeys is the largest with 22
+        const int maxPerSection = 23; // Hotkeys is the largest with 23
         foreach (var kv in SectionEntryCounts)
         {
             Assert.That(
@@ -151,8 +153,8 @@ public class ConfigSectionTests
     public void TotalEntryCount()
     {
         int total = SectionEntryCounts.Values.Sum();
-        // 95 total config entries across all sections
-        Assert.That(total, Is.EqualTo(95));
+        // 97 total config entries across all sections
+        Assert.That(total, Is.EqualTo(97));
     }
 
     // --- Section logical grouping tests ---
@@ -170,8 +172,9 @@ public class ConfigSectionTests
     [TestCase("10. ESP Quests", 5)]
     [TestCase("11. Visual", 4)]
     [TestCase("12. Performance", 2)]
-    [TestCase("13. UI", 2)]
-    [TestCase("14. Hotkeys", 22)]
+    [TestCase("13. Bot Behavior", 1)]
+    [TestCase("14. UI", 2)]
+    [TestCase("15. Hotkeys", 23)]
     public void SectionEntryCount_MatchesExpected(string section, int expectedCount)
     {
         Assert.That(SectionEntryCounts[section], Is.EqualTo(expectedCount));

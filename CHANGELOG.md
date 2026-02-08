@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [2.28.0] - 2026-02-08
+
+### Added
+
+- **Peaceful Mode** — bots completely ignore the local player. Four Harmony patches block enemy registration at every level of the bot AI pipeline: group-level (`BotsGroup.AddEnemy`), individual memory (`BotMemoryClass.AddEnemy`), and knowledge checks (`EnemyInfo.ShallKnowEnemy/Late`). Toggling on mid-raid clears existing aggro from all bots via reflection-based cleanup. Bot-vs-bot AI remains unaffected
+- `PeacefulModeEnabled` config entry (default off) in new "13. Bot Behavior" section
+- `TogglePeacefulModeHotkey` (default unbound) in Hotkeys section
+- `PeacefulLogic.ShouldBlockEnemy` pure logic in MasterTool.Core for testable blocking decisions
+- 7 new peaceful mode tests (635 total)
+
 ## [2.27.0] - 2026-02-08
 
 ### Added

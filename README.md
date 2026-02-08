@@ -111,6 +111,7 @@ The compiled `MasterTool.dll` will be in `build/`.
 | Feature | Description |
 |---------|-------------|
 | **Unlock All Doors** | Instantly unlocks every locked door on the map. No keys required. |
+| **Peaceful Mode** | Bots completely ignore the local player. Four Harmony patches block enemy registration at every level of the bot AI pipeline (group, memory, knowledge). Toggling on mid-raid clears existing aggro. Bot-vs-bot AI remains unaffected. |
 | **Performance Culling** | Deactivates distant bots for a performance boost. Only re-enables bots the mod deactivated — does not interfere with the game's native bot sleep system. |
 | **Teleport Items** | Teleports all loose loot matching the item ESP filter to your position. If no filter is set, all loose loot is teleported. |
 | **Player Teleport** | Save/load position system: save your current spot, teleport back anytime. Includes a **Teleport to Surface** rescue button that finds the terrain above you — fixes falling under the map. |
@@ -147,6 +148,7 @@ All hotkeys below are defaults and can be rebound in-game from the **Hotkeys** t
 | *(unbound)* | Toggle Infinite Energy |
 | *(unbound)* | Toggle Infinite Hydration |
 | *(unbound)* | Toggle No Fall Damage |
+| *(unbound)* | Toggle Peaceful Mode |
 
 ---
 
@@ -197,7 +199,8 @@ Master-Tool/
 │   │   ├── TabDefinitions.cs      # UI tab and sub-tab names
 │   │   ├── VisionLogic.cs         # FOV mapping and override logic
 │   │   ├── WeightLogic.cs         # Weight calculation logic
-│   │   └── WishlistLogic.cs      # Wishlist filter logic
+│   │   ├── WishlistLogic.cs      # Wishlist filter logic
+│   │   └── PeacefulLogic.cs     # Peaceful mode blocking logic
 │   └── MasterTool/
 │       ├── MasterTool.csproj      # Main plugin project (net472)
 │       ├── Plugin/
@@ -242,6 +245,8 @@ Master-Tool/
 │       │   │   └── BigHeadFeature.cs
 │       │   ├── NoWeight/
 │       │   │   └── NoWeightFeature.cs
+│       │   ├── PeacefulMode/
+│       │   │   └── PeacefulPatches.cs
 │       │   └── Teleport/
 │       │       ├── TeleportFeature.cs
 │       │       └── PlayerTeleportFeature.cs
@@ -286,7 +291,8 @@ Master-Tool/
             │   ├── ReloadSpeedTests.cs
             │   ├── SpeedhackTests.cs
             │   ├── VisionStateTests.cs
-            │   └── WeightPercentageTests.cs
+            │   ├── WeightPercentageTests.cs
+            │   └── PeacefulModeTests.cs
             ├── ESP/
             │   ├── ChamsAntiOcclusionTests.cs
             │   ├── ChamsCleanupTests.cs
@@ -333,7 +339,7 @@ make build    # or: dotnet build
 
 ### Running Tests
 
-628 tests cover pure logic: models, utilities, feature state machines, ESP calculations, and config defaults. Pure logic lives in the `MasterTool.Core` shared library (`netstandard2.0`), referenced by both the plugin (`net472`) and test project (`net9.0`). Game-dependent code requires Unity/EFT assemblies and cannot be unit-tested.
+635 tests cover pure logic: models, utilities, feature state machines, ESP calculations, and config defaults. Pure logic lives in the `MasterTool.Core` shared library (`netstandard2.0`), referenced by both the plugin (`net472`) and test project (`net9.0`). Game-dependent code requires Unity/EFT assemblies and cannot be unit-tested.
 
 ```bash
 make test     # or: dotnet test

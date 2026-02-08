@@ -287,6 +287,13 @@ namespace MasterTool.UI
             );
             GUILayout.Label($"Bot Render Distance: {PluginConfig.BotRenderDistance.Value:F0}m");
             PluginConfig.BotRenderDistance.Value = GUILayout.HorizontalSlider(PluginConfig.BotRenderDistance.Value, 50f, 1000f);
+
+            GUILayout.Space(10);
+            GUILayout.Label("<b>--- BOT BEHAVIOR ---</b>");
+            PluginConfig.PeacefulModeEnabled.Value = GUILayout.Toggle(
+                PluginConfig.PeacefulModeEnabled.Value,
+                $" Peaceful Mode (Bots Ignore Me) [{PluginConfig.TogglePeacefulModeHotkey.Value}]"
+            );
         }
 
         private void DrawPlayerEspTab()
@@ -656,6 +663,7 @@ namespace MasterTool.UI
                 new HotkeyBinding { Label = "Save Position", Entry = PluginConfig.SavePositionHotkey },
                 new HotkeyBinding { Label = "Load Position", Entry = PluginConfig.LoadPositionHotkey },
                 new HotkeyBinding { Label = "Teleport Surface", Entry = PluginConfig.SurfaceTeleportHotkey },
+                new HotkeyBinding { Label = "Peaceful Mode", Entry = PluginConfig.TogglePeacefulModeHotkey },
             };
         }
 

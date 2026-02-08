@@ -12,6 +12,7 @@ using MasterTool.Features.FlyMode;
 using MasterTool.Features.GodMode;
 using MasterTool.Features.InfiniteStamina;
 using MasterTool.Features.NoWeight;
+using MasterTool.Features.PeacefulMode;
 using MasterTool.Features.Performance;
 using MasterTool.Features.ReloadSpeed;
 using MasterTool.Features.Speedhack;
@@ -27,7 +28,7 @@ namespace MasterTool.Plugin
     /// Main BepInEx plugin entry point. Initializes config, applies Harmony patches,
     /// and orchestrates per-frame updates for all feature and ESP modules.
     /// </summary>
-    [BepInPlugin("com.master.tools", "Advanced SPT Mod Menu", "2.27.0")]
+    [BepInPlugin("com.master.tools", "Advanced SPT Mod Menu", "2.28.0")]
     public sealed class MasterToolPlugin : BaseUnityPlugin
     {
         internal static MasterToolPlugin Instance;
@@ -38,6 +39,7 @@ namespace MasterTool.Plugin
         private Harmony _harmony;
         private readonly GameState _gameState = new GameState();
         private bool _showUi;
+        private bool _wasPeacefulEnabled;
         private Rect _windowRect = new Rect(25, 25, 500, 750);
 
         // Modules
@@ -68,6 +70,7 @@ namespace MasterTool.Plugin
             _harmony = new Harmony("com.master.tools");
             DamagePatches.PatchAll(_harmony);
             NoWeightFeature.PatchAll(_harmony);
+            PeacefulPatches.PatchAll(_harmony);
             _chams.Initialize();
 
             Logger.LogInfo("[MasterTool] Loaded. INSERT: UI, Numpad 0-9: Toggles.");
@@ -98,6 +101,10 @@ namespace MasterTool.Plugin
 
             if (localPlayer == null)
                 return;
+
+            if (PluginConfig.PeacefulModeEnabled.Value && !_wasPeacefulEnabled)
+                PeacefulPatches.ClearPlayerFromAllBots(gameWorld, localPlayer);
+            _wasPeacefulEnabled = PluginConfig.PeacefulModeEnabled.Value;
 
             if (PluginConfig.InfiniteStaminaEnabled.Value)
                 StaminaFeature.Apply(localPlayer);
@@ -232,6 +239,8 @@ namespace MasterTool.Plugin
                 PlayerTeleportFeature.LoadPosition(_gameState.LocalPlayer);
             if (PluginConfig.SurfaceTeleportHotkey.Value.IsDown())
                 PlayerTeleportFeature.TeleportToSurface(_gameState.LocalPlayer);
+            if (PluginConfig.TogglePeacefulModeHotkey.Value.IsDown())
+                PluginConfig.PeacefulModeEnabled.Value = !PluginConfig.PeacefulModeEnabled.Value;
         }
     }
 }
