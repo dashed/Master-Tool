@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [2.3.0] - 2026-02-07
+
+### Added
+
+- No Weight feature: Harmony patch on `InventoryEquipment.smethod_1` sets equipment weight to zero when enabled, eliminating overweight penalties
+- Unit tests for NoWeight prefix decision logic (4 tests)
+
+### Fixed
+
+- NoWeight toggle (config, hotkey, menu, status HUD) was previously non-functional — now wired to actual Harmony patch
+
 ## [2.2.2] - 2026-02-07
 
 ### Fixed

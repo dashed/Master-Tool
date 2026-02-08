@@ -25,7 +25,7 @@ This audit examines every feature module for the same three patterns, plus two a
 |---|-----|----------|------|---------|
 | 1 | CullingFeature forces all bots active when OFF | **HIGH** | `CullingFeature.cs:33-41` | Unconditional state override |
 | 2 | BigHeadFeature forces head scale to 1x when OFF | **MEDIUM** | `BigHeadFeature.cs:32-35` | Unconditional state override |
-| 3 | NoWeight toggle has no implementation | **MEDIUM** | Multiple files | Missing feature |
+| 3 | ~~NoWeight toggle has no implementation~~ | ~~**MEDIUM**~~ | ~~Multiple files~~ | ~~Missing feature~~ — **FIXED in v2.3.0** |
 | 4 | ChamsManager leaks shader references | **LOW** | `ChamsManager.cs:73` | Resource leak |
 | 5 | GameState.MainCamera never refreshes if changed | **LOW** | `GameState.cs:42-43` | Stale cache |
 | 6 | ChamsIntensity config unused | **LOW** | `PluginConfig.cs:52` | Dead config |
@@ -200,24 +200,16 @@ public static void Apply(GameWorld gameWorld)
 
 ---
 
-### BUG-3: NoWeight toggle has no implementation [MEDIUM]
+### ~~BUG-3: NoWeight toggle has no implementation~~ [FIXED in v2.3.0]
 
-**Files:**
-- `PluginConfig.cs:22` — `ConfigEntry<bool> NoWeightEnabled` declared
-- `PluginConfig.cs:108` — Bound to config: `"Removes weight penalties."`
-- `ModMenu.cs:88-91` — Toggle displayed in General tab
-- `StatusWindow.cs:27` — Shows "Weight: ON/OFF" in status HUD
-- `MasterToolPlugin.cs:162` — Hotkey toggles the value
+**Resolution:** Implemented `NoWeightFeature` using a Harmony prefix patch on `InventoryEquipment.smethod_1` (the obfuscated weight calculation method). When `NoWeightEnabled` is true, the prefix sets `__result = 0f` and skips the original method, eliminating all equipment weight. When disabled, the original method runs normally — no unconditional state override.
 
-**But:** There is no feature class, no logic in `Update()`, and `NoWeightEnabled` is never read anywhere to actually modify weight behavior.
+**Files added/modified:**
+- `src/MasterTool/Features/NoWeight/NoWeightFeature.cs` — NEW: Harmony patch class
+- `src/MasterTool/Plugin/MasterToolPlugin.cs` — Wired `NoWeightFeature.PatchAll()` into `Awake()`
+- `tests/MasterTool.Tests/Tests/Features/NoWeightPrefixTests.cs` — NEW: 4 unit tests for prefix logic
 
-#### Problem
-
-Users see a "No Weight Penalties" toggle in the menu and status window. They can enable it, see "Weight: ON" in the HUD, and believe it's working — but it does absolutely nothing.
-
-#### Proposed Fix
-
-Either implement the feature (likely requires patching the weight calculation in `Physical` or the inventory system) or remove the toggle and config entry until it's implemented. Shipping a non-functional toggle is misleading.
+**Reference:** Implementation approach validated against DadGamerMode mod's `OnWeightUpdatedPatch.cs` which patches the same method.
 
 ---
 
@@ -375,7 +367,7 @@ The SPT server is primarily a **data server** that manages profiles, inventory, 
 - [ ] Toggle CullingFeature OFF, verify only mod-deactivated bots are re-enabled (not all bots)
 - [ ] Verify bots deactivated by the game (dead, despawned) are NOT re-enabled by the mod
 - [ ] Toggle BigHead ON/OFF, verify only mod-scaled heads are reset
-- [ ] Verify NoWeight toggle either works or is removed
+- [x] Verify NoWeight toggle either works or is removed — **Implemented in v2.3.0**
 - [ ] Long raid test: verify ChamsManager doesn't accumulate stale shader entries
 - [ ] Camera transition test: verify ESP uses correct camera after spectator/death
 - [ ] GodMode: verify patch installation is logged (success or failure)

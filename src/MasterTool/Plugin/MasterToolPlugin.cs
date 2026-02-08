@@ -7,6 +7,7 @@ using MasterTool.Features.BigHeadMode;
 using MasterTool.Features.DoorUnlock;
 using MasterTool.Features.GodMode;
 using MasterTool.Features.InfiniteStamina;
+using MasterTool.Features.NoWeight;
 using MasterTool.Features.Performance;
 using MasterTool.Features.Speedhack;
 using MasterTool.Features.Vision;
@@ -19,7 +20,7 @@ namespace MasterTool.Plugin
     /// Main BepInEx plugin entry point. Initializes config, applies Harmony patches,
     /// and orchestrates per-frame updates for all feature and ESP modules.
     /// </summary>
-    [BepInPlugin("com.master.tools", "Advanced SPT Mod Menu", "2.2.2")]
+    [BepInPlugin("com.master.tools", "Advanced SPT Mod Menu", "2.3.0")]
     public sealed class MasterToolPlugin : BaseUnityPlugin
     {
         internal static MasterToolPlugin Instance;
@@ -49,6 +50,7 @@ namespace MasterTool.Plugin
 
             _harmony = new Harmony("com.master.tools");
             DamagePatches.PatchAll(_harmony);
+            NoWeightFeature.PatchAll(_harmony);
             _chams.Initialize();
 
             Logger.LogInfo("[MasterTool] Loaded. INSERT: UI, Numpad 0-9: Toggles.");
