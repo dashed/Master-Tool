@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Draft/pending state for hotkey changes — changes are staged (marked with \*) until explicitly saved or cancelled
 - Save All / Cancel All buttons for bulk hotkey operations
 - Unit tests for KeyBindParser: key name parsing, key bind combos, modifier detection, pending changes logic (67 tests)
+- "Open Mod Menu" button in the F12 ConfigurationManager panel (section "00. Mod Menu") to toggle the in-game mod menu
 
 ### Changed
 
