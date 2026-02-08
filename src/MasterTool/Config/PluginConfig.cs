@@ -1,6 +1,8 @@
+using System;
 using BepInEx.Configuration;
 using EFT.HealthSystem;
 using MasterTool.Models;
+using MasterTool.Plugin;
 using UnityEngine;
 
 namespace MasterTool.Config
@@ -148,6 +150,7 @@ namespace MasterTool.Config
         /// </summary>
         public static class Sections
         {
+            public const string ModMenu = "00. Mod Menu";
             public const string Damage = "01. Damage";
             public const string Survival = "02. Survival";
             public const string Healing = "03. Healing";
@@ -172,6 +175,23 @@ namespace MasterTool.Config
         public static void Initialize(ConfigFile config)
         {
             string hotkeyDesc = "Hotkey to toggle this feature. Use Unity KeyCode names (e.g., Keypad0, Keypad1, Insert, Home, PageUp).";
+
+            // --- 00. Mod Menu ---
+            config.Bind(
+                Sections.ModMenu,
+                "Open Mod Menu",
+                false,
+                new ConfigDescription(
+                    "Click the button to open the in-game mod menu.",
+                    null,
+                    new ConfigurationManagerAttributes
+                    {
+                        CustomDrawer = DrawOpenModMenuButton,
+                        HideDefaultButton = true,
+                        Order = int.MaxValue,
+                    }
+                )
+            );
 
             // --- 01. Damage ---
             GodModeEnabled = config.Bind(Sections.Damage, "GodMode", false, "Player takes no damage.");
@@ -492,6 +512,14 @@ namespace MasterTool.Config
                 new KeyboardShortcut(KeyCode.None),
                 hotkeyDesc
             );
+        }
+
+        private static void DrawOpenModMenuButton(ConfigEntryBase entry)
+        {
+            if (GUILayout.Button("Open Mod Menu", GUILayout.ExpandWidth(true)))
+            {
+                MasterToolPlugin.ToggleModMenu();
+            }
         }
     }
 }

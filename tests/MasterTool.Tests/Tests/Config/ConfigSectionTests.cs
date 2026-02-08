@@ -16,6 +16,7 @@ public class ConfigSectionTests
     /// </summary>
     private static readonly string[] AllSections =
     {
+        "00. Mod Menu",
         "01. Damage",
         "02. Survival",
         "03. Healing",
@@ -37,6 +38,7 @@ public class ConfigSectionTests
     /// </summary>
     private static readonly Dictionary<string, int> SectionEntryCounts = new()
     {
+        { "00. Mod Menu", 1 },
         { "01. Damage", 7 },
         { "02. Survival", 6 },
         { "03. Healing", 4 },
@@ -84,7 +86,7 @@ public class ConfigSectionTests
     {
         for (int i = 0; i < AllSections.Length; i++)
         {
-            int expected = i + 1;
+            int expected = i;
             string prefix = AllSections[i].Substring(0, 2);
             int actual = int.Parse(prefix);
             Assert.That(actual, Is.EqualTo(expected), $"Section '{AllSections[i]}' has wrong number");
@@ -109,9 +111,9 @@ public class ConfigSectionTests
     // --- Section count tests ---
 
     [Test]
-    public void TotalSectionCount_Is14()
+    public void TotalSectionCount_Is15()
     {
-        Assert.That(AllSections.Length, Is.EqualTo(14));
+        Assert.That(AllSections.Length, Is.EqualTo(15));
     }
 
     [Test]
@@ -151,12 +153,13 @@ public class ConfigSectionTests
     public void TotalEntryCount()
     {
         int total = SectionEntryCounts.Values.Sum();
-        // 94 total config entries across all sections
-        Assert.That(total, Is.EqualTo(94));
+        // 95 total config entries across all sections
+        Assert.That(total, Is.EqualTo(95));
     }
 
     // --- Section logical grouping tests ---
 
+    [TestCase("00. Mod Menu", 1)]
     [TestCase("01. Damage", 7)]
     [TestCase("02. Survival", 6)]
     [TestCase("03. Healing", 4)]

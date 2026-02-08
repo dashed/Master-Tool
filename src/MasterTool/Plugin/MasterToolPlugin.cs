@@ -50,6 +50,14 @@ namespace MasterTool.Plugin
         private readonly StatusWindow _statusWindow = new StatusWindow();
         private readonly GuiStyles _styles = new GuiStyles();
 
+        internal static void ToggleModMenu()
+        {
+            if (Instance != null)
+            {
+                Instance._showUi = !Instance._showUi;
+            }
+        }
+
         private void Awake()
         {
             Instance = this;
