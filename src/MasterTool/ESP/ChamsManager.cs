@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using EFT;
 using MasterTool.Config;
+using MasterTool.Plugin;
 using MasterTool.Utils;
 using UnityEngine;
 
@@ -15,6 +17,9 @@ namespace MasterTool.ESP
     {
         private readonly Dictionary<Renderer, Shader> _originalShaders = new Dictionary<Renderer, Shader>();
         private static Shader _chamsShader;
+        private float _nextCleanup;
+        private const float CleanupIntervalSeconds = 30f;
+        private bool _errorLogged;
 
         /// <summary>
         /// Loads the flat-colored shader used for chams rendering. Call once during plugin startup.
@@ -39,28 +44,62 @@ namespace MasterTool.ESP
             if (players == null)
                 return;
 
-            foreach (var player in players)
+            try
             {
-                if (player is Player playerClass)
+                foreach (var player in players)
                 {
-                    float dist = Vector3.Distance(mainCamera.transform.position, playerClass.Transform.position);
-
-                    bool shouldChams =
-                        PluginConfig.ChamsEnabled.Value
-                        && !playerClass.IsYourPlayer
-                        && playerClass.HealthController.IsAlive
-                        && dist <= PluginConfig.EspMaxDistance.Value;
-
-                    if (shouldChams)
+                    if (player is Player playerClass)
                     {
-                        Color color = PlayerUtils.GetPlayerColor(playerClass);
-                        ApplyChams(playerClass, color);
-                    }
-                    else
-                    {
-                        ResetChams(playerClass);
+                        float dist = Vector3.Distance(mainCamera.transform.position, playerClass.Transform.position);
+
+                        bool shouldChams =
+                            PluginConfig.ChamsEnabled.Value
+                            && !playerClass.IsYourPlayer
+                            && playerClass.HealthController.IsAlive
+                            && dist <= PluginConfig.EspMaxDistance.Value;
+
+                        if (shouldChams)
+                        {
+                            Color color = PlayerUtils.GetPlayerColor(playerClass);
+                            ApplyChams(playerClass, color);
+                        }
+                        else
+                        {
+                            ResetChams(playerClass);
+                        }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                if (!_errorLogged)
+                {
+                    MasterToolPlugin.Log?.LogWarning($"[Chams] {ex.Message}");
+                    _errorLogged = true;
+                }
+            }
+
+            if (Time.time > _nextCleanup)
+            {
+                _nextCleanup = Time.time + CleanupIntervalSeconds;
+                PurgeDestroyedEntries();
+            }
+        }
+
+        private void PurgeDestroyedEntries()
+        {
+            var dead = new List<Renderer>();
+            foreach (var kv in _originalShaders)
+            {
+                if (kv.Key == null)
+                {
+                    dead.Add(kv.Key);
+                }
+            }
+
+            foreach (var r in dead)
+            {
+                _originalShaders.Remove(r);
             }
         }
 

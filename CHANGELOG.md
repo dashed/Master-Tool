@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [2.3.2] - 2026-02-07
+
+### Fixed
+
+- ChamsManager no longer leaks shader references for despawned players — periodic cleanup every 30s purges dictionary entries for destroyed Unity Renderer objects
+
+### Added
+
+- Unit tests for chams dictionary cleanup logic (8 tests)
+
 ## [2.3.1] - 2026-02-07
 
 ### Fixed

@@ -26,7 +26,7 @@ This audit examines every feature module for the same three patterns, plus two a
 | 1 | CullingFeature forces all bots active when OFF | **HIGH** | `CullingFeature.cs:33-41` | Unconditional state override |
 | 2 | BigHeadFeature forces head scale to 1x when OFF | **MEDIUM** | `BigHeadFeature.cs:32-35` | Unconditional state override |
 | 3 | ~~NoWeight toggle has no implementation~~ | ~~**MEDIUM**~~ | ~~Multiple files~~ | ~~Missing feature~~ — **FIXED in v2.3.0** |
-| 4 | ChamsManager leaks shader references | **LOW** | `ChamsManager.cs:73` | Resource leak |
+| 4 | ~~ChamsManager leaks shader references~~ | ~~**LOW**~~ | ~~`ChamsManager.cs:73`~~ | ~~Resource leak~~ — **FIXED in v2.3.2** |
 | 5 | GameState.MainCamera never refreshes if changed | **LOW** | `GameState.cs:42-43` | Stale cache |
 | 6 | ChamsIntensity config unused | **LOW** | `PluginConfig.cs:52` | Dead config |
 | 7 | FovMelee config unused | **LOW** | `PluginConfig.cs:89` | Dead config |
@@ -213,36 +213,13 @@ public static void Apply(GameWorld gameWorld)
 
 ---
 
-### BUG-4: ChamsManager leaks shader references for despawned players [LOW]
+### ~~BUG-4: ChamsManager leaks shader references for despawned players~~ [FIXED in v2.3.2]
 
-**File:** `src/MasterTool/ESP/ChamsManager.cs` lines 73–74
+**Resolution:** Added `PurgeDestroyedEntries()` method that iterates `_originalShaders`, collects keys where `kv.Key == null` (Unity-destroyed Renderer), and removes them. Runs every 30 seconds from `Update()` via a `_nextCleanup` timer. Also added one-shot error logging following the v2.3.1 pattern.
 
-#### Problem
-
-The `_originalShaders` dictionary maps `Renderer → Shader`. When a player despawns and their `Renderer` component is destroyed by Unity, the dictionary entry becomes a dangling reference. Over a long raid:
-
-1. Dictionary grows without bound (minor memory leak)
-2. `ResetChams()` iterates entries for non-existent renderers
-3. Null checks in `ResetChams` prevent crashes, but dead entries accumulate
-
-#### Proposed Fix
-
-Periodically purge entries where the Renderer key is null (destroyed by Unity):
-
-```csharp
-private float _nextCleanup;
-
-// In Update(), after the main loop:
-if (Time.time > _nextCleanup)
-{
-    _nextCleanup = Time.time + 30f;
-    var dead = new List<Renderer>();
-    foreach (var kv in _originalShaders)
-        if (kv.Key == null) dead.Add(kv.Key);
-    foreach (var r in dead)
-        _originalShaders.Remove(r);
-}
-```
+**Files modified:**
+- `src/MasterTool/ESP/ChamsManager.cs` — Added cleanup timer, `PurgeDestroyedEntries()`, error logging
+- `tests/MasterTool.Tests/Tests/ESP/ChamsCleanupTests.cs` — NEW: 8 unit tests for dictionary cleanup logic
 
 ---
 
@@ -355,6 +332,6 @@ The SPT server is primarily a **data server** that manages profiles, inventory, 
 - [ ] Verify bots deactivated by the game (dead, despawned) are NOT re-enabled by the mod
 - [ ] Toggle BigHead ON/OFF, verify only mod-scaled heads are reset
 - [x] Verify NoWeight toggle either works or is removed — **Implemented in v2.3.0**
-- [ ] Long raid test: verify ChamsManager doesn't accumulate stale shader entries
+- [x] Long raid test: verify ChamsManager doesn't accumulate stale shader entries — **Periodic cleanup added in v2.3.2**
 - [ ] Camera transition test: verify ESP uses correct camera after spectator/death
 - [x] GodMode: verify patch installation is logged (success or failure) — **Logging added in v2.3.1**
