@@ -6,6 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [2.12.0] - 2026-02-08
+
+### Fixed
+
+- COD Mode (auto-heal) no longer fails to heal when bleeding or taking continuous damage — bleed/fracture tick damage previously reset the heal timer via `NotifyDamage()` in `DamagePatches`, preventing the heal delay from ever expiring. Now uses `Player.BeingHitAction` event which only fires on direct hits (bullets/melee), not on DOT effect ticks
+- COD Mode now skips destroyed (blacked) body parts instead of attempting to heal them
+- COD Mode heal timer now uses `Time.unscaledDeltaTime` instead of `Time.deltaTime`, preventing speedhack from affecting the heal delay countdown
+
+### Changed
+
+- Removed `CodModeFeature.NotifyDamage()` call from `DamagePatches.BlockDamagePrefix_ActiveHealthController` — heal timer reset moved to `Player.BeingHitAction` event subscription in `CodModeFeature`
+
+### Added
+
+- Unit tests for bleed-timer interaction, destroyed body part skipping, effect removal decision logic, and unscaled time accumulation (16 tests)
+
 ## [2.11.2] - 2026-02-07
 
 ### Fixed

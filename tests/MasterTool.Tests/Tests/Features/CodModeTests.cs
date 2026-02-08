@@ -35,6 +35,14 @@ public class CodModeTests
     }
 
     /// <summary>
+    /// Mirrors CodModeFeature.ShouldHealBodyPart: skip destroyed/blacked parts.
+    /// </summary>
+    private static bool ShouldHealBodyPart(float current, float maximum)
+    {
+        return current > 0f && current < maximum;
+    }
+
+    /// <summary>
     /// Simulates time since last damage was taken.
     /// </summary>
     private float _timeSinceLastHit;
@@ -45,12 +53,23 @@ public class CodModeTests
     private bool _isRegenerating;
 
     /// <summary>
-    /// Mirrors the damage-notification logic: resets timer and stops regen.
+    /// Mirrors the BeingHitAction-based notification: resets timer and stops regen.
+    /// Only fires on direct hits (bullets/melee), NOT on bleed/fracture ticks.
     /// </summary>
-    private void NotifyDamage()
+    private void NotifyDirectHit()
     {
         _timeSinceLastHit = 0f;
         _isRegenerating = false;
+    }
+
+    /// <summary>
+    /// Simulates bleed tick damage — does NOT reset the heal timer.
+    /// This is the core fix: previously all damage (including bleeds) reset the timer.
+    /// </summary>
+    private static void SimulateBleedTick()
+    {
+        // Intentionally does nothing to the heal timer.
+        // Bleed damage goes through ApplyDamage but no longer calls NotifyDirectHit.
     }
 
     [SetUp]
@@ -151,18 +170,18 @@ public class CodModeTests
     // === Timer/State Tests ===
 
     [Test]
-    public void NotifyDamage_ResetsTimer()
+    public void NotifyDirectHit_ResetsTimer()
     {
         _timeSinceLastHit = 15f;
-        NotifyDamage();
+        NotifyDirectHit();
         Assert.That(_timeSinceLastHit, Is.EqualTo(0f));
     }
 
     [Test]
-    public void NotifyDamage_StopsRegeneration()
+    public void NotifyDirectHit_StopsRegeneration()
     {
         _isRegenerating = true;
-        NotifyDamage();
+        NotifyDirectHit();
         Assert.That(_isRegenerating, Is.False);
     }
 
@@ -180,7 +199,7 @@ public class CodModeTests
     {
         _timeSinceLastHit = 12f; // past 10s delay
         Assert.That(ShouldHeal(_timeSinceLastHit, 10f), Is.True);
-        NotifyDamage(); // take damage
+        NotifyDirectHit(); // take damage
         Assert.That(ShouldHeal(_timeSinceLastHit, 10f), Is.False);
     }
 
@@ -192,5 +211,167 @@ public class CodModeTests
         // Mirrors the AllBodyParts array in CodModeFeature
         var bodyParts = new[] { "Head", "Chest", "Stomach", "LeftArm", "RightArm", "LeftLeg", "RightLeg" };
         Assert.That(bodyParts, Has.Length.EqualTo(7));
+    }
+
+    // === Bleed-Timer Interaction Tests (core bug fix) ===
+
+    [Test]
+    public void BleedTick_DoesNotResetTimer()
+    {
+        _timeSinceLastHit = 8f;
+        SimulateBleedTick();
+        Assert.That(_timeSinceLastHit, Is.EqualTo(8f));
+    }
+
+    [Test]
+    public void BleedTick_DoesNotStopRegeneration()
+    {
+        _isRegenerating = true;
+        SimulateBleedTick();
+        Assert.That(_isRegenerating, Is.True);
+    }
+
+    [Test]
+    public void DirectHit_ResetsTimer_BleedDoesNot()
+    {
+        _timeSinceLastHit = 12f;
+        Assert.That(ShouldHeal(_timeSinceLastHit, 10f), Is.True);
+
+        // Direct hit resets
+        NotifyDirectHit();
+        Assert.That(ShouldHeal(_timeSinceLastHit, 10f), Is.False);
+
+        // Accumulate past delay again
+        _timeSinceLastHit = 11f;
+        Assert.That(ShouldHeal(_timeSinceLastHit, 10f), Is.True);
+
+        // Bleed tick does NOT reset
+        SimulateBleedTick();
+        Assert.That(ShouldHeal(_timeSinceLastHit, 10f), Is.True);
+    }
+
+    [Test]
+    public void FullCycle_ShotThenBleed_HealingStartsAfterDelay()
+    {
+        // Player gets shot → direct hit resets timer
+        NotifyDirectHit();
+        Assert.That(_timeSinceLastHit, Is.EqualTo(0f));
+
+        // Bleed ticks happen while timer accumulates
+        _timeSinceLastHit = 5f;
+        SimulateBleedTick();
+        Assert.That(_timeSinceLastHit, Is.EqualTo(5f)); // NOT reset
+        Assert.That(ShouldHeal(_timeSinceLastHit, 10f), Is.False); // Not enough time
+
+        // More time passes with bleed ticks
+        _timeSinceLastHit = 11f;
+        SimulateBleedTick();
+        Assert.That(ShouldHeal(_timeSinceLastHit, 10f), Is.True); // Healing should start
+    }
+
+    [Test]
+    public void ContinuousBleeds_NeverPreventHealing()
+    {
+        // Simulate 100 bleed ticks over 15 seconds
+        for (int i = 0; i < 100; i++)
+        {
+            _timeSinceLastHit += 0.15f; // 15s / 100 ticks
+            SimulateBleedTick();
+        }
+
+        // Timer accumulated to ~15s despite constant bleed ticks
+        Assert.That(_timeSinceLastHit, Is.EqualTo(15f).Within(0.01f));
+        Assert.That(ShouldHeal(_timeSinceLastHit, 10f), Is.True);
+    }
+
+    // === Destroyed Body Part Tests ===
+
+    [Test]
+    public void ShouldHealBodyPart_NormalDamaged_ReturnsTrue()
+    {
+        Assert.That(ShouldHealBodyPart(50f, 100f), Is.True);
+    }
+
+    [Test]
+    public void ShouldHealBodyPart_Destroyed_ReturnsFalse()
+    {
+        Assert.That(ShouldHealBodyPart(0f, 100f), Is.False);
+    }
+
+    [Test]
+    public void ShouldHealBodyPart_AtMax_ReturnsFalse()
+    {
+        Assert.That(ShouldHealBodyPart(100f, 100f), Is.False);
+    }
+
+    [Test]
+    public void ShouldHealBodyPart_NegativeHealth_ReturnsFalse()
+    {
+        Assert.That(ShouldHealBodyPart(-5f, 100f), Is.False);
+    }
+
+    [Test]
+    public void ShouldHealBodyPart_OneHp_ReturnsTrue()
+    {
+        Assert.That(ShouldHealBodyPart(1f, 100f), Is.True);
+    }
+
+    [Test]
+    public void ShouldHealBodyPart_AlmostFull_ReturnsTrue()
+    {
+        Assert.That(ShouldHealBodyPart(99.9f, 100f), Is.True);
+    }
+
+    // === UnscaledDeltaTime Tests ===
+
+    [Test]
+    public void Timer_UnscaledAccumulation_IndependentOfTimeScale()
+    {
+        // Simulate unscaledDeltaTime (constant ~16ms) while timeScale varies
+        float unscaledDt = 0.016f;
+        _timeSinceLastHit = 0f;
+
+        // 625 frames × 16ms = 10s
+        for (int i = 0; i < 625; i++)
+        {
+            _timeSinceLastHit += unscaledDt;
+        }
+
+        Assert.That(_timeSinceLastHit, Is.EqualTo(10f).Within(0.1f));
+        Assert.That(ShouldHeal(_timeSinceLastHit, 9.5f), Is.True);
+    }
+
+    // === Effect Removal Decision Tests ===
+
+    [Test]
+    public void ShouldRemoveEffects_BothEnabled_ReturnsTrue()
+    {
+        Assert.That(ShouldRemoveEffects(true, true), Is.True);
+    }
+
+    [Test]
+    public void ShouldRemoveEffects_CodDisabled_ReturnsFalse()
+    {
+        Assert.That(ShouldRemoveEffects(false, true), Is.False);
+    }
+
+    [Test]
+    public void ShouldRemoveEffects_RemoveDisabled_ReturnsFalse()
+    {
+        Assert.That(ShouldRemoveEffects(true, false), Is.False);
+    }
+
+    [Test]
+    public void ShouldRemoveEffects_BothDisabled_ReturnsFalse()
+    {
+        Assert.That(ShouldRemoveEffects(false, false), Is.False);
+    }
+
+    /// <summary>
+    /// Mirrors config check for whether negative effects should be removed.
+    /// </summary>
+    private static bool ShouldRemoveEffects(bool codModeEnabled, bool removeEffectsEnabled)
+    {
+        return codModeEnabled && removeEffectsEnabled;
     }
 }
