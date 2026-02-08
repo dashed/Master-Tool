@@ -126,7 +126,7 @@ namespace MasterTool.ESP
             if (!matches)
                 return;
 
-            Vector3 screenPos = mainCamera.WorldToScreenPoint(pos);
+            Vector3 screenPos = mainCamera.WorldToScreenPoint(pos + Vector3.up * 0.5f);
             if (screenPos.z > 0)
             {
                 screenPos.y = Screen.height - screenPos.y;

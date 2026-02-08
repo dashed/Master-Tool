@@ -64,6 +64,16 @@ namespace MasterTool.ESP
         }
 
         /// <summary>
+        /// Computes the world position for ESP text, preferring head bone when available.
+        /// </summary>
+        internal static Vector3 GetEspWorldPosition(Vector3? headBonePos, Vector3 transformPos)
+        {
+            if (headBonePos.HasValue)
+                return headBonePos.Value + Vector3.up * 0.2f;
+            return transformPos + Vector3.up * 1.8f;
+        }
+
+        /// <summary>
         /// Scans registered players, filters by distance and alive status, and populates <see cref="Targets"/>
         /// with screen-space position data. Throttled by <see cref="PluginConfig.EspUpdateInterval"/>.
         /// </summary>
@@ -102,7 +112,10 @@ namespace MasterTool.ESP
                     Color textColor = PlayerUtils.GetPlayerColor(playerClass);
                     textColor.a = PluginConfig.EspTextAlpha.Value;
 
-                    Vector3 screenPos = mainCamera.WorldToScreenPoint(playerClass.Transform.position + Vector3.up * 1.8f);
+                    var headBone = playerClass.PlayerBones?.Head?.Original;
+                    Vector3? headPos = headBone != null ? (Vector3?)headBone.position : null;
+                    Vector3 worldPos = GetEspWorldPosition(headPos, playerClass.Transform.position);
+                    Vector3 screenPos = mainCamera.WorldToScreenPoint(worldPos);
                     if (screenPos.z > 0)
                     {
                         Targets.Add(

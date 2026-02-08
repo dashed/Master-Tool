@@ -112,6 +112,10 @@ namespace MasterTool.ESP
                 if (renderer == null || renderer.material == null)
                     continue;
 
+                // Force renderer visible — prevents Unity's occlusion culling from hiding chams
+                renderer.forceRenderingOff = false;
+                renderer.allowOcclusionWhenDynamic = false;
+
                 if (renderer.material.shader != _chamsShader)
                 {
                     if (!_originalShaders.ContainsKey(renderer))
@@ -120,6 +124,7 @@ namespace MasterTool.ESP
                     renderer.material.shader = _chamsShader;
                     renderer.material.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.Always);
                     renderer.material.SetInt("_ZWrite", 0);
+                    renderer.material.renderQueue = 4000;
                 }
 
                 float intensity = Mathf.Clamp(PluginConfig.ChamsIntensity.Value, 0.1f, 1f);
@@ -137,6 +142,7 @@ namespace MasterTool.ESP
                 if (renderer != null && renderer.material != null && _originalShaders.ContainsKey(renderer))
                 {
                     renderer.material.shader = _originalShaders[renderer];
+                    renderer.allowOcclusionWhenDynamic = true;
                     _originalShaders.Remove(renderer);
                 }
             }

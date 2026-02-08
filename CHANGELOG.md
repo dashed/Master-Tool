@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [2.8.1] - 2026-02-07
+
+### Fixed
+
+- Player ESP text now renders above players' heads instead of at ground level — uses actual head bone position (`PlayerBones.Head.Original`) with 0.2m offset, falling back to Transform + 1.8m when bone is unavailable
+- Item/Container ESP text now floats 0.5m above item positions instead of rendering at ground level
+- Chams no longer disappear through multiple walls on complex maps (e.g., Interchange) — disables Unity's occlusion culling per-renderer (`forceRenderingOff = false`, `allowOcclusionWhenDynamic = false`) and sets material render queue to 4000 (overlay) to ensure rendering after all geometry
+
+### Added
+
+- Unit tests for ESP world position calculation logic (12 tests)
+- Unit tests for chams anti-occlusion property settings (9 tests)
+
 ## [2.8.0] - 2026-02-07
 
 ### Added

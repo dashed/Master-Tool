@@ -227,15 +227,23 @@ Master-Tool/
             │   └── ReflectionUtilsTests.cs
             ├── Features/
             │   ├── BigHeadStateTests.cs
+            │   ├── CodModeTests.cs
             │   ├── CullingStateTests.cs
+            │   ├── DamageReductionTests.cs
             │   ├── EnergyHydrationTests.cs
             │   ├── FallDamageStateTests.cs
+            │   ├── FlyModeTests.cs
             │   ├── GodModePrefixTests.cs
             │   ├── NoWeightPrefixTests.cs
-            │   └── VisionStateTests.cs
+            │   ├── PlayerTeleportTests.cs
+            │   ├── ReloadSpeedTests.cs
+            │   ├── VisionStateTests.cs
+            │   └── WeightPercentageTests.cs
             ├── ESP/
+            │   ├── ChamsAntiOcclusionTests.cs
             │   ├── ChamsCleanupTests.cs
             │   ├── ChamsIntensityTests.cs
+            │   ├── EspPositionTests.cs
             │   ├── LineOfSightTests.cs
             │   └── QuestZoneExtractionTests.cs
             └── GameStateRefreshTests.cs
@@ -267,7 +275,7 @@ make build    # or: dotnet build
 
 ### Running Tests
 
-234 tests cover pure logic: models, utilities, feature state machines, ESP extraction, and config defaults. Game-dependent code requires Unity/EFT assemblies and cannot be unit-tested — tests duplicate the pure logic with fake types.
+255 tests cover pure logic: models, utilities, feature state machines, ESP extraction, and config defaults. Game-dependent code requires Unity/EFT assemblies and cannot be unit-tested — tests duplicate the pure logic with fake types.
 
 ```bash
 make test     # or: dotnet test
