@@ -74,7 +74,7 @@ namespace MasterTool.Utils
                     catch { }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
             }
             return items;
