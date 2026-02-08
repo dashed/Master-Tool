@@ -13,19 +13,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Sub-tabs for crowded mod menu tabs:
   - **General** tab: "Damage", "Survival", "Weapons", "Utility" sub-tabs
   - **ESP Players** tab: "ESP", "Chams", "Colors" sub-tabs
-  - **Troll** tab: "Movement", "Teleport", "Fun" sub-tabs
+  - **Extras** tab: "Movement", "Teleport", "Fun" sub-tabs
 - Unit tests for sub-tab structure: tab counts, naming, uniqueness, conciseness (32 tests)
 
 ### Changed
 
-- Renamed Portuguese tab names to English: "Geral" → "General", "ESP Itens" → "ESP Items", "ESP Quest/Wish" → "ESP Quests"
+- Renamed Portuguese tab names to English: "Geral" → "General", "ESP Itens" → "ESP Items", "ESP Quest/Wish" → "ESP Quests", "Troll" → "Extras"
 - Removed bold section headers ("--- GENERAL ---", etc.) from sub-tabbed content — sub-tabs replace the need for in-content separators
-- Main tab bar uses `SelectionGrid` (4 columns, 2 rows) instead of single-row `Toolbar` to prevent overlap at narrow window widths
+- Main tab bar rendered as two rows of toggle buttons (4 + 3) instead of single-row `Toolbar` to prevent horizontal overlap
+- Replaced `BeginArea` absolute positioning with pure `GUILayout` flow — tabs, sub-tabs, and content stack automatically without hardcoded pixel offsets
 
 ### Fixed
 
 - Main tab buttons no longer overlap each other horizontally (7 tabs too wide for single row)
-- Tab grid no longer overlaps content below — content area offset computed dynamically via `GUILayoutUtility.GetLastRect()` instead of hardcoded pixel value
+- Tab rows and sub-tabs no longer overlap content — eliminated `BeginArea` with hardcoded offset that didn't account for multi-row tab bar height
 
 ## [2.15.0] - 2026-02-08
 

@@ -24,7 +24,8 @@ namespace MasterTool.UI
     public class ModMenu
     {
         private int _selectedTab;
-        internal static readonly string[] TabNames = { "General", "ESP Players", "ESP Items", "ESP Quests", "Visual", "Troll", "Hotkeys" };
+        private const int TabColumns = 4;
+        internal static readonly string[] TabNames = { "General", "ESP Players", "ESP Items", "ESP Quests", "Visual", "Extras", "Hotkeys" };
         private Vector2 _mainScroll;
         private Vector2 _itemFilterScroll;
 
@@ -59,12 +60,24 @@ namespace MasterTool.UI
         /// <param name="localPlayer">The local player, passed to tabs that need it.</param>
         public void Draw(int id, Rect windowRect, GameWorld gameWorld, Player localPlayer)
         {
-            _selectedTab = GUILayout.SelectionGrid(_selectedTab, TabNames, 4);
-            Rect tabsRect = GUILayoutUtility.GetLastRect();
-            float contentTop = tabsRect.yMax + 10;
-
             GUI.DragWindow(new Rect(0, 0, windowRect.width, DragBarHeight));
-            GUILayout.BeginArea(new Rect(10, contentTop, windowRect.width - 20, windowRect.height - contentTop - 10));
+
+            GUILayout.BeginHorizontal();
+            for (int i = 0; i < TabColumns && i < TabNames.Length; i++)
+            {
+                if (GUILayout.Toggle(_selectedTab == i, TabNames[i], "Button"))
+                    _selectedTab = i;
+            }
+            GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            for (int i = TabColumns; i < TabNames.Length; i++)
+            {
+                if (GUILayout.Toggle(_selectedTab == i, TabNames[i], "Button"))
+                    _selectedTab = i;
+            }
+            GUILayout.EndHorizontal();
+
+            GUILayout.Space(5);
             _mainScroll = GUILayout.BeginScrollView(_mainScroll);
 
             switch (_selectedTab)
@@ -93,7 +106,6 @@ namespace MasterTool.UI
             }
 
             GUILayout.EndScrollView();
-            GUILayout.EndArea();
 
             HandleResize(windowRect);
         }

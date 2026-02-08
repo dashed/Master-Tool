@@ -12,7 +12,7 @@ namespace MasterTool.Tests.Tests.UI;
 public class SubTabTests
 {
     // Mirror the tab/sub-tab arrays from ModMenu since we can't reference net472 assembly
-    private static readonly string[] TabNames = { "General", "ESP Players", "ESP Items", "ESP Quests", "Visual", "Troll", "Hotkeys" };
+    private static readonly string[] TabNames = { "General", "ESP Players", "ESP Items", "ESP Quests", "Visual", "Extras", "Hotkeys" };
 
     private static readonly string[] GeneralSubTabNames = { "Damage", "Survival", "Weapons", "Utility" };
     private static readonly string[] EspPlayersSubTabNames = { "ESP", "Chams", "Colors" };
@@ -49,6 +49,7 @@ public class SubTabTests
         Assert.That(TabNames, Does.Not.Contain("Geral"));
         Assert.That(TabNames, Does.Not.Contain("ESP Itens"));
         Assert.That(TabNames, Does.Not.Contain("ESP Quest/Wish"));
+        Assert.That(TabNames, Does.Not.Contain("Troll"));
     }
 
     // --- General sub-tab tests ---
@@ -157,7 +158,7 @@ public class SubTabTests
     public void TabsWithSubTabs_AreGeneralEspPlayersTroll()
     {
         // Only 3 main tabs have sub-tabs
-        var tabsWithSubTabs = new[] { "General", "ESP Players", "Troll" };
+        var tabsWithSubTabs = new[] { "General", "ESP Players", "Extras" };
         foreach (var tab in tabsWithSubTabs)
         {
             Assert.That(TabNames, Does.Contain(tab));
