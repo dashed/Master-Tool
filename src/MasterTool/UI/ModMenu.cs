@@ -1,9 +1,11 @@
+using System.Collections.Generic;
 using BepInEx.Configuration;
 using EFT;
 using MasterTool.Config;
 using MasterTool.Features.DoorUnlock;
 using MasterTool.Features.Teleport;
 using MasterTool.Models;
+using MasterTool.Utils;
 using UnityEngine;
 
 namespace MasterTool.UI
@@ -41,6 +43,11 @@ namespace MasterTool.UI
         private ConfigEntry<KeyboardShortcut> _rebindingEntry;
         private int _rebindStartFrame = -1;
         private HotkeyBinding[] _hotkeyBindings;
+
+        private readonly Dictionary<ConfigEntry<KeyboardShortcut>, KeyboardShortcut> _pendingChanges = new();
+        private ConfigEntry<KeyboardShortcut> _typingEntry;
+        private string _typingText = "";
+        private string _typingError = "";
 
         private bool _isResizing;
         private Vector2 _resizeStartMouse;
@@ -479,9 +486,8 @@ namespace MasterTool.UI
 
         private void DrawConfigsTab()
         {
-            GUILayout.Space(20);
-            GUILayout.Label("<b>--- HOTKEY CONFIGURATION ---</b>");
-            GUILayout.Label("Click [Rebind] then press any key. [Clear] to unbind.");
+            GUILayout.Space(10);
+            GUILayout.Label("Press [Rebind] to capture a key, or [Type] to enter a combo (e.g. ctrl + b).");
             GUILayout.Space(5);
 
             if (_rebindingEntry != null && Time.frameCount > _rebindStartFrame)
@@ -495,7 +501,7 @@ namespace MasterTool.UI
                     }
                     else
                     {
-                        _rebindingEntry.Value = new KeyboardShortcut(e.keyCode);
+                        _pendingChanges[_rebindingEntry] = new KeyboardShortcut(e.keyCode);
                         _rebindingEntry = null;
                     }
                     e.Use();
@@ -507,31 +513,99 @@ namespace MasterTool.UI
 
             foreach (var binding in _hotkeyBindings)
             {
+                bool isRebinding = _rebindingEntry == binding.Entry;
+                bool isTyping = _typingEntry == binding.Entry;
+                bool hasPending = _pendingChanges.ContainsKey(binding.Entry);
+
+                KeyboardShortcut displayValue = hasPending ? _pendingChanges[binding.Entry] : binding.Entry.Value;
+
                 GUILayout.BeginHorizontal();
 
-                bool isRebinding = _rebindingEntry == binding.Entry;
-                string keyText = isRebinding ? "[ Press any key... ]" : binding.Entry.Value.MainKey.ToString();
+                string label = hasPending ? $"* {binding.Label}" : binding.Label;
+                GUILayout.Label(label, GUILayout.Width(160));
 
-                GUILayout.Label(binding.Label, GUILayout.Width(160));
-                GUILayout.Label(keyText, GUILayout.Width(130));
-
-                if (!isRebinding)
+                if (isTyping)
                 {
-                    if (GUILayout.Button("Rebind", GUILayout.Width(60)))
+                    _typingText = GUILayout.TextField(_typingText, GUILayout.Width(130));
+                    if (GUILayout.Button("OK", GUILayout.Width(35)))
                     {
-                        _rebindingEntry = binding.Entry;
-                        _rebindStartFrame = Time.frameCount;
+                        if (KeyBindParser.TryParseKeyBind(_typingText, out var mainKey, out var modifiers))
+                        {
+                            _pendingChanges[_typingEntry] = new KeyboardShortcut(mainKey, modifiers);
+                            _typingEntry = null;
+                            _typingText = "";
+                            _typingError = "";
+                        }
+                        else
+                        {
+                            _typingError = "Invalid key";
+                        }
                     }
-                    if (GUILayout.Button("Clear", GUILayout.Width(50)))
-                        binding.Entry.Value = new KeyboardShortcut(KeyCode.None);
+                    if (GUILayout.Button("X", GUILayout.Width(25)))
+                    {
+                        _typingEntry = null;
+                        _typingText = "";
+                        _typingError = "";
+                    }
                 }
-                else
+                else if (isRebinding)
                 {
+                    GUILayout.Label("[ Press any key... ]", GUILayout.Width(130));
                     if (GUILayout.Button("Cancel", GUILayout.Width(60)))
                         _rebindingEntry = null;
                 }
+                else
+                {
+                    string keyText = displayValue.MainKey == KeyCode.None ? "Not set" : displayValue.ToString();
+                    GUILayout.Label(keyText, GUILayout.Width(130));
+
+                    if (GUILayout.Button("Rebind", GUILayout.Width(55)))
+                    {
+                        _typingEntry = null;
+                        _rebindingEntry = binding.Entry;
+                        _rebindStartFrame = Time.frameCount;
+                    }
+                    if (GUILayout.Button("Type", GUILayout.Width(40)))
+                    {
+                        _rebindingEntry = null;
+                        _typingEntry = binding.Entry;
+                        _typingText = displayValue.MainKey == KeyCode.None ? "" : displayValue.ToString().ToLowerInvariant();
+                        _typingError = "";
+                    }
+                    if (GUILayout.Button("Clear", GUILayout.Width(45)))
+                    {
+                        _pendingChanges[binding.Entry] = new KeyboardShortcut(KeyCode.None);
+                    }
+                }
 
                 GUILayout.EndHorizontal();
+            }
+
+            if (_typingError.Length > 0)
+            {
+                GUILayout.Label($"<color=red>{_typingError}</color>");
+            }
+
+            GUILayout.Space(10);
+            GUILayout.BeginHorizontal();
+            bool hasChanges = _pendingChanges.Count > 0;
+            GUI.enabled = hasChanges;
+            if (GUILayout.Button("Save All"))
+            {
+                foreach (var kv in _pendingChanges)
+                    kv.Key.Value = kv.Value;
+                _pendingChanges.Clear();
+            }
+            if (GUILayout.Button("Cancel All"))
+            {
+                _pendingChanges.Clear();
+            }
+            GUI.enabled = true;
+            GUILayout.EndHorizontal();
+
+            if (hasChanges)
+            {
+                GUILayout.Label($"<i>{_pendingChanges.Count} unsaved change(s)</i>");
             }
         }
 

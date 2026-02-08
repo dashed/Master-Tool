@@ -135,7 +135,10 @@ public class ConfigSectionTests
         foreach (var kv in SectionEntryCounts)
         {
             if (kv.Key == "14. Hotkeys")
+            {
                 continue;
+            }
+
             Assert.That(
                 kv.Value,
                 Is.LessThanOrEqualTo(maxNonHotkey),

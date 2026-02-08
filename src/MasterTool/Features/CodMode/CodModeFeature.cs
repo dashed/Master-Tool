@@ -10,7 +10,6 @@ namespace MasterTool.Features.CodMode
     public static class CodModeFeature
     {
         private static float _timeSinceLastHit;
-        private static bool _isRegenerating;
         private static int _frameCount;
         private static bool _errorLogged;
         private static Player _subscribedPlayer;
@@ -47,7 +46,6 @@ namespace MasterTool.Features.CodMode
                     return;
                 }
 
-                _isRegenerating = true;
                 var controller = localPlayer.ActiveHealthController;
                 var healRate = PluginConfig.CodModeHealRate.Value;
 
@@ -114,7 +112,6 @@ namespace MasterTool.Features.CodMode
         private static void OnBeingHit(DamageInfoStruct damageInfo, EBodyPart bodyPart, float absorbed)
         {
             _timeSinceLastHit = 0f;
-            _isRegenerating = false;
         }
 
         private static void OnPlayerDeadOrUnspawn(Player player)
@@ -129,7 +126,6 @@ namespace MasterTool.Features.CodMode
         public static void NotifyDamage()
         {
             _timeSinceLastHit = 0f;
-            _isRegenerating = false;
         }
 
         // TODO: Wire PluginConfig.CodModeRemoveEffects — requires subscribing to

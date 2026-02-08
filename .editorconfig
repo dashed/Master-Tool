@@ -116,7 +116,7 @@ csharp_style_pattern_local_over_anonymous_function = false:none
 csharp_style_inlined_variable_declaration = true
 
 # Space preferences
-csharp_space_after_cast = true
+csharp_space_after_cast = false
 csharp_space_after_colon_in_inheritance_clause = true
 csharp_space_after_comma = true
 csharp_space_after_dot = false

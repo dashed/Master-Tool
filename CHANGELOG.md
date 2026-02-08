@@ -6,6 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [2.17.0] - 2026-02-08
+
+### Added
+
+- Text input mode for hotkey rebinding — type key names like "ctrl + b", "shift + f1", "numpad5" using the [Type] button
+- KeyBindParser utility: parses user-friendly key bind strings with 80+ aliases for modifiers, F-keys, numpad, arrow keys, mouse buttons, and special keys
+- Draft/pending state for hotkey changes — changes are staged (marked with \*) until explicitly saved or cancelled
+- Save All / Cancel All buttons for bulk hotkey operations
+- Unit tests for KeyBindParser: key name parsing, key bind combos, modifier detection, pending changes logic (67 tests)
+
+### Changed
+
+- Hotkey rebinding no longer saves immediately on keypress — requires explicit Save to commit
+- Hotkey tab UI redesigned: each entry shows current binding, [Rebind] for keypress capture, [Type] for text input, [Clear] to unbind
+- `.editorconfig`: set `csharp_space_after_cast = false` to resolve conflict between CSharpier and dotnet format
+
 ## [2.16.0] - 2026-02-08
 
 ### Added

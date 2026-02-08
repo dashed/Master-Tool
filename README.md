@@ -120,7 +120,7 @@ The compiled `MasterTool.dll` will be in `build/`.
 | Feature | Description |
 |---------|-------------|
 | **Mod Menu** | Full in-game GUI with 7 tabs and sub-tabs for configuring all features. |
-| **Hotkey Rebinding** | In-game hotkey configuration — click [Rebind], press any key, done. All 22 hotkeys are customizable from the Hotkeys tab. Press Escape to cancel, [Clear] to unbind. Changes persist to the BepInEx config file. |
+| **Hotkey Rebinding** | In-game hotkey configuration with draft state. Click [Rebind] to capture a keypress, or [Type] to enter key names like "ctrl + b". Changes are staged (marked with \*) and committed with Save All. Supports 80+ key aliases. Press Escape to cancel, [Clear] to unbind. |
 | **Status Window** | Compact overlay showing active feature toggles and current settings. |
 
 ---
@@ -263,6 +263,8 @@ Master-Tool/
             ├── UI/
             │   ├── HotkeyRebindTests.cs
             │   └── SubTabTests.cs
+            ├── Utils/
+            │   └── KeyBindParserTests.cs
             └── GameStateRefreshTests.cs
 ```
 

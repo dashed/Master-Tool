@@ -23,44 +23,49 @@ public class ChamsModeTests
     [Test]
     public void ChamsMode_SolidIsZero()
     {
-        Assert.That((int)ChamsMode.Solid, Is.EqualTo(0));
+        int solid = (int)ChamsMode.Solid;
+        Assert.That(solid, Is.EqualTo(0));
     }
 
     [Test]
     public void ChamsMode_CullFrontIsOne()
     {
-        Assert.That((int)ChamsMode.CullFront, Is.EqualTo(1));
+        int cullFront = (int)ChamsMode.CullFront;
+        Assert.That(cullFront, Is.EqualTo(1));
     }
 
     [Test]
     public void ChamsMode_OutlineIsTwo()
     {
-        Assert.That((int)ChamsMode.Outline, Is.EqualTo(2));
+        int outline = (int)ChamsMode.Outline;
+        Assert.That(outline, Is.EqualTo(2));
     }
 
     // --- Mode cycling tests ---
 
+    private static ChamsMode CycleMode(ChamsMode current)
+    {
+        return (ChamsMode)(((int)current + 1) % 3);
+    }
+
     [Test]
     public void ModeCycle_SolidToCullFront()
     {
-        var current = ChamsMode.Solid;
-        var next = (ChamsMode)(((int)current + 1) % 3);
+        var next = CycleMode(ChamsMode.Solid);
         Assert.That(next, Is.EqualTo(ChamsMode.CullFront));
     }
 
     [Test]
     public void ModeCycle_CullFrontToOutline()
     {
-        var current = ChamsMode.CullFront;
-        var next = (ChamsMode)(((int)current + 1) % 3);
+        var next = CycleMode(ChamsMode.CullFront);
         Assert.That(next, Is.EqualTo(ChamsMode.Outline));
     }
 
     [Test]
     public void ModeCycle_OutlineToSolid()
     {
-        var current = ChamsMode.Outline;
-        var next = (ChamsMode)(((int)current + 1) % 3);
+        var next = CycleMode(ChamsMode.Outline);
         Assert.That(next, Is.EqualTo(ChamsMode.Solid));
     }
 
@@ -68,11 +73,11 @@ public class ChamsModeTests
     public void ModeCycle_FullLoop()
     {
         var mode = ChamsMode.Solid;
-        mode = (ChamsMode)(((int)mode + 1) % 3);
+        mode = CycleMode(mode);
         Assert.That(mode, Is.EqualTo(ChamsMode.CullFront));
-        mode = (ChamsMode)(((int)mode + 1) % 3);
+        mode = CycleMode(mode);
         Assert.That(mode, Is.EqualTo(ChamsMode.Outline));
-        mode = (ChamsMode)(((int)mode + 1) % 3);
+        mode = CycleMode(mode);
         Assert.That(mode, Is.EqualTo(ChamsMode.Solid));
     }
 
@@ -189,7 +194,9 @@ public class ChamsModeTests
         foreach (var key in keys)
         {
             if (key == null)
+            {
                 dead.Add(key);
+            }
         }
 
         // Null keys don't exist in dict, but the purge list is correct
@@ -218,7 +225,9 @@ public class ChamsModeTests
         foreach (var kv in dict)
         {
             if (kv.Key is FakeSkinnedRenderer)
+            {
                 keysToRemove.Add(kv.Key);
+            }
         }
 
         foreach (var key in keysToRemove)
@@ -247,7 +256,9 @@ public class ChamsModeTests
         foreach (var kv in dict)
         {
             if (kv.Key is FakeMeshRenderer)
+            {
                 keysToRemove.Add(kv.Key);
+            }
         }
 
         foreach (var key in keysToRemove)
@@ -274,7 +285,10 @@ public class ChamsModeTests
         foreach (var name in objectNames)
         {
             if (name == outlineName)
+            {
                 continue;
+            }
+
             processed++;
         }
 
