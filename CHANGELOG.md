@@ -6,6 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [2.20.0] - 2026-02-08
+
+### Added
+
+- Feature conflict test suite (`FeatureConflictTests.cs`, 24 tests) validating behavior when multiple features are enabled simultaneously:
+  - **Damage chain priority** (8 tests): GodMode overrides all, HeadshotIgnore beats HeadDamagePercent, head% and reduction% stack multiplicatively, Keep1Health clamps after reductions, non-head hits ignore head features
+  - **GodMode + CodMode** (3 tests): CodMode heals independently — timer accumulates and triggers healing regardless of damage blocking
+  - **FlyMode + Speedhack** (4 tests): displacement vectors are cumulative, both scale with deltaTime, zero input on either contributes nothing
+  - **DamageReduction + Keep1Health edge cases** (3 tests): lethal clamping, non-lethal passthrough, "Head And Thorax" selection skips stomach
+  - **Sustenance independence** (2 tests): energy/hydration operate independently of CodMode healing
+  - **Fall damage + Fly Mode** (2 tests): SafeHeight protects any practical fall, DefaultHeight only covers short drops
+  - **Weight + speed** (2 tests): weight calculation independent of movement displacement
+- `SpeedhackLogic` in MasterTool.Core: extracted displacement formula for testable speedhack interactions
+
 ## [2.19.0] - 2026-02-08
 
 ### Added
