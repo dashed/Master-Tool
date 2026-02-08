@@ -1,89 +1,223 @@
-# Master Tools - Features Guide
+# Master Tool - SPT Mod Menu
 
-***To install, simply extract the "master.dll" file to "SPT\BepInEx\plugins"***
+An advanced BepInEx mod menu for **Single Player Tarkov (SPT)** featuring combat utilities, ESP overlays, movement enhancements, visual tweaks, and a full in-game GUI with seven configuration tabs.
 
-⌨️ Controls
+---
 
-•
-INSERT: Open/Close the Mod Menu.
+## Prerequisites
 
-• NumpadKeys
+| Requirement | Version |
+|-------------|---------|
+| SPT (Single Player Tarkov) | 4.0+ |
+| BepInEx | 5.x |
+| .NET Framework | 4.7.2 (bundled with SPT) |
 
+## Installation
 
+1. Download the latest `MasterTool.dll` from the [Releases](https://github.com/M4st3rzzz/Master-Tool/releases) page.
+2. Copy `MasterTool.dll` into your SPT installation:
+   ```
+   SPT\BepInEx\plugins\MasterTool.dll
+   ```
+3. Launch SPT. The mod menu is accessible in-raid by pressing **Insert**.
 
+## Building from Source
 
+### 1. Clone the repository
 
-🛡️ General Cheats
+```bash
+git clone https://github.com/M4st3rzzz/Master-Tool.git
+cd Master-Tool
+```
 
-•
-GodMode: Makes your character immune to all forms of damage. You will not take damage from bullets, falls, or explosions.
+### 2. Copy required game assemblies
 
-•
-Infinite Stamina: Keeps your Leg Stamina, Arm Stamina (Aiming), and Oxygen levels at 100% at all times.
+Create a `libs/` folder in the repository root and copy the following DLLs from your SPT installation:
 
-•
-No Weight Penalties: Removes movement speed and stamina drain penalties caused by carrying heavy gear or loot.
+| DLL | Source path |
+|-----|-------------|
+| `BepInEx.dll` | `SPT/BepInEx/core/BepInEx.dll` |
+| `0Harmony.dll` | `SPT/BepInEx/core/0Harmony.dll` |
+| `Assembly-CSharp.dll` | `SPT/EscapeFromTarkov_Data/Managed/Assembly-CSharp.dll` |
+| `UnityEngine.dll` | `SPT/EscapeFromTarkov_Data/Managed/UnityEngine.dll` |
+| `UnityEngine.CoreModule.dll` | `SPT/EscapeFromTarkov_Data/Managed/UnityEngine.CoreModule.dll` |
+| `UnityEngine.IMGUIModule.dll` | `SPT/EscapeFromTarkov_Data/Managed/UnityEngine.IMGUIModule.dll` |
+| `UnityEngine.PhysicsModule.dll` | `SPT/EscapeFromTarkov_Data/Managed/UnityEngine.PhysicsModule.dll` |
+| `Comfort.dll` | `SPT/EscapeFromTarkov_Data/Managed/Comfort.dll` |
 
-•
-Unlock All Doors: A powerful utility that instantly unlocks every locked door and container on the map during a raid. No keys required.
+### 3. Build
 
+```bash
+dotnet build
+```
 
+The compiled `MasterTool.dll` will be in `src/MasterTool/bin/Debug/net472/`.
 
+---
 
+## Features
 
+### Combat
 
-👥 Player ESP
+| Feature | Description |
+|---------|-------------|
+| **God Mode** | Immunity to all damage sources including bullets, explosions, and fall damage. |
+| **Teleport Enemies** | Teleport all enemies to your position. |
 
-Visualizes all players and bots through walls with the following features:
+### Movement
 
-•
-Faction Identification: Different colors for BEAR, USEC, Bosses and Savages (Scavs/Raiders).
+| Feature | Description |
+|---------|-------------|
+| **Infinite Stamina** | Keeps leg stamina, arm stamina (aiming), and oxygen at 100% at all times. |
+| **No Weight Penalties** | Removes movement speed and stamina drain penalties from carrying heavy gear or loot. |
+| **Speedhack** | Adjustable movement speed multiplier. |
 
-•
-Distance Tracking: Shows the exact distance in meters to each target.
+### ESP (Extrasensory Perception)
 
-•
-Customizable Colors: Full RGB sliders to change faction colors in real-time.
+| Feature | Description |
+|---------|-------------|
+| **Player ESP** | Displays all players and bots through walls with faction-based color coding (BEAR, USEC, Boss, Scav/Raider). Includes distance tracking, customizable colors via RGB sliders, adjustable update rate, and distance filter. |
+| **Item ESP** | Shows loose items on the ground. Supports multi-filter search by name or ID with comma-separated lists (e.g., `LedX, GPU, Salewa`). |
+| **Container ESP** | Reveals items inside containers, crates, jackets, safes, and bodies. Uses a smart caching system (10-second refresh) and squared-distance calculations for zero FPS impact. |
+| **Quest ESP** | Highlights quest-related objectives and locations on the map. |
+| **Chams** | Applies colored material overlays to player models for enhanced visibility through geometry. |
 
-•
-Performance Control: Adjustable Update Rate (FPS) slider to balance between smooth visuals and CPU performance.
+### Visual
 
-•
-Distance Filter: Set a maximum range to avoid screen clutter.
+| Feature | Description |
+|---------|-------------|
+| **Thermal Vision** | Toggles thermal imaging overlay. |
+| **Night Vision** | Toggles night vision overlay. |
+| **Big Head Mode** | Scales enemy head bones for easier target acquisition. |
+| **Weapon FOV** | Adjusts the weapon viewmodel field of view. |
 
+### Utility
 
+| Feature | Description |
+|---------|-------------|
+| **Unlock All Doors** | Instantly unlocks every locked door and container on the map. No keys required. |
+| **Performance Culling** | Disables distant meshes for a performance boost. Note: bots may appear suddenly when entering the configured range. |
+| **Teleport Items** | Teleports nearby loot items to your position. |
 
+### UI
 
+| Feature | Description |
+|---------|-------------|
+| **Mod Menu** | Full in-game GUI with 7 tabs for configuring all features. |
+| **Status Window** | Compact overlay showing active feature toggles and current settings. |
 
-📦 Item & Container ESP
+---
 
-Advanced loot tracking system optimized for high performance:
+## Hotkey Reference
 
-•
-Loose Item ESP: Shows items lying on the ground.
+| Key | Action |
+|-----|--------|
+| `Insert` | Open / Close Mod Menu |
+| `Numpad 0` | Toggle Status Window |
+| `Numpad 1` | Toggle God Mode |
+| `Numpad 2` | Toggle Infinite Stamina |
+| `Numpad 3` | Toggle Quest ESP |
+| `Numpad 4` | Toggle No Weight Penalties |
+| `Numpad 5` | Toggle Player ESP |
+| `Numpad 6` | Toggle Item ESP |
+| `Numpad 7` | Toggle Container ESP |
+| `Numpad 8` | Toggle Performance Culling |
+| `Numpad 9` | Unlock All Doors |
+| `K` | Toggle Chams |
+| `L` | Toggle Weapon Info |
 
-•
-Container Item ESP: Shows items hidden inside crates, jackets, safes, and dead bodies.
+---
 
-•
-Multi-Filter System: Search for specific items by entering names or IDs. Supports comma-separated lists (e.g., LedX, GPU, Salewa).
+## Configuration
 
-•
-Optimized Performance: Uses a smart caching system for containers and squared-distance calculations to ensure zero FPS drops even on loot-heavy maps.
+All settings are persisted to a BepInEx config file at:
 
-•
-Update Rate (FPS): Independent refresh rate control for loot visuals.
+```
+SPT\BepInEx\config\com.master.tools.cfg
+```
 
+Settings are saved automatically when changed through the mod menu and are loaded on each game start.
 
+---
 
+## Project Structure
 
+```
+Master-Tool/
+├── Directory.Build.props          # Shared build properties (TFM, version, metadata)
+├── MasterTool.sln                 # Solution file
+├── libs/                          # Game & BepInEx assemblies (not checked in)
+├── src/
+│   └── MasterTool/
+│       ├── MasterTool.csproj      # Main plugin project
+│       ├── Config/
+│       │   └── PluginConfig.cs    # BepInEx configuration bindings
+│       ├── Models/
+│       │   ├── EspTarget.cs       # Player ESP data model
+│       │   ├── ItemEspTarget.cs   # Item ESP data model
+│       │   └── QuestEspTarget.cs  # Quest ESP data model
+│       ├── Utils/
+│       │   ├── PlayerUtils.cs     # Player helper methods
+│       │   └── ReflectionUtils.cs # Reflection helper methods
+│       ├── Features/
+│       │   ├── GodMode/
+│       │   │   └── DamagePatches.cs
+│       │   ├── InfiniteStamina/
+│       │   │   └── StaminaFeature.cs
+│       │   ├── Performance/
+│       │   │   └── CullingFeature.cs
+│       │   ├── DoorUnlock/
+│       │   │   └── DoorUnlockFeature.cs
+│       │   ├── Speedhack/
+│       │   │   └── SpeedhackFeature.cs
+│       │   ├── Vision/
+│       │   │   └── VisionFeature.cs
+│       │   ├── BigHeadMode/
+│       │   │   └── BigHeadFeature.cs
+│       │   └── Teleport/
+│       │       └── TeleportFeature.cs
+│       ├── ESP/
+│       │   ├── EspRenderer.cs     # Shared ESP drawing utilities
+│       │   ├── PlayerEsp.cs       # Player & bot ESP
+│       │   ├── ItemEsp.cs         # Loose item & container ESP
+│       │   ├── QuestEsp.cs        # Quest objective ESP
+│       │   └── ChamsManager.cs    # Chams material manager
+│       └── UI/
+│           ├── GuiStyles.cs       # IMGUI style definitions
+│           ├── ColorPicker.cs     # RGB color picker widget
+│           └── StatusWindow.cs    # Status overlay window
+└── tests/
+    └── MasterTool.Tests/
+        └── MasterTool.Tests.csproj  # Unit tests (NUnit, net9.0)
+```
 
-⚙️ Technical Details
+---
 
-• Optimization: 
+## Development
 
-  - Features a container caching system that refreshes every 10 seconds to maintain high frame rates. 
+### Building
 
-  - Culling provides a small performance boost by disabling meshes at distance. ⚠️ However, this may cause bots to appear instantly once they enter the configured range. 
+```bash
+dotnet build
+```
 
-• Config file on -> "SPT\BepInEx\config\com.master.tools.cfg"
+### Running Tests
+
+Tests cover pure logic only (models, utilities, config defaults). Game-dependent code requires Unity/EFT assemblies and cannot be unit-tested.
+
+```bash
+dotnet test
+```
+
+### Contributing
+
+1. Fork the repository.
+2. Create a feature branch (`git checkout -b feature/my-feature`).
+3. Commit your changes.
+4. Push to your fork and open a Pull Request.
+
+---
+
+## License
+
+This project is licensed under the **MIT License**. See [LICENSE](LICENSE) for details.
