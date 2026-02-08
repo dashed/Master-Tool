@@ -27,7 +27,7 @@ This audit examines every feature module for the same three patterns, plus two a
 | 2 | BigHeadFeature forces head scale to 1x when OFF | **MEDIUM** | `BigHeadFeature.cs:32-35` | Unconditional state override |
 | 3 | ~~NoWeight toggle has no implementation~~ | ~~**MEDIUM**~~ | ~~Multiple files~~ | ~~Missing feature~~ — **FIXED in v2.3.0** |
 | 4 | ~~ChamsManager leaks shader references~~ | ~~**LOW**~~ | ~~`ChamsManager.cs:73`~~ | ~~Resource leak~~ — **FIXED in v2.3.2** |
-| 5 | GameState.MainCamera never refreshes if changed | **LOW** | `GameState.cs:42-43` | Stale cache |
+| 5 | ~~GameState.MainCamera never refreshes if changed~~ | ~~**LOW**~~ | ~~`GameState.cs:42-43`~~ | ~~Stale cache~~ — **FIXED in v2.3.3** |
 | 6 | ChamsIntensity config unused | **LOW** | `PluginConfig.cs:52` | Dead config |
 | 7 | FovMelee config unused | **LOW** | `PluginConfig.cs:89` | Dead config |
 | 8 | ColorQuestZone config unused | **LOW** | `PluginConfig.cs:79` | Dead config |
@@ -223,32 +223,13 @@ public static void Apply(GameWorld gameWorld)
 
 ---
 
-### BUG-5: GameState.MainCamera never refreshes if camera changes but isn't null [LOW]
+### ~~BUG-5: GameState.MainCamera never refreshes if camera changes but isn't null~~ [FIXED in v2.3.3]
 
-**File:** `src/MasterTool/Plugin/GameState.cs` lines 42–43
+**Resolution:** Removed the `if (MainCamera == null)` guard in `GameState.Refresh()`. The camera is now always re-fetched via `Camera.main ?? GameObject.Find("FPS Camera")` every refresh cycle (4 seconds). This ensures camera swaps (spectator, death screen, scene changes) are picked up even when the old camera object isn't destroyed.
 
-#### Current Code
-
-```csharp
-if (MainCamera == null)
-    MainCamera = Camera.main ?? GameObject.Find("FPS Camera")?.GetComponent<Camera>();
-```
-
-#### Problem
-
-`MainCamera` is only refreshed when it becomes `null`. If the active camera changes (e.g., spectator cam, death screen, cutscene), the stale reference persists. ESP and other features would use the wrong camera for screen-space projection.
-
-In practice, Unity cameras are usually destroyed on scene change (which makes the reference null), so this is low severity. But camera swaps within a scene (spectator mode) could cause issues.
-
-#### Proposed Fix
-
-Always re-check during refresh:
-
-```csharp
-MainCamera = Camera.main ?? GameObject.Find("FPS Camera")?.GetComponent<Camera>();
-```
-
-Remove the `if (MainCamera == null)` guard.
+**Files modified:**
+- `src/MasterTool/Plugin/GameState.cs` — Removed null guard on camera fetch
+- `tests/MasterTool.Tests/Tests/GameStateRefreshTests.cs` — NEW: 7 unit tests for camera refresh logic
 
 ---
 
@@ -333,5 +314,5 @@ The SPT server is primarily a **data server** that manages profiles, inventory, 
 - [ ] Toggle BigHead ON/OFF, verify only mod-scaled heads are reset
 - [x] Verify NoWeight toggle either works or is removed — **Implemented in v2.3.0**
 - [x] Long raid test: verify ChamsManager doesn't accumulate stale shader entries — **Periodic cleanup added in v2.3.2**
-- [ ] Camera transition test: verify ESP uses correct camera after spectator/death
+- [x] Camera transition test: verify ESP uses correct camera after spectator/death — **Always-refresh added in v2.3.3**
 - [x] GodMode: verify patch installation is logged (success or failure) — **Logging added in v2.3.1**

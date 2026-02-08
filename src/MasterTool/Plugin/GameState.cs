@@ -44,8 +44,7 @@ namespace MasterTool.Plugin
                 if (LocalPlayer == null)
                     return;
                 LocalActiveHealthController = LocalPlayer.ActiveHealthController;
-                if (MainCamera == null)
-                    MainCamera = Camera.main ?? GameObject.Find("FPS Camera")?.GetComponent<Camera>();
+                MainCamera = Camera.main ?? GameObject.Find("FPS Camera")?.GetComponent<Camera>();
             }
             catch (Exception ex)
             {

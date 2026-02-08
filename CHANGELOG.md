@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [2.3.3] - 2026-02-07
+
+### Fixed
+
+- GameState.MainCamera now always re-fetches on refresh cycle — previously only fetched when null, causing stale camera references after spectator mode, death screen, or scene transitions
+
+### Added
+
+- Unit tests for camera refresh logic (7 tests)
+
 ## [2.3.2] - 2026-02-07
 
 ### Fixed
