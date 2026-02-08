@@ -67,6 +67,7 @@ The compiled `MasterTool.dll` will be in `build/`.
 | **Keep 1 Health** | Prevents lethal damage by clamping HP to 3 on protected body parts. Selectable protection: "All" body parts or "Head And Thorax" only. |
 | **Headshot Protection** | Toggle to completely ignore head damage, plus a separate head damage percentage slider (0–100%) for fine-grained control. |
 | **Enemy Damage Multiplier** | Configurable multiplier (1–20x) applied to all damage dealt to non-local players (bots/AI). |
+| **COD Mode** | Auto-heal: after not taking damage for a configurable delay (default 10s), all body parts regenerate HP at a configurable rate. Damage resets the timer. |
 | **Teleport Enemies** | Teleport all enemies to 3 meters in front of you. |
 
 ### Movement
@@ -79,6 +80,7 @@ The compiled `MasterTool.dll` will be in `build/`.
 | **No Weight Penalties** | Configurable weight scale (0–100%) — set to 0% for weightless, or fine-tune to reduce weight penalties without removing them entirely. |
 | **No Fall Damage** | Eliminates fall damage by setting safe fall height to an extreme value. State-tracked: only resets when the mod forced the change, never interferes with game defaults. |
 | **Speedhack** | Adjustable movement speed multiplier. |
+| **Reload Speed** | Adjustable magazine load/unload times. Lower values = faster reloads. State-tracked: restores game defaults when disabled. |
 
 ### ESP (Extrasensory Perception)
 
@@ -263,7 +265,7 @@ make build    # or: dotnet build
 
 ### Running Tests
 
-183 tests cover pure logic: models, utilities, feature state machines, ESP extraction, and config defaults. Game-dependent code requires Unity/EFT assemblies and cannot be unit-tested — tests duplicate the pure logic with fake types.
+211 tests cover pure logic: models, utilities, feature state machines, ESP extraction, and config defaults. Game-dependent code requires Unity/EFT assemblies and cannot be unit-tested — tests duplicate the pure logic with fake types.
 
 ```bash
 make test     # or: dotnet test

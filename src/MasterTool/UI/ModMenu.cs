@@ -144,6 +144,38 @@ namespace MasterTool.UI
                 DoorUnlockFeature.UnlockAll();
 
             GUILayout.Space(10);
+            GUILayout.Label("<b>--- COD MODE ---</b>");
+            PluginConfig.CodModeEnabled.Value = GUILayout.Toggle(
+                PluginConfig.CodModeEnabled.Value,
+                $" COD Mode (Auto-Heal) [{PluginConfig.ToggleCodModeHotkey.Value}]"
+            );
+            if (PluginConfig.CodModeEnabled.Value)
+            {
+                GUILayout.Label($"Heal Rate: {PluginConfig.CodModeHealRate.Value:F0} HP/cycle");
+                PluginConfig.CodModeHealRate.Value = GUILayout.HorizontalSlider(PluginConfig.CodModeHealRate.Value, 1f, 100f);
+                GUILayout.Label($"Heal Delay: {PluginConfig.CodModeHealDelay.Value:F0}s");
+                PluginConfig.CodModeHealDelay.Value = GUILayout.HorizontalSlider(PluginConfig.CodModeHealDelay.Value, 0f, 600f);
+                PluginConfig.CodModeRemoveEffects.Value = GUILayout.Toggle(
+                    PluginConfig.CodModeRemoveEffects.Value,
+                    " Remove Effects (experimental)"
+                );
+            }
+
+            GUILayout.Space(10);
+            GUILayout.Label("<b>--- RELOAD SPEED ---</b>");
+            PluginConfig.ReloadSpeedEnabled.Value = GUILayout.Toggle(
+                PluginConfig.ReloadSpeedEnabled.Value,
+                $" Reload Speed [{PluginConfig.ToggleReloadSpeedHotkey.Value}]"
+            );
+            if (PluginConfig.ReloadSpeedEnabled.Value)
+            {
+                GUILayout.Label($"Load Time: {PluginConfig.ReloadLoadTime.Value:F2} (default 0.85)");
+                PluginConfig.ReloadLoadTime.Value = GUILayout.HorizontalSlider(PluginConfig.ReloadLoadTime.Value, 0.01f, 2f);
+                GUILayout.Label($"Unload Time: {PluginConfig.ReloadUnloadTime.Value:F2} (default 0.30)");
+                PluginConfig.ReloadUnloadTime.Value = GUILayout.HorizontalSlider(PluginConfig.ReloadUnloadTime.Value, 0.01f, 2f);
+            }
+
+            GUILayout.Space(10);
             GUILayout.Label("<b>--- PERFORMANCE ---</b>");
             PluginConfig.PerformanceMode.Value = GUILayout.Toggle(
                 PluginConfig.PerformanceMode.Value,

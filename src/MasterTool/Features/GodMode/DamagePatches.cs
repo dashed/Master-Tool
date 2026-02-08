@@ -4,6 +4,7 @@ using EFT;
 using EFT.HealthSystem;
 using HarmonyLib;
 using MasterTool.Config;
+using MasterTool.Features.CodMode;
 using MasterTool.Plugin;
 
 namespace MasterTool.Features.GodMode
@@ -141,6 +142,8 @@ namespace MasterTool.Features.GodMode
                         damage = Math.Max(0f, currentHealth.Current - 3f);
                     }
                 }
+
+                CodModeFeature.NotifyDamage();
 
                 return true;
             }

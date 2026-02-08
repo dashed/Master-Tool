@@ -45,6 +45,15 @@ namespace MasterTool.UI
                 $"ESP: <color={(PluginConfig.EspEnabled.Value ? "green" : "red")}>{(PluginConfig.EspEnabled.Value ? "ON" : "OFF")}</color>\n";
             status +=
                 $"Quest ESP: <color={(PluginConfig.QuestEspEnabled.Value ? "green" : "red")}>{(PluginConfig.QuestEspEnabled.Value ? "ON" : "OFF")}</color>\n";
+            if (PluginConfig.CodModeEnabled.Value)
+            {
+                status += $"COD Mode: <color=green>ON</color>\n";
+            }
+            if (PluginConfig.ReloadSpeedEnabled.Value)
+            {
+                status +=
+                    $"Reload: <color=yellow>{PluginConfig.ReloadLoadTime.Value:F2}/{PluginConfig.ReloadUnloadTime.Value:F2}</color>\n";
+            }
 
             if (PluginConfig.ShowWeaponInfo.Value && localPlayer != null)
             {

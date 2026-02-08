@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [2.7.0] - 2026-02-07
+
+### Added
+
+- COD Mode (auto-heal): after not taking damage for a configurable delay (default 10s), all 7 body parts regenerate HP at a configurable rate (default 10 HP/cycle). Damage resets the heal timer. Throttled to every 60 frames for performance
+- Magazine Reload Speed: adjustable load/unload times via `Singleton<BackendConfigSettingsClass>`. State-tracked: restores defaults (0.85/0.3) when disabled
+- COD Mode damage notification: `DamagePatches` now calls `CodModeFeature.NotifyDamage()` when the local player takes damage, resetting the heal timer
+- Config entries for COD Mode (toggle, heal rate 1–100, heal delay 0–600s, remove effects toggle) and Reload Speed (toggle, load time 0.01–2.0, unload time 0.01–2.0)
+- Mod menu controls: COD Mode section (toggle, heal rate slider, heal delay slider, effects toggle) and Reload Speed section (toggle, load/unload time sliders)
+- Status window indicators for COD Mode and Reload Speed
+- Hotkey bindings for COD Mode and Reload Speed (default: unbound)
+- Unit tests for COD Mode heal logic (19 tests) and Reload Speed state machine (9 tests)
+
 ## [2.6.0] - 2026-02-07
 
 ### Added

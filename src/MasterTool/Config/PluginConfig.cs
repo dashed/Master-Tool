@@ -23,6 +23,13 @@ namespace MasterTool.Config
         public static ConfigEntry<bool> InfiniteEnergyEnabled;
         public static ConfigEntry<bool> InfiniteHydrationEnabled;
         public static ConfigEntry<bool> NoFallDamageEnabled;
+        public static ConfigEntry<bool> CodModeEnabled;
+        public static ConfigEntry<float> CodModeHealRate;
+        public static ConfigEntry<float> CodModeHealDelay;
+        public static ConfigEntry<bool> CodModeRemoveEffects;
+        public static ConfigEntry<bool> ReloadSpeedEnabled;
+        public static ConfigEntry<float> ReloadLoadTime;
+        public static ConfigEntry<float> ReloadUnloadTime;
         public static ConfigEntry<int> DamageReductionPercent;
         public static ConfigEntry<bool> Keep1HealthEnabled;
         public static ConfigEntry<string> Keep1HealthSelection;
@@ -49,6 +56,8 @@ namespace MasterTool.Config
         public static ConfigEntry<KeyboardShortcut> ToggleEnergyHotkey;
         public static ConfigEntry<KeyboardShortcut> ToggleHydrationHotkey;
         public static ConfigEntry<KeyboardShortcut> ToggleFallDamageHotkey;
+        public static ConfigEntry<KeyboardShortcut> ToggleCodModeHotkey;
+        public static ConfigEntry<KeyboardShortcut> ToggleReloadSpeedHotkey;
 
         // --- Player ESP Settings ---
         public static ConfigEntry<bool> EspEnabled;
@@ -122,6 +131,38 @@ namespace MasterTool.Config
             InfiniteEnergyEnabled = config.Bind("General", "Infinite Energy", false, "Energy never drains.");
             InfiniteHydrationEnabled = config.Bind("General", "Infinite Hydration", false, "Hydration never drains.");
             NoFallDamageEnabled = config.Bind("General", "No Fall Damage", false, "Eliminates fall damage.");
+            CodModeEnabled = config.Bind("General", "COD Mode", false, "Auto-heal after not taking damage.");
+            CodModeHealRate = config.Bind(
+                "General",
+                "COD Mode Heal Rate",
+                10f,
+                new ConfigDescription("HP healed per cycle (every 60 frames).", new AcceptableValueRange<float>(1f, 100f))
+            );
+            CodModeHealDelay = config.Bind(
+                "General",
+                "COD Mode Heal Delay",
+                10f,
+                new ConfigDescription("Seconds after last damage before healing starts.", new AcceptableValueRange<float>(0f, 600f))
+            );
+            CodModeRemoveEffects = config.Bind(
+                "General",
+                "COD Mode Remove Effects",
+                false,
+                "Auto-remove bleeds and fractures during heal (experimental)."
+            );
+            ReloadSpeedEnabled = config.Bind("General", "Reload Speed", false, "Adjust magazine reload speed.");
+            ReloadLoadTime = config.Bind(
+                "General",
+                "Reload Load Time",
+                0.85f,
+                new ConfigDescription("Magazine load time (lower = faster, default 0.85).", new AcceptableValueRange<float>(0.01f, 2f))
+            );
+            ReloadUnloadTime = config.Bind(
+                "General",
+                "Reload Unload Time",
+                0.3f,
+                new ConfigDescription("Magazine unload time (lower = faster, default 0.3).", new AcceptableValueRange<float>(0.01f, 2f))
+            );
             DamageReductionPercent = config.Bind(
                 "General",
                 "Damage Reduction %",
@@ -201,6 +242,8 @@ namespace MasterTool.Config
             ToggleEnergyHotkey = config.Bind("Hotkeys", "15. Toggle Energy", new KeyboardShortcut(KeyCode.None), hotkeyDesc);
             ToggleHydrationHotkey = config.Bind("Hotkeys", "16. Toggle Hydration", new KeyboardShortcut(KeyCode.None), hotkeyDesc);
             ToggleFallDamageHotkey = config.Bind("Hotkeys", "17. Toggle Fall Damage", new KeyboardShortcut(KeyCode.None), hotkeyDesc);
+            ToggleCodModeHotkey = config.Bind("Hotkeys", "18. Toggle COD Mode", new KeyboardShortcut(KeyCode.None), hotkeyDesc);
+            ToggleReloadSpeedHotkey = config.Bind("Hotkeys", "19. Toggle Reload Speed", new KeyboardShortcut(KeyCode.None), hotkeyDesc);
 
             // Movement
             SpeedhackEnabled = config.Bind("Movement", "Speedhack", false, "Move faster.");
