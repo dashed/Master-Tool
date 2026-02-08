@@ -4,6 +4,8 @@
     <AssemblyName>MasterTool</AssemblyName>
     <RootNamespace>MasterTool</RootNamespace>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <OutputPath>..\..\build\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 
   <!--
@@ -15,6 +17,7 @@
       - EscapeFromTarkov_Data/Managed/UnityEngine.CoreModule.dll
       - EscapeFromTarkov_Data/Managed/UnityEngine.IMGUIModule.dll
       - EscapeFromTarkov_Data/Managed/UnityEngine.PhysicsModule.dll
+      - EscapeFromTarkov_Data/Managed/UnityEngine.TextRenderingModule.dll
       - EscapeFromTarkov_Data/Managed/Comfort.dll
       - BepInEx/core/0Harmony.dll
   -->
@@ -26,6 +29,7 @@
     <Reference Include="UnityEngine.CoreModule" HintPath="..\..\libs\UnityEngine.CoreModule.dll" Private="false" />
     <Reference Include="UnityEngine.IMGUIModule" HintPath="..\..\libs\UnityEngine.IMGUIModule.dll" Private="false" />
     <Reference Include="UnityEngine.PhysicsModule" HintPath="..\..\libs\UnityEngine.PhysicsModule.dll" Private="false" />
+    <Reference Include="UnityEngine.TextRenderingModule" HintPath="..\..\libs\UnityEngine.TextRenderingModule.dll" Private="false" />
     <Reference Include="Comfort" HintPath="..\..\libs\Comfort.dll" Private="false" />
   </ItemGroup>
 

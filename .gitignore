@@ -51,12 +51,19 @@ coverage*.info
 .idea/
 *.sln.iml
 
+## Game assemblies (copied from SPT installation)
+libs/
+
+## VS Code
+.vscode/
+
 ## OS files
 .DS_Store
 Thumbs.db
 desktop.ini
 
 ## Build output
+build/
 artifacts/
 publish/
 out/

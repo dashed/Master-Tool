@@ -43,6 +43,7 @@ Create a `libs/` folder in the repository root and copy the following DLLs from 
 | `UnityEngine.CoreModule.dll` | `SPT/EscapeFromTarkov_Data/Managed/UnityEngine.CoreModule.dll` |
 | `UnityEngine.IMGUIModule.dll` | `SPT/EscapeFromTarkov_Data/Managed/UnityEngine.IMGUIModule.dll` |
 | `UnityEngine.PhysicsModule.dll` | `SPT/EscapeFromTarkov_Data/Managed/UnityEngine.PhysicsModule.dll` |
+| `UnityEngine.TextRenderingModule.dll` | `SPT/EscapeFromTarkov_Data/Managed/UnityEngine.TextRenderingModule.dll` |
 | `Comfort.dll` | `SPT/EscapeFromTarkov_Data/Managed/Comfort.dll` |
 
 ### 3. Build
@@ -51,7 +52,7 @@ Create a `libs/` folder in the repository root and copy the following DLLs from 
 dotnet build
 ```
 
-The compiled `MasterTool.dll` will be in `src/MasterTool/bin/Debug/net472/`.
+The compiled `MasterTool.dll` will be in `build/`.
 
 ---
 
