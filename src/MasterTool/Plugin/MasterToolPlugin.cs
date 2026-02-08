@@ -56,7 +56,11 @@ namespace MasterTool.Plugin
 
         private void OnDestroy()
         {
-            try { _harmony?.UnpatchSelf(); } catch { }
+            try
+            {
+                _harmony?.UnpatchSelf();
+            }
+            catch { }
         }
 
         private void Update()
@@ -70,7 +74,8 @@ namespace MasterTool.Plugin
             var gameWorld = _gameState.GameWorld;
             var mainCamera = _gameState.MainCamera;
 
-            if (localPlayer == null) return;
+            if (localPlayer == null)
+                return;
 
             if (PluginConfig.InfiniteStaminaEnabled.Value)
                 StaminaFeature.Apply(localPlayer);
@@ -92,15 +97,17 @@ namespace MasterTool.Plugin
                 SpeedhackFeature.Apply(localPlayer);
 
             _vision.UpdateThermalVision(mainCamera);
-
-            if (localPlayer.HandsController == null) return;
-            if (!(localPlayer.HandsController.Item is Weapon)) return;
-
             _vision.UpdateNightVision(mainCamera);
-            _vision.UpdateWeaponFov(mainCamera, localPlayer);
 
             if (gameWorld != null)
                 BigHeadFeature.Apply(gameWorld);
+
+            if (localPlayer.HandsController == null)
+                return;
+            if (!(localPlayer.HandsController.Item is Weapon))
+                return;
+
+            _vision.UpdateWeaponFov(mainCamera, localPlayer);
         }
 
         private void OnGUI()
@@ -128,27 +135,43 @@ namespace MasterTool.Plugin
 
             if (_showUi)
             {
-                _windowRect = GUI.Window(WindowId, _windowRect, id =>
-                    _modMenu.Draw(id, _windowRect, gameWorld, localPlayer),
-                    "Advanced SPT Mod Menu");
+                _windowRect = GUI.Window(
+                    WindowId,
+                    _windowRect,
+                    id => _modMenu.Draw(id, _windowRect, gameWorld, localPlayer),
+                    "Advanced SPT Mod Menu"
+                );
             }
         }
 
         private void HandleHotkeys()
         {
-            if (PluginConfig.ToggleChamsHotkey.Value.IsDown()) PluginConfig.ChamsEnabled.Value = !PluginConfig.ChamsEnabled.Value;
-            if (PluginConfig.ToggleUiHotkey.Value.IsDown()) _showUi = !_showUi;
-            if (PluginConfig.ToggleStatusHotkey.Value.IsDown()) PluginConfig.StatusWindowEnabled.Value = !PluginConfig.StatusWindowEnabled.Value;
-            if (PluginConfig.ToggleWeaponInfoHotkey.Value.IsDown()) PluginConfig.ShowWeaponInfo.Value = !PluginConfig.ShowWeaponInfo.Value;
-            if (PluginConfig.ToggleGodModeHotkey.Value.IsDown()) PluginConfig.GodModeEnabled.Value = !PluginConfig.GodModeEnabled.Value;
-            if (PluginConfig.ToggleStaminaHotkey.Value.IsDown()) PluginConfig.InfiniteStaminaEnabled.Value = !PluginConfig.InfiniteStaminaEnabled.Value;
-            if (PluginConfig.ToggleWeightHotkey.Value.IsDown()) PluginConfig.NoWeightEnabled.Value = !PluginConfig.NoWeightEnabled.Value;
-            if (PluginConfig.ToggleEspHotkey.Value.IsDown()) PluginConfig.EspEnabled.Value = !PluginConfig.EspEnabled.Value;
-            if (PluginConfig.ToggleItemEspHotkey.Value.IsDown()) PluginConfig.ItemEspEnabled.Value = !PluginConfig.ItemEspEnabled.Value;
-            if (PluginConfig.ToggleContainerEspHotkey.Value.IsDown()) PluginConfig.ContainerEspEnabled.Value = !PluginConfig.ContainerEspEnabled.Value;
-            if (PluginConfig.ToggleCullingHotkey.Value.IsDown()) PluginConfig.PerformanceMode.Value = !PluginConfig.PerformanceMode.Value;
-            if (PluginConfig.ToggleUnlockDoorsHotkey.Value.IsDown()) DoorUnlockFeature.UnlockAll();
-            if (PluginConfig.ToggleQuestEspHotkey.Value.IsDown()) PluginConfig.QuestEspEnabled.Value = !PluginConfig.QuestEspEnabled.Value;
+            if (PluginConfig.ToggleChamsHotkey.Value.IsDown())
+                PluginConfig.ChamsEnabled.Value = !PluginConfig.ChamsEnabled.Value;
+            if (PluginConfig.ToggleUiHotkey.Value.IsDown())
+                _showUi = !_showUi;
+            if (PluginConfig.ToggleStatusHotkey.Value.IsDown())
+                PluginConfig.StatusWindowEnabled.Value = !PluginConfig.StatusWindowEnabled.Value;
+            if (PluginConfig.ToggleWeaponInfoHotkey.Value.IsDown())
+                PluginConfig.ShowWeaponInfo.Value = !PluginConfig.ShowWeaponInfo.Value;
+            if (PluginConfig.ToggleGodModeHotkey.Value.IsDown())
+                PluginConfig.GodModeEnabled.Value = !PluginConfig.GodModeEnabled.Value;
+            if (PluginConfig.ToggleStaminaHotkey.Value.IsDown())
+                PluginConfig.InfiniteStaminaEnabled.Value = !PluginConfig.InfiniteStaminaEnabled.Value;
+            if (PluginConfig.ToggleWeightHotkey.Value.IsDown())
+                PluginConfig.NoWeightEnabled.Value = !PluginConfig.NoWeightEnabled.Value;
+            if (PluginConfig.ToggleEspHotkey.Value.IsDown())
+                PluginConfig.EspEnabled.Value = !PluginConfig.EspEnabled.Value;
+            if (PluginConfig.ToggleItemEspHotkey.Value.IsDown())
+                PluginConfig.ItemEspEnabled.Value = !PluginConfig.ItemEspEnabled.Value;
+            if (PluginConfig.ToggleContainerEspHotkey.Value.IsDown())
+                PluginConfig.ContainerEspEnabled.Value = !PluginConfig.ContainerEspEnabled.Value;
+            if (PluginConfig.ToggleCullingHotkey.Value.IsDown())
+                PluginConfig.PerformanceMode.Value = !PluginConfig.PerformanceMode.Value;
+            if (PluginConfig.ToggleUnlockDoorsHotkey.Value.IsDown())
+                DoorUnlockFeature.UnlockAll();
+            if (PluginConfig.ToggleQuestEspHotkey.Value.IsDown())
+                PluginConfig.QuestEspEnabled.Value = !PluginConfig.QuestEspEnabled.Value;
         }
     }
 }

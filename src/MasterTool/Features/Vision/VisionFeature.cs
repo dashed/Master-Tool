@@ -14,32 +14,60 @@ namespace MasterTool.Features.Vision
     {
         private float _originalFov = 75f;
         private bool _fovInitialized;
+        private bool _modForcedNvOn;
+        private bool _modForcedThermalOn;
 
         /// <summary>
-        /// Enables or disables the thermal vision camera effect based on the config toggle.
+        /// Manages the thermal vision camera effect. When the mod toggle is ON, forces thermal
+        /// vision active. When toggled OFF, performs a one-time cleanup. When the mod toggle is
+        /// OFF and the mod didn't force it, does nothing — allowing vanilla thermal to work.
         /// </summary>
         /// <param name="mainCamera">The active game camera. Ignored if null.</param>
         public void UpdateThermalVision(Camera mainCamera)
         {
-            if (mainCamera == null) return;
+            if (mainCamera == null)
+                return;
             var thermal = mainCamera.GetComponent<ThermalVision>();
-            if (thermal != null && thermal.On != PluginConfig.ThermalVisionEnabled.Value)
+            if (thermal == null)
+                return;
+
+            if (PluginConfig.ThermalVisionEnabled.Value)
             {
-                thermal.On = PluginConfig.ThermalVisionEnabled.Value;
+                if (!thermal.On)
+                    thermal.On = true;
+                _modForcedThermalOn = true;
+            }
+            else if (_modForcedThermalOn)
+            {
+                thermal.On = false;
+                _modForcedThermalOn = false;
             }
         }
 
         /// <summary>
-        /// Enables or disables the night vision camera effect based on the config toggle.
+        /// Manages the night vision camera effect. When the mod toggle is ON, forces night
+        /// vision active. When toggled OFF, performs a one-time cleanup. When the mod toggle is
+        /// OFF and the mod didn't force it, does nothing — allowing vanilla NVGs to work.
         /// </summary>
         /// <param name="mainCamera">The active game camera. Ignored if null.</param>
         public void UpdateNightVision(Camera mainCamera)
         {
-            if (mainCamera == null) return;
+            if (mainCamera == null)
+                return;
             var nv = mainCamera.GetComponent<NightVision>();
-            if (nv != null && nv.On != PluginConfig.NightVisionEnabled.Value)
+            if (nv == null)
+                return;
+
+            if (PluginConfig.NightVisionEnabled.Value)
             {
-                nv.On = PluginConfig.NightVisionEnabled.Value;
+                if (!nv.On)
+                    nv.On = true;
+                _modForcedNvOn = true;
+            }
+            else if (_modForcedNvOn)
+            {
+                nv.On = false;
+                _modForcedNvOn = false;
             }
         }
 
@@ -51,7 +79,8 @@ namespace MasterTool.Features.Vision
         /// <param name="localPlayer">The local player whose equipped weapon determines the target FOV.</param>
         public void UpdateWeaponFov(Camera mainCamera, Player localPlayer)
         {
-            if (mainCamera == null || localPlayer == null) return;
+            if (mainCamera == null || localPlayer == null)
+                return;
 
             if (PluginConfig.WeaponFovEnabled.Value)
             {
@@ -99,15 +128,22 @@ namespace MasterTool.Features.Vision
 
                 switch (weaponType?.ToLower())
                 {
-                    case "pistol": return PluginConfig.FovPistol.Value;
-                    case "smg": return PluginConfig.FovSMG.Value;
+                    case "pistol":
+                        return PluginConfig.FovPistol.Value;
+                    case "smg":
+                        return PluginConfig.FovSMG.Value;
                     case "assaultrifle":
-                    case "assaultcarbine": return PluginConfig.FovAssaultRifle.Value;
-                    case "shotgun": return PluginConfig.FovShotgun.Value;
+                    case "assaultcarbine":
+                        return PluginConfig.FovAssaultRifle.Value;
+                    case "shotgun":
+                        return PluginConfig.FovShotgun.Value;
                     case "marksmanrifle":
-                    case "sniperrifle": return PluginConfig.FovSniper.Value;
-                    case "machinegun": return PluginConfig.FovAssaultRifle.Value;
-                    default: return PluginConfig.FovDefault.Value;
+                    case "sniperrifle":
+                        return PluginConfig.FovSniper.Value;
+                    case "machinegun":
+                        return PluginConfig.FovAssaultRifle.Value;
+                    default:
+                        return PluginConfig.FovDefault.Value;
                 }
             }
 

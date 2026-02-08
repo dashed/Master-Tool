@@ -12,6 +12,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `EspLineOfSightOnly` config entry in "ESP Players" section (defaults to off)
 - "Line of Sight Only" toggle in mod menu ESP Players tab
 - Unit tests for LOS layer mask computation logic
+- Unit tests for vision state machine logic (11 tests)
+
+### Fixed
+
+- Night vision and thermal vision toggles no longer override vanilla NVG/thermal state when mod toggles are OFF (previously force-disabled vanilla NVGs every frame)
+- Night vision update no longer gated behind weapon check — NVGs now work correctly regardless of equipped item
+- Big head mode no longer gated behind weapon check — works with meds, keys, and all items
 
 ## [2.1.2] - 2026-02-07
 
