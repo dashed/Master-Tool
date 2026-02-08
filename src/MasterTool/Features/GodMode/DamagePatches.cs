@@ -4,6 +4,7 @@ using EFT;
 using EFT.HealthSystem;
 using HarmonyLib;
 using MasterTool.Config;
+using MasterTool.Plugin;
 
 namespace MasterTool.Features.GodMode
 {
@@ -36,7 +37,10 @@ namespace MasterTool.Features.GodMode
                 );
                 harmony.Patch(method, prefix: prefix);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                MasterToolPlugin.Log?.LogWarning($"[GodMode] Failed to patch {type.Name}.{methodName}: {ex.Message}");
+            }
         }
 
         private static bool BlockDamagePrefix_Player(Player __instance)

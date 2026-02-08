@@ -1,6 +1,8 @@
+using System;
 using EFT;
 using EFT.InventoryLogic;
 using MasterTool.Config;
+using MasterTool.Plugin;
 using UnityEngine;
 
 namespace MasterTool.UI
@@ -12,6 +14,7 @@ namespace MasterTool.UI
     public class StatusWindow
     {
         private Rect _rect = new Rect(Screen.width - 210, 20, 200, 165);
+        private bool _errorLogged;
 
         /// <summary>
         /// Draws the status window box showing feature toggles and optional weapon information.
@@ -49,7 +52,14 @@ namespace MasterTool.UI
                         status += $"Ammo: <color=cyan>{currentAmmo}/{maxAmmo}</color>";
                     }
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    if (!_errorLogged)
+                    {
+                        MasterToolPlugin.Log?.LogWarning($"[StatusWindow] {ex.Message}");
+                        _errorLogged = true;
+                    }
+                }
             }
 
             float height = PluginConfig.ShowWeaponInfo.Value ? 260 : 200;

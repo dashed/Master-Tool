@@ -1,4 +1,6 @@
+using System;
 using BepInEx;
+using BepInEx.Logging;
 using EFT.InventoryLogic;
 using HarmonyLib;
 using MasterTool.Config;
@@ -20,10 +22,11 @@ namespace MasterTool.Plugin
     /// Main BepInEx plugin entry point. Initializes config, applies Harmony patches,
     /// and orchestrates per-frame updates for all feature and ESP modules.
     /// </summary>
-    [BepInPlugin("com.master.tools", "Advanced SPT Mod Menu", "2.3.0")]
+    [BepInPlugin("com.master.tools", "Advanced SPT Mod Menu", "2.3.1")]
     public sealed class MasterToolPlugin : BaseUnityPlugin
     {
         internal static MasterToolPlugin Instance;
+        internal static ManualLogSource Log;
         private const int WindowId = 987654;
 
         // State
@@ -45,6 +48,7 @@ namespace MasterTool.Plugin
         private void Awake()
         {
             Instance = this;
+            Log = Logger;
 
             PluginConfig.Initialize(Config);
 

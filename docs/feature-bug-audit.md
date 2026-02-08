@@ -31,7 +31,7 @@ This audit examines every feature module for the same three patterns, plus two a
 | 6 | ChamsIntensity config unused | **LOW** | `PluginConfig.cs:52` | Dead config |
 | 7 | FovMelee config unused | **LOW** | `PluginConfig.cs:89` | Dead config |
 | 8 | ColorQuestZone config unused | **LOW** | `PluginConfig.cs:79` | Dead config |
-| 9 | GodMode patches fail silently | **LOW** | `DamagePatches.cs:36` | Silent failure |
+| 9 | ~~GodMode patches fail silently~~ | ~~**LOW**~~ | ~~`DamagePatches.cs:36`~~ | ~~Silent failure~~ — **FIXED in v2.3.1** |
 
 ---
 
@@ -295,28 +295,15 @@ Either implement the functionality these config entries were meant to control, o
 
 ---
 
-### BUG-9: GodMode Harmony patches fail silently [LOW]
+### ~~BUG-9: GodMode Harmony patches fail silently~~ [FIXED in v2.3.1]
 
-**File:** `src/MasterTool/Features/GodMode/DamagePatches.cs` line 36
+**Resolution:** Exposed `MasterToolPlugin.Log` (`ManualLogSource`) as an internal static field. All silent `catch { }` blocks now log errors:
 
-```csharp
-catch { }
-```
+- **Harmony patches** (GodMode, NoWeight): Always log `LogWarning` with feature name and exception message — these are one-shot during `Awake()` so no spam risk.
+- **Per-frame features** (Stamina, Culling, QuestESP, GameState, StatusWindow): Log once using a `_errorLogged` flag to avoid spamming every frame.
+- **Reflection utils** and **OnDestroy**: Left silent — expected failures during property scanning and cleanup respectively.
 
-#### Problem
-
-If a Harmony patch fails to install (e.g., method signature changed in a game update, reflection fails), the exception is swallowed. The user sees "GodMode: ON" in the status window and believes they're protected, but damage is not being blocked.
-
-#### Proposed Fix
-
-Log a warning on patch failure:
-
-```csharp
-catch (Exception ex)
-{
-    MasterToolPlugin.Instance?.Logger?.LogWarning($"[GodMode] Failed to patch {type.Name}.{methodName}: {ex.Message}");
-}
-```
+**Files modified:** `MasterToolPlugin.cs`, `DamagePatches.cs`, `NoWeightFeature.cs`, `StaminaFeature.cs`, `CullingFeature.cs`, `GameState.cs`, `QuestEsp.cs`, `StatusWindow.cs`
 
 ---
 
@@ -370,4 +357,4 @@ The SPT server is primarily a **data server** that manages profiles, inventory, 
 - [x] Verify NoWeight toggle either works or is removed — **Implemented in v2.3.0**
 - [ ] Long raid test: verify ChamsManager doesn't accumulate stale shader entries
 - [ ] Camera transition test: verify ESP uses correct camera after spectator/death
-- [ ] GodMode: verify patch installation is logged (success or failure)
+- [x] GodMode: verify patch installation is logged (success or failure) — **Logging added in v2.3.1**

@@ -3,6 +3,7 @@ using System.Reflection;
 using EFT.InventoryLogic;
 using HarmonyLib;
 using MasterTool.Config;
+using MasterTool.Plugin;
 
 namespace MasterTool.Features.NoWeight
 {
@@ -32,7 +33,10 @@ namespace MasterTool.Features.NoWeight
                 );
                 harmony.Patch(method, prefix: prefix);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                MasterToolPlugin.Log?.LogWarning($"[NoWeight] Failed to patch weight calculation: {ex.Message}");
+            }
         }
 
         private static bool WeightPrefix(ref float __result)

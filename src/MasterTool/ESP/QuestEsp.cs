@@ -4,6 +4,7 @@ using EFT;
 using EFT.Interactive;
 using MasterTool.Config;
 using MasterTool.Models;
+using MasterTool.Plugin;
 using MasterTool.Utils;
 using UnityEngine;
 
@@ -18,6 +19,7 @@ namespace MasterTool.ESP
     {
         public List<QuestEspTarget> Targets { get; } = new List<QuestEspTarget>();
         private float _nextUpdate;
+        private bool _errorLogged;
 
         /// <summary>
         /// Builds the set of quest-relevant item template IDs from the player's active quests,
@@ -84,7 +86,14 @@ namespace MasterTool.ESP
                 ScanLooseItems(gameWorld, mainCamera, localPlayer, questItemIds);
                 ScanContainers(mainCamera, localPlayer, cachedContainers, questItemIds);
             }
-            catch (Exception) { }
+            catch (Exception ex)
+            {
+                if (!_errorLogged)
+                {
+                    MasterToolPlugin.Log?.LogWarning($"[QuestESP] {ex.Message}");
+                    _errorLogged = true;
+                }
+            }
         }
 
         private void ScanLooseItems(GameWorld gameWorld, Camera mainCamera, Player localPlayer, HashSet<string> questItemIds)

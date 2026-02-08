@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [2.3.1] - 2026-02-07
+
+### Fixed
+
+- Silent Harmony patch failures now logged to BepInEx console — GodMode and NoWeight patch errors are always reported, per-frame feature errors (Stamina, Culling, QuestESP, GameState, StatusWindow) log once to avoid spam
+
 ## [2.3.0] - 2026-02-07
 
 ### Added

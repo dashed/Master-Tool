@@ -1,3 +1,4 @@
+using System;
 using Comfort.Common;
 using EFT;
 using EFT.HealthSystem;
@@ -18,6 +19,7 @@ namespace MasterTool.Plugin
 
         private float _nextRefresh;
         private const float RefreshIntervalSeconds = 4.0f;
+        private bool _errorLogged;
 
         /// <summary>
         /// Checks whether the refresh interval has elapsed and, if so, re-caches game references.
@@ -45,7 +47,14 @@ namespace MasterTool.Plugin
                 if (MainCamera == null)
                     MainCamera = Camera.main ?? GameObject.Find("FPS Camera")?.GetComponent<Camera>();
             }
-            catch { }
+            catch (Exception ex)
+            {
+                if (!_errorLogged)
+                {
+                    MasterToolPlugin.Log?.LogWarning($"[GameState] {ex.Message}");
+                    _errorLogged = true;
+                }
+            }
         }
     }
 }

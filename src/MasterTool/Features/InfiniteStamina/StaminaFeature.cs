@@ -1,4 +1,6 @@
+using System;
 using EFT;
+using MasterTool.Plugin;
 
 namespace MasterTool.Features.InfiniteStamina
 {
@@ -7,6 +9,8 @@ namespace MasterTool.Features.InfiniteStamina
     /// </summary>
     public static class StaminaFeature
     {
+        private static bool _errorLogged;
+
         /// <summary>
         /// Sets stamina, hand stamina, and oxygen to their total capacity for the given player.
         /// </summary>
@@ -25,7 +29,14 @@ namespace MasterTool.Features.InfiniteStamina
                 if (oxygen != null)
                     oxygen.Current = oxygen.TotalCapacity;
             }
-            catch { }
+            catch (Exception ex)
+            {
+                if (!_errorLogged)
+                {
+                    MasterToolPlugin.Log?.LogWarning($"[Stamina] {ex.Message}");
+                    _errorLogged = true;
+                }
+            }
         }
     }
 }

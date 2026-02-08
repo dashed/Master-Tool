@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using Comfort.Common;
 using EFT;
 using MasterTool.Config;
+using MasterTool.Plugin;
 using UnityEngine;
 
 namespace MasterTool.Features.Performance
@@ -14,6 +16,7 @@ namespace MasterTool.Features.Performance
     public static class CullingFeature
     {
         private static readonly HashSet<int> _modDeactivatedBots = new HashSet<int>();
+        private static bool _errorLogged;
 
         /// <summary>
         /// Enables or disables bot GameObjects based on their distance to the local player.
@@ -63,7 +66,14 @@ namespace MasterTool.Features.Performance
                     }
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                if (!_errorLogged)
+                {
+                    MasterToolPlugin.Log?.LogWarning($"[Culling] {ex.Message}");
+                    _errorLogged = true;
+                }
+            }
         }
     }
 }
