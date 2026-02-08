@@ -16,6 +16,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `PeacefulLogic.ShouldBlockEnemy` pure logic in MasterTool.Core for testable blocking decisions
 - 7 new peaceful mode tests (635 total)
 
+### Notes
+
+- **SAIN compatible** — Peaceful Mode coexists with SAIN's custom bot AI. Both mods patch the same enemy registration methods but their prefix checks are orthogonal (ours blocks the local player, SAIN's blocks invalid bots). SAIN's parallel enemy tracking is also protected since it depends on base-game `EnemyInfo` which our prefix prevents. For best results, enable Peaceful Mode before entering a raid — mid-raid toggling may leave stale entries in SAIN's internal enemy dictionary
+
 ## [2.27.0] - 2026-02-08
 
 ### Added

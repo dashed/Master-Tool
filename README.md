@@ -111,7 +111,7 @@ The compiled `MasterTool.dll` will be in `build/`.
 | Feature | Description |
 |---------|-------------|
 | **Unlock All Doors** | Instantly unlocks every locked door on the map. No keys required. |
-| **Peaceful Mode** | Bots completely ignore the local player. Four Harmony patches block enemy registration at every level of the bot AI pipeline (group, memory, knowledge). Toggling on mid-raid clears existing aggro. Bot-vs-bot AI remains unaffected. |
+| **Peaceful Mode** | Bots completely ignore the local player. Four Harmony patches block enemy registration at every level of the bot AI pipeline (group, memory, knowledge). Toggling on mid-raid clears existing aggro. Bot-vs-bot AI remains unaffected. **SAIN compatible** — works alongside SAIN's custom AI; for best results enable before entering a raid (see [Mod Compatibility](#mod-compatibility)). |
 | **Performance Culling** | Deactivates distant bots for a performance boost. Only re-enables bots the mod deactivated — does not interfere with the game's native bot sleep system. |
 | **Teleport Items** | Teleports all loose loot matching the item ESP filter to your position. If no filter is set, all loose loot is teleported. |
 | **Player Teleport** | Save/load position system: save your current spot, teleport back anytime. Includes a **Teleport to Surface** rescue button that finds the terrain above you — fixes falling under the map. |
@@ -149,6 +149,23 @@ All hotkeys below are defaults and can be rebound in-game from the **Hotkeys** t
 | *(unbound)* | Toggle Infinite Hydration |
 | *(unbound)* | Toggle No Fall Damage |
 | *(unbound)* | Toggle Peaceful Mode |
+
+---
+
+## Mod Compatibility
+
+MasterTool is compatible with all major SPT mods. The only feature with mod-specific considerations is **Peaceful Mode**:
+
+| Mod | Compatible | Notes |
+|-----|:----------:|-------|
+| **SAIN** | Yes | SAIN patches the same bot AI methods as Peaceful Mode. Both coexist because Harmony 2.x runs all prefix patches — our "block local player" and SAIN's "block invalid bots" are orthogonal checks. SAIN's parallel enemy tracking system is also protected: it requires a base-game `EnemyInfo` which our prefix prevents from being created. **Caveat:** if you toggle Peaceful Mode on mid-raid after bots already have aggro, SAIN's internal enemy dictionary may retain a stale entry. For best results, enable Peaceful Mode before entering a raid. |
+| **BigBrain** | Yes | Only patches brain layers and logic nodes — no enemy detection overlap. |
+| **Questing Bots** | Yes | Patrol/quest behavior only. |
+| **Looting Bots** | Yes | Loot behavior only. |
+| **Phobos** | Yes | Movement overhaul only. |
+| **Waypoints** | Yes | Navigation only. |
+| **That's Lit** | Yes | Lighting/visibility at a different layer. |
+| **Fika** | Yes | Multiplayer mod, different scope. |
 
 ---
 
