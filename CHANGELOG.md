@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [2.25.0] - 2026-02-08
+
+### Added
+
+- **Line of Sight filtering for item/container ESP** — new "Line of Sight Only" toggle in the Item ESP tab filters out items behind walls, terrain, and buildings using Physics.Linecast against static geometry layers (same layer mask pattern as player ESP)
+- `ItemEspLineOfSightOnly` config entry (default off) in ESP Items section
+- `HasLineOfSightToPosition` method in ItemEsp for camera-to-position visibility checks
+
 ## [2.24.0] - 2026-02-08
 
 ### Added

@@ -112,6 +112,7 @@ namespace MasterTool.Config
         public static ConfigEntry<Color> ColorItem;
         public static ConfigEntry<Color> ColorContainer;
         public static ConfigEntry<int> ItemEspFontSize;
+        public static ConfigEntry<bool> ItemEspLineOfSightOnly;
 
         // --- 10. ESP Quests ---
         public static ConfigEntry<bool> QuestEspEnabled;
@@ -445,6 +446,12 @@ namespace MasterTool.Config
             ColorItem = config.Bind(Sections.EspItems, "Item Color", Color.green, "Color for loose items.");
             ColorContainer = config.Bind(Sections.EspItems, "Container Color", new Color(1f, 0.5f, 0f), "Color for container items.");
             ItemEspFontSize = config.Bind(Sections.EspItems, "Font Size", 10, "Item text size.");
+            ItemEspLineOfSightOnly = config.Bind(
+                Sections.EspItems,
+                "Line of Sight Only",
+                false,
+                "Only show items visible to the camera (not behind walls)."
+            );
 
             // --- 10. ESP Quests ---
             QuestEspEnabled = config.Bind(Sections.EspQuests, "Enabled", false, "Show quest items and objectives.");

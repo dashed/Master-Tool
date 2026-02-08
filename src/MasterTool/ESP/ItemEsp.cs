@@ -21,6 +21,27 @@ namespace MasterTool.ESP
     public class ItemEsp
     {
         public List<ItemEspTarget> Targets { get; } = new List<ItemEspTarget>();
+
+        private static int _losLayerMask = -1;
+
+        private static void InitLayerMask()
+        {
+            if (_losLayerMask != -1)
+                return;
+            int hp = LayerMask.NameToLayer("HighPolyCollider");
+            int lp = LayerMask.NameToLayer("LowPolyCollider");
+            int terrain = LayerMask.NameToLayer("Terrain");
+            _losLayerMask = EspLogic.ComputeLayerMask(hp, lp, terrain);
+        }
+
+        internal static bool HasLineOfSightToPosition(Camera camera, Vector3 destination)
+        {
+            Vector3 origin = camera.transform.position;
+            origin += (destination - origin).normalized * 0.15f;
+            InitLayerMask();
+            return !Physics.Linecast(origin, destination, _losLayerMask, QueryTriggerInteraction.Ignore);
+        }
+
         public LootableContainer[] CachedContainers { get; private set; }
 
         private float _nextUpdate;
@@ -109,6 +130,9 @@ namespace MasterTool.ESP
         {
             float dist = Vector3.Distance(localPlayer.Transform.position, pos);
             if (dist > PluginConfig.ItemEspMaxDistance.Value)
+                return;
+
+            if (PluginConfig.ItemEspLineOfSightOnly.Value && !HasLineOfSightToPosition(mainCamera, pos))
                 return;
 
             string name = item.ShortName.Localized();

@@ -65,7 +65,7 @@ The compiled `MasterTool.dll` will be in `build/`.
 |---------|-------------|
 | **God Mode** | Comprehensive immunity: blocks damage, instant kills, limb destruction, fractures, and bleeds across 7 Harmony patches on both Player and ActiveHealthController. |
 | **Damage Reduction** | Configurable percentage slider (0–100%) that scales all incoming damage to the local player. |
-| **Keep 1 Health** | Prevents lethal damage by clamping HP to 3 on protected body parts. Selectable protection: "All" body parts or "Head And Thorax" only. |
+| **Keep 1 Health** | Prevents lethal damage by clamping HP to 3 on protected body parts. Four protection modes: **All** (all 7 parts), **Head And Thorax**, **Vitals** (Head + Chest + Stomach), or **Custom** (per-body-part toggles for Head, Chest, Stomach, Left Arm, Right Arm, Left Leg, Right Leg). |
 | **Headshot Protection** | Toggle to completely ignore head damage, plus a separate head damage percentage slider (0–100%) for fine-grained control. |
 | **Enemy Damage Multiplier** | Configurable multiplier (1–20x) applied to all damage dealt to non-local players (bots/AI). |
 | **COD Mode** | Auto-heal: after not taking damage for a configurable delay (default 10s), all body parts regenerate HP at a configurable rate. Damage resets the timer. |
@@ -91,11 +91,11 @@ The compiled `MasterTool.dll` will be in `build/`.
 | Feature | Description |
 |---------|-------------|
 | **Player ESP** | Displays all players and bots with faction-based color coding (BEAR, USEC, Boss, Scav/Raider). Includes distance tracking, customizable colors via RGB sliders, adjustable update rate, distance filter, and optional **line-of-sight mode** that only shows players you can directly see (no wall visibility). |
-| **Item ESP** | Shows loose items on the ground. Supports multi-filter search by name or ID with comma-separated lists (e.g., `LedX, GPU, Salewa`). |
+| **Item ESP** | Shows loose items on the ground. Supports multi-filter search by name or ID with comma-separated lists (e.g., `LedX, GPU, Salewa`). Optional **line-of-sight mode** hides items behind walls/terrain. |
 | **Container ESP** | Reveals items inside containers, crates, jackets, safes, and bodies. Uses a smart caching system (10-second refresh) and squared-distance calculations for zero FPS impact. |
 | **Quest ESP** | Highlights quest-related items in the world and quest zone markers (placement zones, visit locations, flare zones) with configurable colors for items and zones. |
-| **Player Chams** | Applies colored material overlays to player models for enhanced visibility through geometry. Three rendering modes: **Solid** (flat color, all faces), **CullFront** (hollow silhouette, back faces only), and **Outline** (normal model + colored edge via inverted hull). Configurable color intensity (10%–100%), opacity (10%–100%), and outline thickness. Anti-occlusion: forces renderer visibility through multiple walls. |
-| **Loot Chams** | Applies colored material overlays to loose loot items for through-wall visibility. Same three rendering modes as player chams. Configurable color via the Item ESP tab. Shares intensity and opacity settings with player chams. Distance limited by Item ESP max distance. |
+| **Player Chams** | Applies colored material overlays to player models for enhanced visibility through geometry. Three rendering modes: **Solid** (flat color, all faces), **CullFront** (hollow silhouette, back faces only), and **Outline** (normal model + colored edge via inverted hull). Configurable color intensity (10%–100%), opacity (10%–100%), outline thickness, and **dedicated max distance** (independent from ESP label distance). Anti-occlusion: forces renderer visibility through multiple walls. |
+| **Loot Chams** | Applies colored material overlays to loose loot items for through-wall visibility. Same three rendering modes as player chams. Configurable color via the Item ESP tab. Shares intensity and opacity settings with player chams. **Dedicated max distance** slider (independent from item ESP label distance). |
 
 ### Visual
 
@@ -175,14 +175,28 @@ Master-Tool/
 ├── src/
 │   ├── MasterTool.Core/           # Shared pure-logic library (netstandard2.0)
 │   │   ├── MasterTool.Core.csproj
-│   │   ├── KeyCode.cs             # Platform-agnostic KeyCode enum
-│   │   ├── KeyBindParser.cs       # Key bind string parser
+│   │   ├── BodyPart.cs            # Body part enum (Head, Chest, Stomach, Arms, Legs)
+│   │   ├── BodyPartProtection.cs  # Keep 1 Health protection logic (4 selection modes)
+│   │   ├── ChamsLogic.cs          # Chams distance/state/material logic
 │   │   ├── ChamsMode.cs           # Chams rendering mode enum
 │   │   ├── ConfigSections.cs      # BepInEx config section names
+│   │   ├── DamageLogic.cs         # Full damage chain (god mode, reduction, keep 1 health)
+│   │   ├── EspLogic.cs            # ESP position and LOS layer mask logic
+│   │   ├── FallDamageDefaults.cs  # Fall damage safe height constants
 │   │   ├── HealingLogic.cs        # COD Mode heal calculations
+│   │   ├── KeyBindParser.cs       # Key bind string parser
+│   │   ├── KeyCode.cs             # Platform-agnostic KeyCode enum
+│   │   ├── MathTypes.cs           # Vec3, Vec2, Color structs for pure logic
+│   │   ├── MovementLogic.cs       # Fly mode and teleport movement calculations
+│   │   ├── RebindLogic.cs         # Hotkey rebind state machine
 │   │   ├── ReloadDefaults.cs      # Reload speed default values
 │   │   ├── ScreenLogic.cs         # ESP screen-bounds logic
-│   │   └── TabDefinitions.cs      # UI tab and sub-tab names
+│   │   ├── SpeedhackLogic.cs      # Speedhack displacement formula
+│   │   ├── StringExtraction.cs    # String extraction utilities
+│   │   ├── SustenanceLogic.cs     # Energy/hydration sustenance logic
+│   │   ├── TabDefinitions.cs      # UI tab and sub-tab names
+│   │   ├── VisionLogic.cs         # FOV mapping and override logic
+│   │   └── WeightLogic.cs         # Weight calculation logic
 │   └── MasterTool/
 │       ├── MasterTool.csproj      # Main plugin project (net472)
 │       ├── Plugin/
@@ -195,6 +209,7 @@ Master-Tool/
 │       │   ├── ItemEspTarget.cs   # Item ESP data model
 │       │   └── QuestEspTarget.cs  # Quest ESP data model
 │       ├── Utils/
+│       │   ├── CoreConversions.cs # Vec3/Color/BodyPart conversion extensions
 │       │   ├── PlayerUtils.cs     # Player helper methods
 │       │   ├── ReflectionUtils.cs # Reflection helper methods
 │       │   └── KeyBindParser.cs   # Unity-side key bind parser (delegates to Core)
@@ -247,31 +262,36 @@ Master-Tool/
             ├── Config/
             │   └── ConfigSectionTests.cs
             ├── Models/
-            │   └── EspTargetTests.cs
+            │   ├── EspTargetTests.cs
+            │   └── MathTypesTests.cs
             ├── Utils/
             │   ├── FovMappingTests.cs
             │   ├── PlayerTagTests.cs
             │   └── ReflectionUtilsTests.cs
             ├── Features/
             │   ├── BigHeadStateTests.cs
+            │   ├── BodyPartProtectionTests.cs
             │   ├── CodModeTests.cs
             │   ├── CullingStateTests.cs
             │   ├── DamageReductionTests.cs
             │   ├── EnergyHydrationTests.cs
             │   ├── FallDamageStateTests.cs
+            │   ├── FeatureConflictTests.cs
             │   ├── FlyModeTests.cs
             │   ├── FovOverrideTests.cs
             │   ├── GodModePrefixTests.cs
             │   ├── NoWeightPrefixTests.cs
             │   ├── PlayerTeleportTests.cs
             │   ├── ReloadSpeedTests.cs
+            │   ├── SpeedhackTests.cs
             │   ├── VisionStateTests.cs
             │   └── WeightPercentageTests.cs
             ├── ESP/
             │   ├── ChamsAntiOcclusionTests.cs
             │   ├── ChamsCleanupTests.cs
-            │   ├── ChamsModeTests.cs
+            │   ├── ChamsDistanceTests.cs
             │   ├── ChamsIntensityTests.cs
+            │   ├── ChamsModeTests.cs
             │   ├── EspPositionTests.cs
             │   ├── EspScreenBoundsTests.cs
             │   ├── LineOfSightTests.cs
@@ -311,7 +331,7 @@ make build    # or: dotnet build
 
 ### Running Tests
 
-524 tests cover pure logic: models, utilities, feature state machines, ESP calculations, and config defaults. Pure logic lives in the `MasterTool.Core` shared library (`netstandard2.0`), referenced by both the plugin (`net472`) and test project (`net9.0`). Game-dependent code requires Unity/EFT assemblies and cannot be unit-tested.
+618 tests cover pure logic: models, utilities, feature state machines, ESP calculations, and config defaults. Pure logic lives in the `MasterTool.Core` shared library (`netstandard2.0`), referenced by both the plugin (`net472`) and test project (`net9.0`). Game-dependent code requires Unity/EFT assemblies and cannot be unit-tested.
 
 ```bash
 make test     # or: dotnet test

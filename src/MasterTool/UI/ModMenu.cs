@@ -400,6 +400,7 @@ namespace MasterTool.UI
             GUILayout.Space(5);
             GUILayout.Label($"Max Distance: {PluginConfig.ItemEspMaxDistance.Value:F0}m");
             PluginConfig.ItemEspMaxDistance.Value = GUILayout.HorizontalSlider(PluginConfig.ItemEspMaxDistance.Value, 5f, 500f);
+            PluginConfig.ItemEspLineOfSightOnly.Value = GUILayout.Toggle(PluginConfig.ItemEspLineOfSightOnly.Value, " Line of Sight Only");
             GUILayout.Label($"Update Rate (FPS): {1f / PluginConfig.ItemEspUpdateInterval.Value:F0}");
             float iFps = GUILayout.HorizontalSlider(1f / PluginConfig.ItemEspUpdateInterval.Value, 1f, 60f);
             PluginConfig.ItemEspUpdateInterval.Value = 1f / iFps;
