@@ -20,6 +20,8 @@ namespace MasterTool.ESP
         private float _nextCleanup;
         private const float CleanupIntervalSeconds = 30f;
         private bool _errorLogged;
+        private bool _wasChamsEnabled;
+        private bool _wasLootChamsEnabled;
 
         /// <summary>
         /// Loads the flat-colored shader used for chams rendering. Call once during plugin startup.
@@ -37,6 +39,12 @@ namespace MasterTool.ESP
         /// <param name="mainCamera">The active camera used for distance calculations.</param>
         public void Update(GameWorld gameWorld, Camera mainCamera)
         {
+            if (_wasChamsEnabled && !PluginConfig.ChamsEnabled.Value)
+            {
+                ResetAllPlayerChams();
+            }
+            _wasChamsEnabled = PluginConfig.ChamsEnabled.Value;
+
             if (gameWorld == null || mainCamera == null)
                 return;
 
@@ -91,6 +99,12 @@ namespace MasterTool.ESP
         /// </summary>
         public void UpdateLootChams(GameWorld gameWorld, Camera mainCamera, Player localPlayer)
         {
+            if (_wasLootChamsEnabled && !PluginConfig.LootChamsEnabled.Value)
+            {
+                ResetAllLootChams();
+            }
+            _wasLootChamsEnabled = PluginConfig.LootChamsEnabled.Value;
+
             if (gameWorld == null || mainCamera == null || _chamsShader == null)
                 return;
 
@@ -190,6 +204,66 @@ namespace MasterTool.ESP
             foreach (var r in dead)
             {
                 _originalShaders.Remove(r);
+            }
+        }
+
+        private void ResetAllPlayerChams()
+        {
+            var keysToRemove = new List<Renderer>();
+            foreach (var kv in _originalShaders)
+            {
+                if (kv.Key is SkinnedMeshRenderer)
+                {
+                    keysToRemove.Add(kv.Key);
+                }
+            }
+
+            foreach (var key in keysToRemove)
+            {
+                try
+                {
+                    var renderer = key as SkinnedMeshRenderer;
+                    if (renderer != null && renderer.material != null)
+                    {
+                        renderer.material.shader = _originalShaders[key];
+                        renderer.allowOcclusionWhenDynamic = true;
+                    }
+                }
+                catch (Exception)
+                {
+                    // Renderer may have been destroyed
+                }
+                _originalShaders.Remove(key);
+            }
+        }
+
+        private void ResetAllLootChams()
+        {
+            var keysToRemove = new List<Renderer>();
+            foreach (var kv in _originalShaders)
+            {
+                if (kv.Key is MeshRenderer)
+                {
+                    keysToRemove.Add(kv.Key);
+                }
+            }
+
+            foreach (var key in keysToRemove)
+            {
+                try
+                {
+                    var renderer = key as MeshRenderer;
+                    if (renderer != null && renderer.material != null)
+                    {
+                        renderer.material.shader = _originalShaders[key];
+                        renderer.allowOcclusionWhenDynamic = true;
+                    }
+                }
+                catch (Exception)
+                {
+                    // Renderer may have been destroyed
+                }
+                _originalShaders.Remove(key);
             }
         }
 

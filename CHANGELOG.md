@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [2.12.1] - 2026-02-08
+
+### Fixed
+
+- Chams no longer persist on dead bot armor after disabling the chams toggle — dead/despawned bots removed from `RegisteredPlayers` were never visited by the cleanup loop, leaving their renderers with the chams shader. Now tracks toggle state transitions and calls `ResetAllPlayerChams()` / `ResetAllLootChams()` which iterate ALL tracked renderers (by type) and restore original shaders when the respective toggle goes from enabled to disabled
+
+### Added
+
+- Unit tests for reset-all-by-type cleanup logic and toggle transition detection (11 tests)
+
 ## [2.12.0] - 2026-02-08
 
 ### Fixed

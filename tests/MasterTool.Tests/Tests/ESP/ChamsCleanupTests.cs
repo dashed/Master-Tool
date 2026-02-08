@@ -22,10 +22,14 @@ public class ChamsCleanupTests
     {
         public int Id { get; }
         public bool IsDestroyed { get; set; }
+        public string RendererType { get; }
+        public string CurrentShader { get; set; }
 
-        public FakeRenderer(int id)
+        public FakeRenderer(int id, string rendererType = "Skinned")
         {
             Id = id;
+            RendererType = rendererType;
+            CurrentShader = "original";
         }
     }
 
@@ -199,5 +203,194 @@ public class ChamsCleanupTests
 
         Assert.That(_entries.Count, Is.EqualTo(1));
         Assert.That(_entries.ContainsKey(alive), Is.True);
+    }
+
+    // === Reset-All-By-Type Tests (chams disable cleanup) ===
+
+    /// <summary>
+    /// Mirrors ChamsManager.ResetAllPlayerChams / ResetAllLootChams.
+    /// Restores original shaders for entries matching the given renderer type
+    /// and removes them from the dictionary. Skips destroyed renderers.
+    /// </summary>
+    private List<FakeRenderer> ResetAllByType(string type)
+    {
+        var restored = new List<FakeRenderer>();
+        var toRemove = new List<FakeRenderer>();
+
+        foreach (var kv in _entries)
+        {
+            if (kv.Key.RendererType == type)
+            {
+                if (!kv.Key.IsDestroyed)
+                {
+                    kv.Key.CurrentShader = kv.Value; // Restore original shader
+                    restored.Add(kv.Key);
+                }
+
+                toRemove.Add(kv.Key);
+            }
+        }
+
+        foreach (var r in toRemove)
+        {
+            _entries.Remove(r);
+        }
+
+        return restored;
+    }
+
+    /// <summary>
+    /// Mirrors the toggle transition check in ChamsManager.Update().
+    /// Returns true when chams transitions from enabled to disabled.
+    /// </summary>
+    private static bool ShouldResetOnToggle(bool wasEnabled, bool isEnabled)
+    {
+        return wasEnabled && !isEnabled;
+    }
+
+    [Test]
+    public void ResetAllByType_Skinned_RestoresOnlySkinnedRenderers()
+    {
+        var skinned1 = new FakeRenderer(1, "Skinned") { CurrentShader = "chams" };
+        var skinned2 = new FakeRenderer(2, "Skinned") { CurrentShader = "chams" };
+        var mesh1 = new FakeRenderer(3, "Mesh") { CurrentShader = "chams" };
+        _entries[skinned1] = "originalA";
+        _entries[skinned2] = "originalB";
+        _entries[mesh1] = "originalC";
+
+        var restored = ResetAllByType("Skinned");
+
+        Assert.That(restored.Count, Is.EqualTo(2));
+        Assert.That(skinned1.CurrentShader, Is.EqualTo("originalA"));
+        Assert.That(skinned2.CurrentShader, Is.EqualTo("originalB"));
+        Assert.That(mesh1.CurrentShader, Is.EqualTo("chams")); // Untouched
+        Assert.That(_entries.Count, Is.EqualTo(1));
+        Assert.That(_entries.ContainsKey(mesh1), Is.True);
+    }
+
+    [Test]
+    public void ResetAllByType_Mesh_RestoresOnlyMeshRenderers()
+    {
+        var skinned1 = new FakeRenderer(1, "Skinned") { CurrentShader = "chams" };
+        var mesh1 = new FakeRenderer(2, "Mesh") { CurrentShader = "chams" };
+        var mesh2 = new FakeRenderer(3, "Mesh") { CurrentShader = "chams" };
+        _entries[skinned1] = "originalA";
+        _entries[mesh1] = "originalB";
+        _entries[mesh2] = "originalC";
+
+        var restored = ResetAllByType("Mesh");
+
+        Assert.That(restored.Count, Is.EqualTo(2));
+        Assert.That(mesh1.CurrentShader, Is.EqualTo("originalB"));
+        Assert.That(mesh2.CurrentShader, Is.EqualTo("originalC"));
+        Assert.That(skinned1.CurrentShader, Is.EqualTo("chams")); // Untouched
+        Assert.That(_entries.Count, Is.EqualTo(1));
+        Assert.That(_entries.ContainsKey(skinned1), Is.True);
+    }
+
+    [Test]
+    public void ResetAllByType_EmptyDictionary_NoError()
+    {
+        var restored = ResetAllByType("Skinned");
+
+        Assert.That(restored.Count, Is.EqualTo(0));
+        Assert.That(_entries.Count, Is.EqualTo(0));
+    }
+
+    [Test]
+    public void ResetAllByType_DestroyedRenderers_SkippedButRemoved()
+    {
+        var alive = new FakeRenderer(1, "Skinned") { CurrentShader = "chams" };
+        var dead = new FakeRenderer(2, "Skinned") { CurrentShader = "chams", IsDestroyed = true };
+        _entries[alive] = "originalA";
+        _entries[dead] = "originalB";
+
+        var restored = ResetAllByType("Skinned");
+
+        // alive was restored, dead was skipped but both removed
+        Assert.That(restored.Count, Is.EqualTo(1));
+        Assert.That(alive.CurrentShader, Is.EqualTo("originalA"));
+        Assert.That(dead.CurrentShader, Is.EqualTo("chams")); // Can't restore destroyed
+        Assert.That(_entries.Count, Is.EqualTo(0));
+    }
+
+    [Test]
+    public void ToggleTransition_EnabledToDisabled_ReturnsTrue()
+    {
+        Assert.That(ShouldResetOnToggle(true, false), Is.True);
+    }
+
+    [Test]
+    public void ToggleTransition_DisabledToEnabled_ReturnsFalse()
+    {
+        Assert.That(ShouldResetOnToggle(false, true), Is.False);
+    }
+
+    [Test]
+    public void ToggleTransition_StaysEnabled_ReturnsFalse()
+    {
+        Assert.That(ShouldResetOnToggle(true, true), Is.False);
+    }
+
+    [Test]
+    public void ToggleTransition_StaysDisabled_ReturnsFalse()
+    {
+        Assert.That(ShouldResetOnToggle(false, false), Is.False);
+    }
+
+    [Test]
+    public void ToggleOff_PlayerChams_LootChamsUnaffected()
+    {
+        var skinned = new FakeRenderer(1, "Skinned") { CurrentShader = "chams" };
+        var mesh = new FakeRenderer(2, "Mesh") { CurrentShader = "chams" };
+        _entries[skinned] = "originalA";
+        _entries[mesh] = "originalB";
+
+        // Disable player chams only
+        ResetAllByType("Skinned");
+
+        Assert.That(skinned.CurrentShader, Is.EqualTo("originalA"));
+        Assert.That(mesh.CurrentShader, Is.EqualTo("chams")); // Untouched
+        Assert.That(_entries.Count, Is.EqualTo(1));
+    }
+
+    [Test]
+    public void ToggleOff_LootChams_PlayerChamsUnaffected()
+    {
+        var skinned = new FakeRenderer(1, "Skinned") { CurrentShader = "chams" };
+        var mesh = new FakeRenderer(2, "Mesh") { CurrentShader = "chams" };
+        _entries[skinned] = "originalA";
+        _entries[mesh] = "originalB";
+
+        // Disable loot chams only
+        ResetAllByType("Mesh");
+
+        Assert.That(mesh.CurrentShader, Is.EqualTo("originalB"));
+        Assert.That(skinned.CurrentShader, Is.EqualTo("chams")); // Untouched
+        Assert.That(_entries.Count, Is.EqualTo(1));
+    }
+
+    [Test]
+    public void FullCycle_EnableApplyDisableReset_DictionaryEmpty()
+    {
+        // Simulate: enable chams, apply to several bots, disable chams
+        var renderers = new List<FakeRenderer>();
+        for (int i = 0; i < 5; i++)
+        {
+            var r = new FakeRenderer(i, "Skinned") { CurrentShader = "chams" };
+            _entries[r] = $"original_{i}";
+            renderers.Add(r);
+        }
+
+        Assert.That(_entries.Count, Is.EqualTo(5));
+
+        // Disable: reset all
+        ResetAllByType("Skinned");
+
+        Assert.That(_entries.Count, Is.EqualTo(0));
+        foreach (var r in renderers)
+        {
+            Assert.That(r.CurrentShader, Does.StartWith("original_"));
+        }
     }
 }
