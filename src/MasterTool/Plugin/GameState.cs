@@ -25,7 +25,8 @@ namespace MasterTool.Plugin
         /// </summary>
         public void Update()
         {
-            if (Time.time < _nextRefresh) return;
+            if (Time.time < _nextRefresh)
+                return;
             _nextRefresh = Time.time + RefreshIntervalSeconds;
             Refresh();
         }
@@ -35,9 +36,11 @@ namespace MasterTool.Plugin
             try
             {
                 GameWorld = Singleton<GameWorld>.Instance;
-                if (GameWorld == null) return;
+                if (GameWorld == null)
+                    return;
                 LocalPlayer = GameWorld.MainPlayer;
-                if (LocalPlayer == null) return;
+                if (LocalPlayer == null)
+                    return;
                 LocalActiveHealthController = LocalPlayer.ActiveHealthController;
                 if (MainCamera == null)
                     MainCamera = Camera.main ?? GameObject.Find("FPS Camera")?.GetComponent<Camera>();

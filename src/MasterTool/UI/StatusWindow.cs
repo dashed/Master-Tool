@@ -22,11 +22,16 @@ namespace MasterTool.UI
         public void Draw(GUIStyle style, Player localPlayer)
         {
             string status = "<b>[ MOD STATUS ]</b>\n";
-            status += $"GodMode: <color={(PluginConfig.GodModeEnabled.Value ? "green" : "red")}>{(PluginConfig.GodModeEnabled.Value ? "ON" : "OFF")}</color>\n";
-            status += $"Stamina: <color={(PluginConfig.InfiniteStaminaEnabled.Value ? "green" : "red")}>{(PluginConfig.InfiniteStaminaEnabled.Value ? "ON" : "OFF")}</color>\n";
-            status += $"Weight: <color={(PluginConfig.NoWeightEnabled.Value ? "green" : "red")}>{(PluginConfig.NoWeightEnabled.Value ? "ON" : "OFF")}</color>\n";
-            status += $"ESP: <color={(PluginConfig.EspEnabled.Value ? "green" : "red")}>{(PluginConfig.EspEnabled.Value ? "ON" : "OFF")}</color>\n";
-            status += $"Quest ESP: <color={(PluginConfig.QuestEspEnabled.Value ? "green" : "red")}>{(PluginConfig.QuestEspEnabled.Value ? "ON" : "OFF")}</color>\n";
+            status +=
+                $"GodMode: <color={(PluginConfig.GodModeEnabled.Value ? "green" : "red")}>{(PluginConfig.GodModeEnabled.Value ? "ON" : "OFF")}</color>\n";
+            status +=
+                $"Stamina: <color={(PluginConfig.InfiniteStaminaEnabled.Value ? "green" : "red")}>{(PluginConfig.InfiniteStaminaEnabled.Value ? "ON" : "OFF")}</color>\n";
+            status +=
+                $"Weight: <color={(PluginConfig.NoWeightEnabled.Value ? "green" : "red")}>{(PluginConfig.NoWeightEnabled.Value ? "ON" : "OFF")}</color>\n";
+            status +=
+                $"ESP: <color={(PluginConfig.EspEnabled.Value ? "green" : "red")}>{(PluginConfig.EspEnabled.Value ? "ON" : "OFF")}</color>\n";
+            status +=
+                $"Quest ESP: <color={(PluginConfig.QuestEspEnabled.Value ? "green" : "red")}>{(PluginConfig.QuestEspEnabled.Value ? "ON" : "OFF")}</color>\n";
 
             if (PluginConfig.ShowWeaponInfo.Value && localPlayer != null)
             {

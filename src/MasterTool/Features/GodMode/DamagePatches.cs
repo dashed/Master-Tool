@@ -29,8 +29,11 @@ namespace MasterTool.Features.GodMode
             try
             {
                 var method = type.GetMethod(methodName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-                if (method == null) return;
-                var prefix = new HarmonyMethod(typeof(DamagePatches).GetMethod(prefixMethodName, BindingFlags.Static | BindingFlags.NonPublic));
+                if (method == null)
+                    return;
+                var prefix = new HarmonyMethod(
+                    typeof(DamagePatches).GetMethod(prefixMethodName, BindingFlags.Static | BindingFlags.NonPublic)
+                );
                 harmony.Patch(method, prefix: prefix);
             }
             catch { }
@@ -41,13 +44,13 @@ namespace MasterTool.Features.GodMode
             return !PluginConfig.GodModeEnabled.Value || !__instance.IsYourPlayer;
         }
 
-        private static bool BlockDamagePrefix_ActiveHealthController(
-            ActiveHealthController __instance,
-            ref float __result)
+        private static bool BlockDamagePrefix_ActiveHealthController(ActiveHealthController __instance, ref float __result)
         {
-            if (PluginConfig.GodModeEnabled.Value &&
-                PluginConfig.LocalActiveHealthController != null &&
-                ReferenceEquals(__instance, PluginConfig.LocalActiveHealthController))
+            if (
+                PluginConfig.GodModeEnabled.Value
+                && PluginConfig.LocalActiveHealthController != null
+                && ReferenceEquals(__instance, PluginConfig.LocalActiveHealthController)
+            )
             {
                 __result = 0f;
                 return false;

@@ -1,162 +1,173 @@
 using NUnit.Framework;
 
-namespace MasterTool.Tests.Tests.Models
+namespace MasterTool.Tests.Tests.Models;
+
+[TestFixture]
+public class EspTargetTests
 {
-    [TestFixture]
-    public class EspTargetTests
+    // Minimal Vector2/Color structs to mirror UnityEngine types for testing
+    private struct Vec2
     {
-        // Minimal Vector2/Color structs to mirror UnityEngine types for testing
-        private struct Vec2
+        public float X,
+            Y;
+
+        public Vec2(float x, float y)
         {
-            public float X, Y;
-            public Vec2(float x, float y) { X = x; Y = y; }
+            X = x;
+            Y = y;
         }
+    }
 
-        private struct Col
+    private struct Col
+    {
+        public float R,
+            G,
+            B,
+            A;
+
+        public Col(float r, float g, float b, float a)
         {
-            public float R, G, B, A;
-            public Col(float r, float g, float b, float a) { R = r; G = g; B = b; A = a; }
+            R = r;
+            G = g;
+            B = b;
+            A = a;
         }
+    }
 
-        // Standalone model mirrors (same fields as the real Models)
-        private class EspTarget
+    // Standalone model mirrors (same fields as the real Models)
+    private class EspTarget
+    {
+        public Vec2 ScreenPosition;
+        public float Distance;
+        public string Nickname;
+        public string Side;
+        public Col Color;
+    }
+
+    private class ItemEspTarget
+    {
+        public Vec2 ScreenPosition;
+        public float Distance;
+        public string Name;
+        public Col Color;
+    }
+
+    private class QuestEspTarget
+    {
+        public Vec2 ScreenPosition;
+        public float Distance;
+        public string Name;
+        public Col Color;
+        public bool IsZone;
+    }
+
+    // --- EspTarget ---
+
+    [Test]
+    public void EspTarget_FieldAssignment_SetsAllFields()
+    {
+        var target = new EspTarget
         {
-            public Vec2 ScreenPosition;
-            public float Distance;
-            public string Nickname;
-            public string Side;
-            public Col Color;
-        }
+            ScreenPosition = new Vec2(100f, 200f),
+            Distance = 42.5f,
+            Nickname = "TestPlayer",
+            Side = "BEAR",
+            Color = new Col(1f, 0f, 0f, 1f),
+        };
 
-        private class ItemEspTarget
+        Assert.That(target.ScreenPosition.X, Is.EqualTo(100f));
+        Assert.That(target.ScreenPosition.Y, Is.EqualTo(200f));
+        Assert.That(target.Distance, Is.EqualTo(42.5f));
+        Assert.That(target.Nickname, Is.EqualTo("TestPlayer"));
+        Assert.That(target.Side, Is.EqualTo("BEAR"));
+        Assert.That(target.Color.R, Is.EqualTo(1f));
+        Assert.That(target.Color.G, Is.EqualTo(0f));
+        Assert.That(target.Color.B, Is.EqualTo(0f));
+        Assert.That(target.Color.A, Is.EqualTo(1f));
+    }
+
+    [Test]
+    public void EspTarget_DefaultValues_AreZeroAndNull()
+    {
+        var target = new EspTarget();
+
+        Assert.That(target.ScreenPosition.X, Is.EqualTo(0f));
+        Assert.That(target.ScreenPosition.Y, Is.EqualTo(0f));
+        Assert.That(target.Distance, Is.EqualTo(0f));
+        Assert.That(target.Nickname, Is.Null);
+        Assert.That(target.Side, Is.Null);
+        Assert.That(target.Color.R, Is.EqualTo(0f));
+    }
+
+    // --- ItemEspTarget ---
+
+    [Test]
+    public void ItemEspTarget_FieldAssignment_SetsAllFields()
+    {
+        var target = new ItemEspTarget
         {
-            public Vec2 ScreenPosition;
-            public float Distance;
-            public string Name;
-            public Col Color;
-        }
+            ScreenPosition = new Vec2(300f, 400f),
+            Distance = 15.3f,
+            Name = "M4A1",
+            Color = new Col(0f, 1f, 0f, 0.8f),
+        };
 
-        private class QuestEspTarget
+        Assert.That(target.ScreenPosition.X, Is.EqualTo(300f));
+        Assert.That(target.ScreenPosition.Y, Is.EqualTo(400f));
+        Assert.That(target.Distance, Is.EqualTo(15.3f));
+        Assert.That(target.Name, Is.EqualTo("M4A1"));
+        Assert.That(target.Color.G, Is.EqualTo(1f));
+        Assert.That(target.Color.A, Is.EqualTo(0.8f));
+    }
+
+    [Test]
+    public void ItemEspTarget_DefaultValues_AreZeroAndNull()
+    {
+        var target = new ItemEspTarget();
+
+        Assert.That(target.ScreenPosition.X, Is.EqualTo(0f));
+        Assert.That(target.Distance, Is.EqualTo(0f));
+        Assert.That(target.Name, Is.Null);
+    }
+
+    // --- QuestEspTarget ---
+
+    [Test]
+    public void QuestEspTarget_FieldAssignment_SetsAllFields()
+    {
+        var target = new QuestEspTarget
         {
-            public Vec2 ScreenPosition;
-            public float Distance;
-            public string Name;
-            public Col Color;
-            public bool IsZone;
-        }
+            ScreenPosition = new Vec2(500f, 600f),
+            Distance = 120.7f,
+            Name = "Quest Item Location",
+            Color = new Col(0f, 0f, 1f, 1f),
+            IsZone = true,
+        };
 
-        // --- EspTarget ---
+        Assert.That(target.ScreenPosition.X, Is.EqualTo(500f));
+        Assert.That(target.ScreenPosition.Y, Is.EqualTo(600f));
+        Assert.That(target.Distance, Is.EqualTo(120.7f));
+        Assert.That(target.Name, Is.EqualTo("Quest Item Location"));
+        Assert.That(target.Color.B, Is.EqualTo(1f));
+        Assert.That(target.IsZone, Is.True);
+    }
 
-        [Test]
-        public void EspTarget_FieldAssignment_SetsAllFields()
-        {
-            var target = new EspTarget
-            {
-                ScreenPosition = new Vec2(100f, 200f),
-                Distance = 42.5f,
-                Nickname = "TestPlayer",
-                Side = "BEAR",
-                Color = new Col(1f, 0f, 0f, 1f)
-            };
+    [Test]
+    public void QuestEspTarget_DefaultValues_IsZoneIsFalse()
+    {
+        var target = new QuestEspTarget();
 
-            Assert.That(target.ScreenPosition.X, Is.EqualTo(100f));
-            Assert.That(target.ScreenPosition.Y, Is.EqualTo(200f));
-            Assert.That(target.Distance, Is.EqualTo(42.5f));
-            Assert.That(target.Nickname, Is.EqualTo("TestPlayer"));
-            Assert.That(target.Side, Is.EqualTo("BEAR"));
-            Assert.That(target.Color.R, Is.EqualTo(1f));
-            Assert.That(target.Color.G, Is.EqualTo(0f));
-            Assert.That(target.Color.B, Is.EqualTo(0f));
-            Assert.That(target.Color.A, Is.EqualTo(1f));
-        }
+        Assert.That(target.IsZone, Is.False);
+        Assert.That(target.Name, Is.Null);
+        Assert.That(target.Distance, Is.EqualTo(0f));
+    }
 
-        [Test]
-        public void EspTarget_DefaultValues_AreZeroAndNull()
-        {
-            var target = new EspTarget();
+    [Test]
+    public void QuestEspTarget_IsZoneFalse_ForNonZoneTarget()
+    {
+        var target = new QuestEspTarget { Name = "Find Item", IsZone = false };
 
-            Assert.That(target.ScreenPosition.X, Is.EqualTo(0f));
-            Assert.That(target.ScreenPosition.Y, Is.EqualTo(0f));
-            Assert.That(target.Distance, Is.EqualTo(0f));
-            Assert.That(target.Nickname, Is.Null);
-            Assert.That(target.Side, Is.Null);
-            Assert.That(target.Color.R, Is.EqualTo(0f));
-        }
-
-        // --- ItemEspTarget ---
-
-        [Test]
-        public void ItemEspTarget_FieldAssignment_SetsAllFields()
-        {
-            var target = new ItemEspTarget
-            {
-                ScreenPosition = new Vec2(300f, 400f),
-                Distance = 15.3f,
-                Name = "M4A1",
-                Color = new Col(0f, 1f, 0f, 0.8f)
-            };
-
-            Assert.That(target.ScreenPosition.X, Is.EqualTo(300f));
-            Assert.That(target.ScreenPosition.Y, Is.EqualTo(400f));
-            Assert.That(target.Distance, Is.EqualTo(15.3f));
-            Assert.That(target.Name, Is.EqualTo("M4A1"));
-            Assert.That(target.Color.G, Is.EqualTo(1f));
-            Assert.That(target.Color.A, Is.EqualTo(0.8f));
-        }
-
-        [Test]
-        public void ItemEspTarget_DefaultValues_AreZeroAndNull()
-        {
-            var target = new ItemEspTarget();
-
-            Assert.That(target.ScreenPosition.X, Is.EqualTo(0f));
-            Assert.That(target.Distance, Is.EqualTo(0f));
-            Assert.That(target.Name, Is.Null);
-        }
-
-        // --- QuestEspTarget ---
-
-        [Test]
-        public void QuestEspTarget_FieldAssignment_SetsAllFields()
-        {
-            var target = new QuestEspTarget
-            {
-                ScreenPosition = new Vec2(500f, 600f),
-                Distance = 120.7f,
-                Name = "Quest Item Location",
-                Color = new Col(0f, 0f, 1f, 1f),
-                IsZone = true
-            };
-
-            Assert.That(target.ScreenPosition.X, Is.EqualTo(500f));
-            Assert.That(target.ScreenPosition.Y, Is.EqualTo(600f));
-            Assert.That(target.Distance, Is.EqualTo(120.7f));
-            Assert.That(target.Name, Is.EqualTo("Quest Item Location"));
-            Assert.That(target.Color.B, Is.EqualTo(1f));
-            Assert.That(target.IsZone, Is.True);
-        }
-
-        [Test]
-        public void QuestEspTarget_DefaultValues_IsZoneIsFalse()
-        {
-            var target = new QuestEspTarget();
-
-            Assert.That(target.IsZone, Is.False);
-            Assert.That(target.Name, Is.Null);
-            Assert.That(target.Distance, Is.EqualTo(0f));
-        }
-
-        [Test]
-        public void QuestEspTarget_IsZoneFalse_ForNonZoneTarget()
-        {
-            var target = new QuestEspTarget
-            {
-                Name = "Find Item",
-                IsZone = false
-            };
-
-            Assert.That(target.IsZone, Is.False);
-            Assert.That(target.Name, Is.EqualTo("Find Item"));
-        }
+        Assert.That(target.IsZone, Is.False);
+        Assert.That(target.Name, Is.EqualTo("Find Item"));
     }
 }

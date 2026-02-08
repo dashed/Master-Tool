@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [2.2.1] - 2026-02-07
+
+### Fixed
+
+- Performance culling no longer force-enables all bots when toggled OFF (previously overrode game-side deactivations for dead/despawned bots every frame — same root cause as the v2.2.0 night vision bug)
+
+### Added
+
+- Unit tests for culling state machine logic (12 tests)
+
 ## [2.2.0] - 2026-02-07
 
 ### Added

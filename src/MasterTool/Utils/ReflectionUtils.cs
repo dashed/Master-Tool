@@ -29,10 +29,7 @@ namespace MasterTool.Utils
 
                 foreach (var name in possibleNames)
                 {
-                    var prop = conditionType.GetProperty(name,
-                        BindingFlags.Instance |
-                        BindingFlags.Public |
-                        BindingFlags.NonPublic);
+                    var prop = conditionType.GetProperty(name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
                     if (prop != null)
                     {
@@ -41,10 +38,7 @@ namespace MasterTool.Utils
                             return items;
                     }
 
-                    var field = conditionType.GetField(name,
-                        BindingFlags.Instance |
-                        BindingFlags.Public |
-                        BindingFlags.NonPublic);
+                    var field = conditionType.GetField(name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
                     if (field != null)
                     {
@@ -54,10 +48,7 @@ namespace MasterTool.Utils
                     }
                 }
 
-                foreach (var prop in conditionType.GetProperties(
-                    BindingFlags.Instance |
-                    BindingFlags.Public |
-                    BindingFlags.NonPublic))
+                foreach (var prop in conditionType.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
                 {
                     try
                     {
@@ -74,9 +65,7 @@ namespace MasterTool.Utils
                     catch { }
                 }
             }
-            catch (Exception)
-            {
-            }
+            catch (Exception) { }
             return items;
         }
 
@@ -90,7 +79,8 @@ namespace MasterTool.Utils
         /// <returns>True if at least one string was extracted; otherwise false.</returns>
         public static bool TryExtractStrings(object value, List<string> items)
         {
-            if (value == null) return false;
+            if (value == null)
+                return false;
 
             if (value is string[] strArray)
             {

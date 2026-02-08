@@ -32,10 +32,12 @@ namespace MasterTool.ESP
         /// <param name="mainCamera">The active camera used for distance calculations.</param>
         public void Update(GameWorld gameWorld, Camera mainCamera)
         {
-            if (gameWorld == null || mainCamera == null) return;
+            if (gameWorld == null || mainCamera == null)
+                return;
 
             var players = gameWorld.RegisteredPlayers;
-            if (players == null) return;
+            if (players == null)
+                return;
 
             foreach (var player in players)
             {
@@ -43,10 +45,11 @@ namespace MasterTool.ESP
                 {
                     float dist = Vector3.Distance(mainCamera.transform.position, playerClass.Transform.position);
 
-                    bool shouldChams = PluginConfig.ChamsEnabled.Value &&
-                                       !playerClass.IsYourPlayer &&
-                                       playerClass.HealthController.IsAlive &&
-                                       dist <= PluginConfig.EspMaxDistance.Value;
+                    bool shouldChams =
+                        PluginConfig.ChamsEnabled.Value
+                        && !playerClass.IsYourPlayer
+                        && playerClass.HealthController.IsAlive
+                        && dist <= PluginConfig.EspMaxDistance.Value;
 
                     if (shouldChams)
                     {
@@ -63,10 +66,12 @@ namespace MasterTool.ESP
 
         private void ApplyChams(Player player, Color color)
         {
-            if (player == null) return;
+            if (player == null)
+                return;
             foreach (var renderer in player.GetComponentsInChildren<SkinnedMeshRenderer>())
             {
-                if (renderer == null || renderer.material == null) continue;
+                if (renderer == null || renderer.material == null)
+                    continue;
 
                 if (renderer.material.shader != _chamsShader)
                 {
@@ -84,7 +89,8 @@ namespace MasterTool.ESP
 
         private void ResetChams(Player player)
         {
-            if (player == null) return;
+            if (player == null)
+                return;
             foreach (var renderer in player.GetComponentsInChildren<SkinnedMeshRenderer>())
             {
                 if (renderer != null && renderer.material != null && _originalShaders.ContainsKey(renderer))

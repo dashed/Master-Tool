@@ -29,7 +29,7 @@ namespace MasterTool.UI
                 {
                     fontSize = PluginConfig.EspFontSize.Value,
                     fontStyle = FontStyle.Bold,
-                    alignment = TextAnchor.MiddleCenter
+                    alignment = TextAnchor.MiddleCenter,
                 };
                 _espInitialized = true;
             }
@@ -42,11 +42,7 @@ namespace MasterTool.UI
 
             if (!_statusInitialized)
             {
-                StatusBox = new GUIStyle(GUI.skin.box)
-                {
-                    alignment = TextAnchor.UpperLeft,
-                    fontSize = 11
-                };
+                StatusBox = new GUIStyle(GUI.skin.box) { alignment = TextAnchor.UpperLeft, fontSize = 11 };
                 StatusBox.normal.textColor = Color.white;
                 _statusInitialized = true;
             }

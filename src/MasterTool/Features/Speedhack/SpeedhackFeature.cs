@@ -16,13 +16,12 @@ namespace MasterTool.Features.Speedhack
         /// <param name="localPlayer">The local player to move. Ignored if null.</param>
         public static void Apply(Player localPlayer)
         {
-            if (localPlayer == null) return;
+            if (localPlayer == null)
+                return;
 
-            Vector3 moveDir = localPlayer.Transform.rotation *
-                new Vector3(
-                    localPlayer.MovementContext.MovementDirection.x,
-                    0,
-                    localPlayer.MovementContext.MovementDirection.y);
+            Vector3 moveDir =
+                localPlayer.Transform.rotation
+                * new Vector3(localPlayer.MovementContext.MovementDirection.x, 0, localPlayer.MovementContext.MovementDirection.y);
 
             localPlayer.Transform.position += moveDir * (PluginConfig.SpeedMultiplier.Value * Time.deltaTime * 5f);
         }

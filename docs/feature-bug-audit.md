@@ -62,6 +62,17 @@ When `PerformanceMode` is OFF, `shouldRender` defaults to `true`, so `SetActive(
 
 Note: `PerformanceMode` defaults to `true` in config (line 239 of PluginConfig.cs), so this bug manifests when a user explicitly disables culling.
 
+**Critical server-side finding:** EFT has a **native bot sleep/wake system** (`DistToSleep` / `DistToActivate` in `BotLocationModifier`) that deactivates bots beyond a per-map distance threshold using the same `SetActive(false)` mechanism. Example thresholds:
+
+| Map | DistToActivate | DistToSleep |
+|-----|---------------|-------------|
+| factory4_day | 140m | 150m |
+| bigmap (customs) | 265m | 300m |
+| tarkovstreets | 260m | 300m |
+| lighthouse | 330m | 350m |
+
+When our CullingFeature was disabled and called `SetActive(true)` on ALL bots, it **force-woke bots that the game's native system had put to sleep** — causing bots at 300+ meters to suddenly activate, impacting both performance and gameplay.
+
 The code runs unconditionally from `MasterToolPlugin.Update()` (line 83):
 ```csharp
 CullingFeature.Apply(gameWorld, localPlayer);  // Always called, not gated by toggle

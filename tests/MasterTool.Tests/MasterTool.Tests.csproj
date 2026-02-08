@@ -1,5 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <RootNamespace>MasterTool.Tests</RootNamespace>
@@ -18,5 +17,4 @@
     Note: Tests target net9.0 and test pure logic only (models, utils, config defaults).
     Game-dependent code (Unity, EFT) cannot be tested without game assemblies.
   -->
-
 </Project>

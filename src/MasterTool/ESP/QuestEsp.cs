@@ -29,36 +29,44 @@ namespace MasterTool.ESP
         /// <param name="cachedContainers">Pre-cached array of lootable containers from <see cref="ItemEsp"/>.</param>
         public void Update(GameWorld gameWorld, Camera mainCamera, Player localPlayer, LootableContainer[] cachedContainers)
         {
-            if (Time.time < _nextUpdate) return;
+            if (Time.time < _nextUpdate)
+                return;
             _nextUpdate = Time.time + (1f / PluginConfig.QuestEspFps.Value);
 
             Targets.Clear();
-            if (gameWorld == null || mainCamera == null || localPlayer == null) return;
+            if (gameWorld == null || mainCamera == null || localPlayer == null)
+                return;
 
             try
             {
                 var profile = localPlayer.Profile;
-                if (profile == null) return;
+                if (profile == null)
+                    return;
 
                 var questsData = profile.QuestsData;
-                if (questsData == null) return;
+                if (questsData == null)
+                    return;
 
                 HashSet<string> questItemIds = new HashSet<string>();
 
                 foreach (var quest in questsData)
                 {
-                    if (quest == null) continue;
+                    if (quest == null)
+                        continue;
                     bool isStarted = quest.Status == EFT.Quests.EQuestStatus.Started;
                     bool isReadyToFinish = quest.Status == EFT.Quests.EQuestStatus.AvailableForFinish;
 
-                    if (!isStarted && !isReadyToFinish) continue;
+                    if (!isStarted && !isReadyToFinish)
+                        continue;
 
                     var template = quest.Template;
-                    if (template?.Conditions == null) continue;
+                    if (template?.Conditions == null)
+                        continue;
 
                     foreach (var conditionGroup in template.Conditions)
                     {
-                        if (conditionGroup.Value == null) continue;
+                        if (conditionGroup.Value == null)
+                            continue;
                         foreach (var condition in conditionGroup.Value)
                         {
                             var targetItems = ReflectionUtils.GetConditionTargetItems(condition);
@@ -70,7 +78,8 @@ namespace MasterTool.ESP
                     }
                 }
 
-                if (questItemIds.Count == 0) return;
+                if (questItemIds.Count == 0)
+                    return;
 
                 ScanLooseItems(gameWorld, mainCamera, localPlayer, questItemIds);
                 ScanContainers(mainCamera, localPlayer, cachedContainers, questItemIds);
@@ -81,62 +90,79 @@ namespace MasterTool.ESP
         private void ScanLooseItems(GameWorld gameWorld, Camera mainCamera, Player localPlayer, HashSet<string> questItemIds)
         {
             var lootItems = gameWorld.LootItems;
-            if (lootItems == null) return;
+            if (lootItems == null)
+                return;
 
             for (int i = 0; i < lootItems.Count; i++)
             {
                 var loot = lootItems.GetByIndex(i);
-                if (loot == null || loot.Item == null) continue;
+                if (loot == null || loot.Item == null)
+                    continue;
 
                 float dist = Vector3.Distance(localPlayer.Transform.position, loot.transform.position);
-                if (dist > PluginConfig.QuestEspMaxDistance.Value) continue;
+                if (dist > PluginConfig.QuestEspMaxDistance.Value)
+                    continue;
 
-                if (!questItemIds.Contains(loot.Item.TemplateId)) continue;
+                if (!questItemIds.Contains(loot.Item.TemplateId))
+                    continue;
 
                 Vector3 screenPos = mainCamera.WorldToScreenPoint(loot.transform.position);
                 if (screenPos.z > 0)
                 {
-                    Targets.Add(new QuestEspTarget
-                    {
-                        ScreenPosition = new Vector2(screenPos.x, Screen.height - screenPos.y),
-                        Distance = dist,
-                        Name = "[QUEST] " + loot.Item.ShortName.Localized(),
-                        Color = PluginConfig.ColorQuestItem.Value,
-                        IsZone = false
-                    });
+                    Targets.Add(
+                        new QuestEspTarget
+                        {
+                            ScreenPosition = new Vector2(screenPos.x, Screen.height - screenPos.y),
+                            Distance = dist,
+                            Name = "[QUEST] " + loot.Item.ShortName.Localized(),
+                            Color = PluginConfig.ColorQuestItem.Value,
+                            IsZone = false,
+                        }
+                    );
                 }
             }
         }
 
-        private void ScanContainers(Camera mainCamera, Player localPlayer,
-            LootableContainer[] cachedContainers, HashSet<string> questItemIds)
+        private void ScanContainers(
+            Camera mainCamera,
+            Player localPlayer,
+            LootableContainer[] cachedContainers,
+            HashSet<string> questItemIds
+        )
         {
-            if (cachedContainers == null) return;
+            if (cachedContainers == null)
+                return;
 
             foreach (var container in cachedContainers)
             {
-                if (container == null || container.ItemOwner?.RootItem == null) continue;
+                if (container == null || container.ItemOwner?.RootItem == null)
+                    continue;
 
                 float dist = Vector3.Distance(localPlayer.Transform.position, container.transform.position);
-                if (dist > PluginConfig.QuestEspMaxDistance.Value) continue;
+                if (dist > PluginConfig.QuestEspMaxDistance.Value)
+                    continue;
 
                 var items = container.ItemOwner.RootItem.GetAllItems();
                 foreach (var item in items)
                 {
-                    if (item == container.ItemOwner.RootItem) continue;
-                    if (!questItemIds.Contains(item.TemplateId)) continue;
+                    if (item == container.ItemOwner.RootItem)
+                        continue;
+                    if (!questItemIds.Contains(item.TemplateId))
+                        continue;
 
                     Vector3 screenPos = mainCamera.WorldToScreenPoint(container.transform.position);
                     if (screenPos.z > 0)
                     {
-                        Targets.Add(new QuestEspTarget
-                        {
-                            ScreenPosition = new Vector2(screenPos.x, Screen.height - screenPos.y),
-                            Distance = dist,
-                            Name = "[QUEST-C] " + item.ShortName.Localized(),
-                            Color = PluginConfig.ColorQuestItem.Value,
-                            IsZone = false
-                        });
+                        Targets.Add(
+                            new QuestEspTarget
+                            {
+                                ScreenPosition = new Vector2(screenPos.x, Screen.height - screenPos.y),
+                                Distance = dist,
+                                Name = "[QUEST-C] " + item.ShortName.Localized(),
+                                Color = PluginConfig.ColorQuestItem.Value,
+                                IsZone = false,
+                            }
+                        );
                     }
                 }
             }

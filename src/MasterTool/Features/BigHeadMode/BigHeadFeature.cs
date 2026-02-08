@@ -16,13 +16,16 @@ namespace MasterTool.Features.BigHeadMode
         /// <param name="gameWorld">The current game world containing registered players.</param>
         public static void Apply(GameWorld gameWorld)
         {
-            if (gameWorld == null) return;
+            if (gameWorld == null)
+                return;
 
             foreach (var player in gameWorld.RegisteredPlayers)
             {
-                if (player == null || player.IsYourPlayer) continue;
+                if (player == null || player.IsYourPlayer)
+                    continue;
                 var head = player.PlayerBones.Head.Original;
-                if (head == null) continue;
+                if (head == null)
+                    continue;
 
                 if (PluginConfig.BigHeadModeEnabled.Value && player.HealthController.IsAlive)
                 {

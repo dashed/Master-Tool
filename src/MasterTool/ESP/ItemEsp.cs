@@ -33,14 +33,16 @@ namespace MasterTool.ESP
         /// <param name="localPlayer">The local player used for distance calculations.</param>
         public void Update(GameWorld gameWorld, Camera mainCamera, Player localPlayer)
         {
-            if (Time.time < _nextUpdate) return;
+            if (Time.time < _nextUpdate)
+                return;
             _nextUpdate = Time.time + PluginConfig.ItemEspUpdateInterval.Value;
 
             Targets.Clear();
-            if (gameWorld == null || mainCamera == null) return;
+            if (gameWorld == null || mainCamera == null)
+                return;
 
-            string[] filters = PluginConfig.ItemEspFilter.Value
-                .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+            string[] filters = PluginConfig
+                .ItemEspFilter.Value.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
                 .Select(f => f.Trim().ToLower())
                 .ToArray();
 
@@ -52,7 +54,8 @@ namespace MasterTool.ESP
                     for (int i = 0; i < lootItems.Count; i++)
                     {
                         var loot = lootItems.GetByIndex(i);
-                        if (loot == null || loot.Item == null) continue;
+                        if (loot == null || loot.Item == null)
+                            continue;
                         ProcessLoot(loot.transform.position, loot.Item, PluginConfig.ColorItem.Value, filters, mainCamera, localPlayer);
                     }
                 }
@@ -71,27 +74,39 @@ namespace MasterTool.ESP
 
                 foreach (var container in CachedContainers)
                 {
-                    if (container == null) continue;
+                    if (container == null)
+                        continue;
                     Vector3 containerPos = container.transform.position;
                     float distSq = (containerPos - playerPos).sqrMagnitude;
-                    if (distSq > maxDistSq) continue;
-                    if (container.ItemOwner == null || container.ItemOwner.RootItem == null) continue;
+                    if (distSq > maxDistSq)
+                        continue;
+                    if (container.ItemOwner == null || container.ItemOwner.RootItem == null)
+                        continue;
 
                     var items = container.ItemOwner.RootItem.GetAllItems();
                     foreach (var item in items)
                     {
-                        if (item == container.ItemOwner.RootItem) continue;
+                        if (item == container.ItemOwner.RootItem)
+                            continue;
                         ProcessLoot(containerPos, item, PluginConfig.ColorContainer.Value, filters, mainCamera, localPlayer, true);
                     }
                 }
             }
         }
 
-        private void ProcessLoot(Vector3 pos, Item item, Color color, string[] filters,
-            Camera mainCamera, Player localPlayer, bool isContainer = false)
+        private void ProcessLoot(
+            Vector3 pos,
+            Item item,
+            Color color,
+            string[] filters,
+            Camera mainCamera,
+            Player localPlayer,
+            bool isContainer = false
+        )
         {
             float dist = Vector3.Distance(localPlayer.Transform.position, pos);
-            if (dist > PluginConfig.ItemEspMaxDistance.Value) return;
+            if (dist > PluginConfig.ItemEspMaxDistance.Value)
+                return;
 
             string name = item.ShortName.Localized();
             string id = item.TemplateId;
@@ -108,19 +123,22 @@ namespace MasterTool.ESP
                     }
                 }
             }
-            if (!matches) return;
+            if (!matches)
+                return;
 
             Vector3 screenPos = mainCamera.WorldToScreenPoint(pos);
             if (screenPos.z > 0)
             {
                 screenPos.y = Screen.height - screenPos.y;
-                Targets.Add(new ItemEspTarget
-                {
-                    ScreenPosition = screenPos,
-                    Distance = dist,
-                    Name = isContainer ? $"[C] {name}" : name,
-                    Color = color
-                });
+                Targets.Add(
+                    new ItemEspTarget
+                    {
+                        ScreenPosition = screenPos,
+                        Distance = dist,
+                        Name = isContainer ? $"[C] {name}" : name,
+                        Color = color,
+                    }
+                );
             }
         }
 

@@ -19,8 +19,10 @@ namespace MasterTool.Utils
         {
             if (player.Side == EPlayerSide.Savage)
             {
-                if (player.Profile.Info.Settings.Role != WildSpawnType.assault &&
-                    player.Profile.Info.Settings.Role != WildSpawnType.marksman)
+                if (
+                    player.Profile.Info.Settings.Role != WildSpawnType.assault
+                    && player.Profile.Info.Settings.Role != WildSpawnType.marksman
+                )
                 {
                     return PluginConfig.ColorBoss.Value;
                 }

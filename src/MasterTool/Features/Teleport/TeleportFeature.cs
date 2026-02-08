@@ -18,13 +18,15 @@ namespace MasterTool.Features.Teleport
         /// <param name="localPlayer">The local player whose position is the teleport destination.</param>
         public static void TeleportEnemiesToPlayer(GameWorld gameWorld, Player localPlayer)
         {
-            if (gameWorld == null || localPlayer == null) return;
+            if (gameWorld == null || localPlayer == null)
+                return;
 
             Vector3 targetPos = localPlayer.Transform.position + (localPlayer.Transform.forward * 3f);
 
             foreach (var player in gameWorld.RegisteredPlayers)
             {
-                if (player == null || player.IsYourPlayer || !player.HealthController.IsAlive) continue;
+                if (player == null || player.IsYourPlayer || !player.HealthController.IsAlive)
+                    continue;
                 player.Transform.position = targetPos;
             }
         }
@@ -37,11 +39,12 @@ namespace MasterTool.Features.Teleport
         /// <param name="localPlayer">The local player whose position is the teleport destination.</param>
         public static void TeleportFilteredItemsToPlayer(GameWorld gameWorld, Player localPlayer)
         {
-            if (gameWorld == null || localPlayer == null) return;
+            if (gameWorld == null || localPlayer == null)
+                return;
 
             Vector3 targetPos = localPlayer.Transform.position + Vector3.up * 0.5f;
-            string[] filters = PluginConfig.ItemEspFilter.Value
-                .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+            string[] filters = PluginConfig
+                .ItemEspFilter.Value.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
                 .Select(f => f.Trim().ToLower())
                 .ToArray();
 
@@ -49,10 +52,12 @@ namespace MasterTool.Features.Teleport
             for (int i = 0; i < lootItems.Count; i++)
             {
                 var loot = lootItems.GetByIndex(i);
-                if (loot == null || loot.Item == null) continue;
+                if (loot == null || loot.Item == null)
+                    continue;
 
                 string name = loot.Item.ShortName.Localized().ToLower();
-                if (filters.Length > 0 && !filters.Any(f => name.Contains(f))) continue;
+                if (filters.Length > 0 && !filters.Any(f => name.Contains(f)))
+                    continue;
 
                 loot.transform.position = targetPos;
             }

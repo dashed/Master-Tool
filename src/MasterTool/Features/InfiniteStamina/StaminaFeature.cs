@@ -18,9 +18,12 @@ namespace MasterTool.Features.InfiniteStamina
                 var stamina = localPlayer.Physical.Stamina;
                 var hands = localPlayer.Physical.HandsStamina;
                 var oxygen = localPlayer.Physical.Oxygen;
-                if (stamina != null) stamina.Current = stamina.TotalCapacity;
-                if (hands != null) hands.Current = hands.TotalCapacity;
-                if (oxygen != null) oxygen.Current = oxygen.TotalCapacity;
+                if (stamina != null)
+                    stamina.Current = stamina.TotalCapacity;
+                if (hands != null)
+                    hands.Current = hands.TotalCapacity;
+                if (oxygen != null)
+                    oxygen.Current = oxygen.TotalCapacity;
             }
             catch { }
         }

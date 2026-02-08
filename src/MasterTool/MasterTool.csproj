@@ -1,5 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <AssemblyName>MasterTool</AssemblyName>
     <RootNamespace>MasterTool</RootNamespace>
@@ -32,5 +31,4 @@
     <Reference Include="UnityEngine.TextRenderingModule" HintPath="..\..\libs\UnityEngine.TextRenderingModule.dll" Private="false" />
     <Reference Include="Comfort" HintPath="..\..\libs\Comfort.dll" Private="false" />
   </ItemGroup>
-
 </Project>
