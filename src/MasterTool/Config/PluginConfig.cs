@@ -30,6 +30,11 @@ namespace MasterTool.Config
         public static ConfigEntry<bool> ReloadSpeedEnabled;
         public static ConfigEntry<float> ReloadLoadTime;
         public static ConfigEntry<float> ReloadUnloadTime;
+
+        // --- Fly Mode ---
+        public static ConfigEntry<bool> FlyModeEnabled;
+        public static ConfigEntry<float> FlySpeed;
+
         public static ConfigEntry<int> DamageReductionPercent;
         public static ConfigEntry<bool> Keep1HealthEnabled;
         public static ConfigEntry<string> Keep1HealthSelection;
@@ -58,6 +63,10 @@ namespace MasterTool.Config
         public static ConfigEntry<KeyboardShortcut> ToggleFallDamageHotkey;
         public static ConfigEntry<KeyboardShortcut> ToggleCodModeHotkey;
         public static ConfigEntry<KeyboardShortcut> ToggleReloadSpeedHotkey;
+        public static ConfigEntry<KeyboardShortcut> ToggleFlyModeHotkey;
+        public static ConfigEntry<KeyboardShortcut> SavePositionHotkey;
+        public static ConfigEntry<KeyboardShortcut> LoadPositionHotkey;
+        public static ConfigEntry<KeyboardShortcut> SurfaceTeleportHotkey;
 
         // --- Player ESP Settings ---
         public static ConfigEntry<bool> EspEnabled;
@@ -163,6 +172,13 @@ namespace MasterTool.Config
                 0.3f,
                 new ConfigDescription("Magazine unload time (lower = faster, default 0.3).", new AcceptableValueRange<float>(0.01f, 2f))
             );
+            FlyModeEnabled = config.Bind("General", "Fly Mode", false, "Noclip flight mode — move freely through walls and terrain.");
+            FlySpeed = config.Bind(
+                "General",
+                "Fly Speed",
+                10f,
+                new ConfigDescription("Flight speed in fly mode.", new AcceptableValueRange<float>(1f, 50f))
+            );
             DamageReductionPercent = config.Bind(
                 "General",
                 "Damage Reduction %",
@@ -244,6 +260,10 @@ namespace MasterTool.Config
             ToggleFallDamageHotkey = config.Bind("Hotkeys", "17. Toggle Fall Damage", new KeyboardShortcut(KeyCode.None), hotkeyDesc);
             ToggleCodModeHotkey = config.Bind("Hotkeys", "18. Toggle COD Mode", new KeyboardShortcut(KeyCode.None), hotkeyDesc);
             ToggleReloadSpeedHotkey = config.Bind("Hotkeys", "19. Toggle Reload Speed", new KeyboardShortcut(KeyCode.None), hotkeyDesc);
+            ToggleFlyModeHotkey = config.Bind("Hotkeys", "20. Toggle Fly Mode", new KeyboardShortcut(KeyCode.None), hotkeyDesc);
+            SavePositionHotkey = config.Bind("Hotkeys", "21. Save Position", new KeyboardShortcut(KeyCode.None), hotkeyDesc);
+            LoadPositionHotkey = config.Bind("Hotkeys", "22. Load Position", new KeyboardShortcut(KeyCode.None), hotkeyDesc);
+            SurfaceTeleportHotkey = config.Bind("Hotkeys", "23. Teleport to Surface", new KeyboardShortcut(KeyCode.None), hotkeyDesc);
 
             // Movement
             SpeedhackEnabled = config.Bind("Movement", "Speedhack", false, "Move faster.");

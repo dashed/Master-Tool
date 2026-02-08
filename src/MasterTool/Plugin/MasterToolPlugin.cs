@@ -9,6 +9,7 @@ using MasterTool.Features.BigHeadMode;
 using MasterTool.Features.CodMode;
 using MasterTool.Features.DoorUnlock;
 using MasterTool.Features.FallDamage;
+using MasterTool.Features.FlyMode;
 using MasterTool.Features.GodMode;
 using MasterTool.Features.InfiniteStamina;
 using MasterTool.Features.NoWeight;
@@ -16,6 +17,7 @@ using MasterTool.Features.Performance;
 using MasterTool.Features.ReloadSpeed;
 using MasterTool.Features.Speedhack;
 using MasterTool.Features.Sustenance;
+using MasterTool.Features.Teleport;
 using MasterTool.Features.Vision;
 using MasterTool.UI;
 using UnityEngine;
@@ -26,7 +28,7 @@ namespace MasterTool.Plugin
     /// Main BepInEx plugin entry point. Initializes config, applies Harmony patches,
     /// and orchestrates per-frame updates for all feature and ESP modules.
     /// </summary>
-    [BepInPlugin("com.master.tools", "Advanced SPT Mod Menu", "2.7.0")]
+    [BepInPlugin("com.master.tools", "Advanced SPT Mod Menu", "2.8.0")]
     public sealed class MasterToolPlugin : BaseUnityPlugin
     {
         internal static MasterToolPlugin Instance;
@@ -102,6 +104,8 @@ namespace MasterTool.Plugin
                 CodModeFeature.Apply(localPlayer);
 
             ReloadSpeedFeature.Apply(PluginConfig.ReloadSpeedEnabled.Value);
+
+            FlyModeFeature.Apply(localPlayer, mainCamera);
 
             CullingFeature.Apply(gameWorld, localPlayer);
 
@@ -206,6 +210,14 @@ namespace MasterTool.Plugin
                 PluginConfig.CodModeEnabled.Value = !PluginConfig.CodModeEnabled.Value;
             if (PluginConfig.ToggleReloadSpeedHotkey.Value.IsDown())
                 PluginConfig.ReloadSpeedEnabled.Value = !PluginConfig.ReloadSpeedEnabled.Value;
+            if (PluginConfig.ToggleFlyModeHotkey.Value.IsDown())
+                PluginConfig.FlyModeEnabled.Value = !PluginConfig.FlyModeEnabled.Value;
+            if (PluginConfig.SavePositionHotkey.Value.IsDown())
+                PlayerTeleportFeature.SavePosition(_gameState.LocalPlayer);
+            if (PluginConfig.LoadPositionHotkey.Value.IsDown())
+                PlayerTeleportFeature.LoadPosition(_gameState.LocalPlayer);
+            if (PluginConfig.SurfaceTeleportHotkey.Value.IsDown())
+                PlayerTeleportFeature.TeleportToSurface(_gameState.LocalPlayer);
         }
     }
 }

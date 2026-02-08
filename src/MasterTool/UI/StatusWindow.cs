@@ -2,6 +2,7 @@ using System;
 using EFT;
 using EFT.InventoryLogic;
 using MasterTool.Config;
+using MasterTool.Features.Teleport;
 using MasterTool.Plugin;
 using UnityEngine;
 
@@ -54,6 +55,10 @@ namespace MasterTool.UI
                 status +=
                     $"Reload: <color=yellow>{PluginConfig.ReloadLoadTime.Value:F2}/{PluginConfig.ReloadUnloadTime.Value:F2}</color>\n";
             }
+            if (PluginConfig.FlyModeEnabled.Value)
+                status += "Fly Mode: <color=green>ON</color>\n";
+            if (PlayerTeleportFeature.HasSavedPosition)
+                status += "Pos: <color=yellow>Saved</color>\n";
 
             if (PluginConfig.ShowWeaponInfo.Value && localPlayer != null)
             {

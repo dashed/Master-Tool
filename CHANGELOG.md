@@ -6,6 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [2.8.0] - 2026-02-07
+
+### Added
+
+- Fly Mode (Noclip): spectator-style free flight — disables CharacterController for collision-free movement through walls and terrain. Camera-direction based controls: WASD for horizontal, Space for up, LeftControl for down. Configurable speed (1–50, default 10). State-tracked: restores CharacterController on disable
+- Player Self-Teleport: save/load position system with 3 actions:
+  - **Save Position**: stores current player position and rotation
+  - **Load Position**: teleports back to saved position
+  - **Teleport to Surface**: rescue button that raycasts from 500m above to find terrain surface — fixes falling under the map from speedhack
+- Config entries for Fly Mode (toggle, speed slider) and 4 hotkeys (fly toggle, save/load/surface teleport), all default unbound
+- Mod menu controls: Fly Mode section in Troll tab with toggle, speed slider, and control hints. Player Teleport section with Save/Load/Surface buttons
+- Status window indicators for Fly Mode and saved position state
+- Unit tests for fly movement calculation (13 tests) and teleport save/load state (10 tests)
+
 ## [2.7.0] - 2026-02-07
 
 ### Added

@@ -299,9 +299,32 @@ namespace MasterTool.UI
                 PluginConfig.SpeedMultiplier.Value = GUILayout.HorizontalSlider(PluginConfig.SpeedMultiplier.Value, 1f, 10f);
             }
             GUILayout.Space(10);
+            GUILayout.Label("<b>--- FLY MODE (NOCLIP) ---</b>");
+            PluginConfig.FlyModeEnabled.Value = GUILayout.Toggle(
+                PluginConfig.FlyModeEnabled.Value,
+                $" Fly Mode [{PluginConfig.ToggleFlyModeHotkey.Value}]"
+            );
+            if (PluginConfig.FlyModeEnabled.Value)
+            {
+                GUILayout.Label($"Fly Speed: {PluginConfig.FlySpeed.Value:F1}");
+                PluginConfig.FlySpeed.Value = GUILayout.HorizontalSlider(PluginConfig.FlySpeed.Value, 1f, 50f);
+                GUILayout.Label("Controls: WASD + Space(up) + Ctrl(down)");
+            }
+
+            GUILayout.Space(10);
             GUILayout.Label("<b>--- TELEPORT & SPAWN ---</b>");
             if (GUILayout.Button("Teleport All Enemies to Me"))
                 TeleportFeature.TeleportEnemiesToPlayer(gameWorld, localPlayer);
+
+            GUILayout.Space(5);
+            GUILayout.Label("<b>--- PLAYER TELEPORT ---</b>");
+            if (GUILayout.Button("Save Position"))
+                PlayerTeleportFeature.SavePosition(localPlayer);
+            if (GUILayout.Button("Load Position" + (PlayerTeleportFeature.HasSavedPosition ? " (Saved)" : "")))
+                PlayerTeleportFeature.LoadPosition(localPlayer);
+            if (GUILayout.Button("Teleport to Surface (Rescue)"))
+                PlayerTeleportFeature.TeleportToSurface(localPlayer);
+
             GUILayout.Label("<b>--- FUN ---</b>");
 
             PluginConfig.BigHeadModeEnabled.Value = GUILayout.Toggle(PluginConfig.BigHeadModeEnabled.Value, " Big Head Mode");

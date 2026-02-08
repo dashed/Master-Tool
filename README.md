@@ -79,6 +79,7 @@ The compiled `MasterTool.dll` will be in `build/`.
 | **Infinite Hydration** | Keeps hydration at maximum — no need to drink. Same efficiency guard as Energy. |
 | **No Weight Penalties** | Configurable weight scale (0–100%) — set to 0% for weightless, or fine-tune to reduce weight penalties without removing them entirely. |
 | **No Fall Damage** | Eliminates fall damage by setting safe fall height to an extreme value. State-tracked: only resets when the mod forced the change, never interferes with game defaults. |
+| **Fly Mode (Noclip)** | Spectator-style free flight through walls and terrain. Disables CharacterController for collision-free movement. WASD + Space (up) + Ctrl (down), configurable speed. |
 | **Speedhack** | Adjustable movement speed multiplier. |
 | **Reload Speed** | Adjustable magazine load/unload times. Lower values = faster reloads. State-tracked: restores game defaults when disabled. |
 
@@ -108,6 +109,7 @@ The compiled `MasterTool.dll` will be in `build/`.
 | **Unlock All Doors** | Instantly unlocks every locked door on the map. No keys required. |
 | **Performance Culling** | Deactivates distant bots for a performance boost. Only re-enables bots the mod deactivated — does not interfere with the game's native bot sleep system. |
 | **Teleport Items** | Teleports all loose loot matching the item ESP filter to your position. If no filter is set, all loose loot is teleported. |
+| **Player Teleport** | Save/load position system: save your current spot, teleport back anytime. Includes a **Teleport to Surface** rescue button that finds the terrain above you — fixes falling under the map. |
 
 ### UI
 
@@ -265,7 +267,7 @@ make build    # or: dotnet build
 
 ### Running Tests
 
-211 tests cover pure logic: models, utilities, feature state machines, ESP extraction, and config defaults. Game-dependent code requires Unity/EFT assemblies and cannot be unit-tested — tests duplicate the pure logic with fake types.
+234 tests cover pure logic: models, utilities, feature state machines, ESP extraction, and config defaults. Game-dependent code requires Unity/EFT assemblies and cannot be unit-tested — tests duplicate the pure logic with fake types.
 
 ```bash
 make test     # or: dotnet test
