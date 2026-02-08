@@ -84,7 +84,9 @@ The compiled `MasterTool.dll` will be in `build/`.
 | **Speedhack** | Adjustable movement speed multiplier. |
 | **Reload Speed** | Adjustable magazine load/unload times. Lower values = faster reloads. State-tracked: restores game defaults when disabled. |
 
-### ESP (Extrasensory Perception)
+### ESP & Chams
+
+**ESP** (Extrasensory Perception) draws on-screen text labels showing positions, distances, and details for players, items, and quest objectives. **Chams** (short for "chameleon") are colored shader overlays applied directly to 3D models, making them visible through walls and geometry by replacing the normal material with a flat-colored always-visible shader (depth testing disabled).
 
 | Feature | Description |
 |---------|-------------|
