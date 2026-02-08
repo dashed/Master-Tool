@@ -41,6 +41,7 @@ namespace MasterTool.Config
         public static ConfigEntry<bool> EspEnabled;
         public static ConfigEntry<float> EspUpdateInterval;
         public static ConfigEntry<float> EspMaxDistance;
+        public static ConfigEntry<bool> EspLineOfSightOnly;
         public static ConfigEntry<float> EspTextAlpha;
         public static ConfigEntry<int> EspFontSize;
         public static ConfigEntry<Color> ColorBear;
@@ -108,7 +109,12 @@ namespace MasterTool.Config
             StatusWindowEnabled = config.Bind("General", "Status Window", true, "Show the mini status window.");
 
             ShowWeaponInfo = config.Bind("General", "Show Weapon Info", true, "Show current weapon and ammo in status window.");
-            ToggleWeaponInfoHotkey = config.Bind("Hotkeys", "12. Toggle Weapon Info", new KeyboardShortcut(KeyCode.L), "Hotkey to toggle weapon info display.");
+            ToggleWeaponInfoHotkey = config.Bind(
+                "Hotkeys",
+                "12. Toggle Weapon Info",
+                new KeyboardShortcut(KeyCode.L),
+                "Hotkey to toggle weapon info display."
+            );
 
             // Hotkeys
             ToggleUiHotkey = config.Bind("Hotkeys", "01. Toggle UI", new KeyboardShortcut(KeyCode.Insert), hotkeyDesc);
@@ -118,7 +124,12 @@ namespace MasterTool.Config
             ToggleWeightHotkey = config.Bind("Hotkeys", "06. Toggle Weight", new KeyboardShortcut(KeyCode.Keypad4), hotkeyDesc);
             ToggleEspHotkey = config.Bind("Hotkeys", "07. Toggle Player ESP", new KeyboardShortcut(KeyCode.Keypad5), hotkeyDesc);
             ToggleItemEspHotkey = config.Bind("Hotkeys", "08. Toggle Item ESP", new KeyboardShortcut(KeyCode.Keypad6), hotkeyDesc);
-            ToggleContainerEspHotkey = config.Bind("Hotkeys", "09. Toggle Container ESP", new KeyboardShortcut(KeyCode.Keypad7), hotkeyDesc);
+            ToggleContainerEspHotkey = config.Bind(
+                "Hotkeys",
+                "09. Toggle Container ESP",
+                new KeyboardShortcut(KeyCode.Keypad7),
+                hotkeyDesc
+            );
             ToggleCullingHotkey = config.Bind("Hotkeys", "10. Toggle Culling", new KeyboardShortcut(KeyCode.Keypad8), hotkeyDesc);
             ToggleUnlockDoorsHotkey = config.Bind("Hotkeys", "11. Unlock All Doors", new KeyboardShortcut(KeyCode.Keypad9), hotkeyDesc);
             ToggleQuestEspHotkey = config.Bind("Hotkeys", "14. Toggle Quest ESP", new KeyboardShortcut(KeyCode.Keypad3), hotkeyDesc);
@@ -139,6 +150,12 @@ namespace MasterTool.Config
             EspFontSize = config.Bind("ESP Players", "Font Size", 12, "Text Size.");
             EspUpdateInterval = config.Bind("ESP Players", "Update Interval", 0.05f, "Update rate for player ESP.");
             EspMaxDistance = config.Bind("ESP Players", "Max Distance", 400f, "Max distance for players.");
+            EspLineOfSightOnly = config.Bind(
+                "ESP Players",
+                "Line of Sight Only",
+                false,
+                "Only show ESP labels for players you have direct line of sight to."
+            );
             ColorBear = config.Bind("ESP Players", "Color BEAR", Color.red, "Color for BEAR faction.");
             ColorUsec = config.Bind("ESP Players", "Color USEC", Color.blue, "Color for USEC faction.");
             ColorSavage = config.Bind("ESP Players", "Color Savage", Color.yellow, "Color for Scavs/Bots.");
@@ -163,17 +180,60 @@ namespace MasterTool.Config
             QuestEspMaxDistance = config.Bind("ESP Quests", "Max Distance", 200f, "Max distance for quest ESP.");
             ColorQuestItem = config.Bind("ESP Quests", "Quest Item Color", new Color(1f, 0.84f, 0f), "Color for quest items (gold).");
             ColorQuestZone = config.Bind("ESP Quests", "Quest Zone Color", new Color(0f, 1f, 0.5f), "Color for quest zones (green).");
-            QuestEspFps = config.Bind("ESP Quests", "Update FPS", 15, new ConfigDescription("Update rate in frames per second. Higher is smoother but uses more resources.", new AcceptableValueRange<int>(1, 60)));
+            QuestEspFps = config.Bind(
+                "ESP Quests",
+                "Update FPS",
+                15,
+                new ConfigDescription(
+                    "Update rate in frames per second. Higher is smoother but uses more resources.",
+                    new AcceptableValueRange<int>(1, 60)
+                )
+            );
 
             // FOV by Weapon Category
             WeaponFovEnabled = config.Bind("FOV Settings", "Enable Weapon FOV", false, "Automatically adjust FOV based on weapon type.");
-            FovDefault = config.Bind("FOV Settings", "Default FOV", 75f, new ConfigDescription("FOV when no weapon equipped.", new AcceptableValueRange<float>(50f, 120f)));
-            FovPistol = config.Bind("FOV Settings", "Pistol FOV", 65f, new ConfigDescription("FOV for pistols.", new AcceptableValueRange<float>(50f, 120f)));
-            FovSMG = config.Bind("FOV Settings", "SMG FOV", 70f, new ConfigDescription("FOV for SMGs.", new AcceptableValueRange<float>(50f, 120f)));
-            FovAssaultRifle = config.Bind("FOV Settings", "Assault Rifle FOV", 75f, new ConfigDescription("FOV for assault rifles.", new AcceptableValueRange<float>(50f, 120f)));
-            FovShotgun = config.Bind("FOV Settings", "Shotgun FOV", 70f, new ConfigDescription("FOV for shotguns.", new AcceptableValueRange<float>(50f, 120f)));
-            FovSniper = config.Bind("FOV Settings", "Sniper FOV", 80f, new ConfigDescription("FOV for sniper/marksman rifles.", new AcceptableValueRange<float>(50f, 120f)));
-            FovMelee = config.Bind("FOV Settings", "Melee FOV", 60f, new ConfigDescription("FOV for melee weapons.", new AcceptableValueRange<float>(50f, 120f)));
+            FovDefault = config.Bind(
+                "FOV Settings",
+                "Default FOV",
+                75f,
+                new ConfigDescription("FOV when no weapon equipped.", new AcceptableValueRange<float>(50f, 120f))
+            );
+            FovPistol = config.Bind(
+                "FOV Settings",
+                "Pistol FOV",
+                65f,
+                new ConfigDescription("FOV for pistols.", new AcceptableValueRange<float>(50f, 120f))
+            );
+            FovSMG = config.Bind(
+                "FOV Settings",
+                "SMG FOV",
+                70f,
+                new ConfigDescription("FOV for SMGs.", new AcceptableValueRange<float>(50f, 120f))
+            );
+            FovAssaultRifle = config.Bind(
+                "FOV Settings",
+                "Assault Rifle FOV",
+                75f,
+                new ConfigDescription("FOV for assault rifles.", new AcceptableValueRange<float>(50f, 120f))
+            );
+            FovShotgun = config.Bind(
+                "FOV Settings",
+                "Shotgun FOV",
+                70f,
+                new ConfigDescription("FOV for shotguns.", new AcceptableValueRange<float>(50f, 120f))
+            );
+            FovSniper = config.Bind(
+                "FOV Settings",
+                "Sniper FOV",
+                80f,
+                new ConfigDescription("FOV for sniper/marksman rifles.", new AcceptableValueRange<float>(50f, 120f))
+            );
+            FovMelee = config.Bind(
+                "FOV Settings",
+                "Melee FOV",
+                60f,
+                new ConfigDescription("FOV for melee weapons.", new AcceptableValueRange<float>(50f, 120f))
+            );
 
             // Performance
             PerformanceMode = config.Bind("Performance", "Enable Distance Culling", true, "Only render bots within distance.");

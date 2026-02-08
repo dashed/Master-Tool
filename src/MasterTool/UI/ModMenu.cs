@@ -44,13 +44,27 @@ namespace MasterTool.UI
 
             switch (_selectedTab)
             {
-                case 0: DrawGeneralTab(); break;
-                case 1: DrawPlayerEspTab(); break;
-                case 2: DrawItemEspTab(); break;
-                case 3: DrawQuestEspTab(); break;
-                case 4: DrawVisualTab(gameWorld, localPlayer); break;
-                case 5: DrawTrollTab(gameWorld, localPlayer); break;
-                case 6: DrawConfigsTab(); break;
+                case 0:
+                    DrawGeneralTab();
+                    break;
+                case 1:
+                    DrawPlayerEspTab();
+                    break;
+                case 2:
+                    DrawItemEspTab();
+                    break;
+                case 3:
+                    DrawQuestEspTab();
+                    break;
+                case 4:
+                    DrawVisualTab(gameWorld, localPlayer);
+                    break;
+                case 5:
+                    DrawTrollTab(gameWorld, localPlayer);
+                    break;
+                case 6:
+                    DrawConfigsTab();
+                    break;
             }
 
             GUILayout.EndScrollView();
@@ -63,18 +77,36 @@ namespace MasterTool.UI
         {
             GUILayout.Space(20);
             GUILayout.Label("<b>--- GENERAL ---</b>");
-            PluginConfig.GodModeEnabled.Value = GUILayout.Toggle(PluginConfig.GodModeEnabled.Value, $" GodMode [{PluginConfig.ToggleGodModeHotkey.Value}]");
-            PluginConfig.InfiniteStaminaEnabled.Value = GUILayout.Toggle(PluginConfig.InfiniteStaminaEnabled.Value, $" Infinite Stamina [{PluginConfig.ToggleStaminaHotkey.Value}]");
-            PluginConfig.NoWeightEnabled.Value = GUILayout.Toggle(PluginConfig.NoWeightEnabled.Value, $" No Weight Penalties [{PluginConfig.ToggleWeightHotkey.Value}]");
-            PluginConfig.StatusWindowEnabled.Value = GUILayout.Toggle(PluginConfig.StatusWindowEnabled.Value, $" Show Status Window [{PluginConfig.ToggleStatusHotkey.Value}]");
-            PluginConfig.ShowWeaponInfo.Value = GUILayout.Toggle(PluginConfig.ShowWeaponInfo.Value, $" Show Weapon Info in Status [{PluginConfig.ToggleWeaponInfoHotkey.Value}]");
+            PluginConfig.GodModeEnabled.Value = GUILayout.Toggle(
+                PluginConfig.GodModeEnabled.Value,
+                $" GodMode [{PluginConfig.ToggleGodModeHotkey.Value}]"
+            );
+            PluginConfig.InfiniteStaminaEnabled.Value = GUILayout.Toggle(
+                PluginConfig.InfiniteStaminaEnabled.Value,
+                $" Infinite Stamina [{PluginConfig.ToggleStaminaHotkey.Value}]"
+            );
+            PluginConfig.NoWeightEnabled.Value = GUILayout.Toggle(
+                PluginConfig.NoWeightEnabled.Value,
+                $" No Weight Penalties [{PluginConfig.ToggleWeightHotkey.Value}]"
+            );
+            PluginConfig.StatusWindowEnabled.Value = GUILayout.Toggle(
+                PluginConfig.StatusWindowEnabled.Value,
+                $" Show Status Window [{PluginConfig.ToggleStatusHotkey.Value}]"
+            );
+            PluginConfig.ShowWeaponInfo.Value = GUILayout.Toggle(
+                PluginConfig.ShowWeaponInfo.Value,
+                $" Show Weapon Info in Status [{PluginConfig.ToggleWeaponInfoHotkey.Value}]"
+            );
             GUILayout.Space(10);
             if (GUILayout.Button($"Unlock All Doors in Raid [{PluginConfig.ToggleUnlockDoorsHotkey.Value}]"))
                 DoorUnlockFeature.UnlockAll();
 
             GUILayout.Space(10);
             GUILayout.Label("<b>--- PERFORMANCE ---</b>");
-            PluginConfig.PerformanceMode.Value = GUILayout.Toggle(PluginConfig.PerformanceMode.Value, $" Enable Bot Distance Culling [{PluginConfig.ToggleCullingHotkey.Value}]");
+            PluginConfig.PerformanceMode.Value = GUILayout.Toggle(
+                PluginConfig.PerformanceMode.Value,
+                $" Enable Bot Distance Culling [{PluginConfig.ToggleCullingHotkey.Value}]"
+            );
             GUILayout.Label($"Bot Render Distance: {PluginConfig.BotRenderDistance.Value:F0}m");
             PluginConfig.BotRenderDistance.Value = GUILayout.HorizontalSlider(PluginConfig.BotRenderDistance.Value, 50f, 1000f);
 
@@ -96,7 +128,10 @@ namespace MasterTool.UI
         {
             GUILayout.Space(20);
             GUILayout.Label("<b>--- PLAYER ESP ---</b>");
-            PluginConfig.EspEnabled.Value = GUILayout.Toggle(PluginConfig.EspEnabled.Value, $" Enable Player ESP (Text) [{PluginConfig.ToggleEspHotkey.Value}]");
+            PluginConfig.EspEnabled.Value = GUILayout.Toggle(
+                PluginConfig.EspEnabled.Value,
+                $" Enable Player ESP (Text) [{PluginConfig.ToggleEspHotkey.Value}]"
+            );
             GUILayout.Label($"ESP Transparency: {PluginConfig.EspTextAlpha.Value:F2}");
             PluginConfig.EspTextAlpha.Value = GUILayout.HorizontalSlider(PluginConfig.EspTextAlpha.Value, 0.1f, 1.0f);
             GUILayout.Label($"ESP Font Size: {PluginConfig.EspFontSize.Value}");
@@ -107,8 +142,13 @@ namespace MasterTool.UI
             float pFps = GUILayout.HorizontalSlider(1f / PluginConfig.EspUpdateInterval.Value, 1f, 60f);
             PluginConfig.EspUpdateInterval.Value = 1f / pFps;
 
+            PluginConfig.EspLineOfSightOnly.Value = GUILayout.Toggle(PluginConfig.EspLineOfSightOnly.Value, " Line of Sight Only");
+
             GUILayout.Label("<b>--- CHAMS SETTINGS ---</b>");
-            PluginConfig.ChamsEnabled.Value = GUILayout.Toggle(PluginConfig.ChamsEnabled.Value, $" Enable Player Chams (Models) [{PluginConfig.ToggleChamsHotkey.Value}]");
+            PluginConfig.ChamsEnabled.Value = GUILayout.Toggle(
+                PluginConfig.ChamsEnabled.Value,
+                $" Enable Player Chams (Models) [{PluginConfig.ToggleChamsHotkey.Value}]"
+            );
 
             GUILayout.Space(5);
             GUILayout.Label("<b>--- COLORS & TRANSPARENCY (RGB) ---</b>");
@@ -122,12 +162,22 @@ namespace MasterTool.UI
         {
             GUILayout.Space(20);
             GUILayout.Label("<b>--- ITEM & CONTAINER ESP ---</b>");
-            PluginConfig.ItemEspEnabled.Value = GUILayout.Toggle(PluginConfig.ItemEspEnabled.Value, $" Enable Loose Item ESP [{PluginConfig.ToggleItemEspHotkey.Value}]");
-            PluginConfig.ContainerEspEnabled.Value = GUILayout.Toggle(PluginConfig.ContainerEspEnabled.Value, $" Enable Container Item ESP [{PluginConfig.ToggleContainerEspHotkey.Value}]");
+            PluginConfig.ItemEspEnabled.Value = GUILayout.Toggle(
+                PluginConfig.ItemEspEnabled.Value,
+                $" Enable Loose Item ESP [{PluginConfig.ToggleItemEspHotkey.Value}]"
+            );
+            PluginConfig.ContainerEspEnabled.Value = GUILayout.Toggle(
+                PluginConfig.ContainerEspEnabled.Value,
+                $" Enable Container Item ESP [{PluginConfig.ToggleContainerEspHotkey.Value}]"
+            );
             GUILayout.Label("Filter (Name or ID, comma separated):");
 
             _itemFilterScroll = GUILayout.BeginScrollView(_itemFilterScroll, GUILayout.Height(60), GUILayout.ExpandWidth(true));
-            PluginConfig.ItemEspFilter.Value = GUILayout.TextArea(PluginConfig.ItemEspFilter.Value, GUILayout.Width(260), GUILayout.ExpandHeight(true));
+            PluginConfig.ItemEspFilter.Value = GUILayout.TextArea(
+                PluginConfig.ItemEspFilter.Value,
+                GUILayout.Width(260),
+                GUILayout.ExpandHeight(true)
+            );
             GUILayout.EndScrollView();
 
             GUILayout.Space(5);
@@ -144,7 +194,10 @@ namespace MasterTool.UI
         {
             GUILayout.Space(20);
             GUILayout.Label("<b>--- QUEST ESP ---</b>");
-            PluginConfig.QuestEspEnabled.Value = GUILayout.Toggle(PluginConfig.QuestEspEnabled.Value, $" Enable Quest Item ESP [{PluginConfig.ToggleQuestEspHotkey.Value}]");
+            PluginConfig.QuestEspEnabled.Value = GUILayout.Toggle(
+                PluginConfig.QuestEspEnabled.Value,
+                $" Enable Quest Item ESP [{PluginConfig.ToggleQuestEspHotkey.Value}]"
+            );
             GUILayout.Label($"Quest ESP Distance: {PluginConfig.QuestEspMaxDistance.Value:F0}m");
             PluginConfig.QuestEspMaxDistance.Value = GUILayout.HorizontalSlider(PluginConfig.QuestEspMaxDistance.Value, 10f, 500f);
             PluginConfig.ColorQuestItem.Value = ColorPicker.Draw("Quest Items", PluginConfig.ColorQuestItem.Value);
@@ -226,7 +279,8 @@ namespace MasterTool.UI
                 windowRect.height = Mathf.Max(MinWindowHeight, _resizeStartRect.height + delta.y);
                 e.Use();
             }
-            if (e.type == EventType.MouseUp) _isResizing = false;
+            if (e.type == EventType.MouseUp)
+                _isResizing = false;
         }
     }
 }

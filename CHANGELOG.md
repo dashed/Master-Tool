@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- Line-of-sight mode for Player ESP: optional toggle that only shows ESP labels for players with direct line of sight (uses `Physics.Linecast` against terrain/wall geometry layers)
+- `EspLineOfSightOnly` config entry in "ESP Players" section (defaults to off)
+- "Line of Sight Only" toggle in mod menu ESP Players tab
+- Unit tests for LOS layer mask computation logic
+
 ## [2.1.2] - 2026-02-07
 
 ### Added
