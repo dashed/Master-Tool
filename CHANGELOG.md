@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [2.5.0] - 2026-02-07
+
+### Added
+
+- Infinite Energy feature: keeps player energy at maximum, no need to eat. Event-guard prevents unnecessary calls when already at max
+- Infinite Hydration feature: keeps player hydration at maximum, no need to drink. Same event-guard pattern as Energy
+- No Fall Damage feature: sets `ActiveHealthController.FallSafeHeight` to extreme value. State-tracked cleanup restores default 1.8m when disabled without interfering with game state
+- Config entries for all 3 features with customizable hotkeys (default: unbound)
+- Mod menu toggles in General tab for Energy, Hydration, and Fall Damage
+- Status window indicators for all 3 new features
+- Unit tests for energy/hydration value-clamping logic (10 tests) and fall damage state machine (9 tests)
+
 ## [2.4.0] - 2026-02-07
 
 ### Changed

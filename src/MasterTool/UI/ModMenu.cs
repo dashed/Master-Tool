@@ -89,6 +89,18 @@ namespace MasterTool.UI
                 PluginConfig.NoWeightEnabled.Value,
                 $" No Weight Penalties [{PluginConfig.ToggleWeightHotkey.Value}]"
             );
+            PluginConfig.InfiniteEnergyEnabled.Value = GUILayout.Toggle(
+                PluginConfig.InfiniteEnergyEnabled.Value,
+                $" Infinite Energy [{PluginConfig.ToggleEnergyHotkey.Value}]"
+            );
+            PluginConfig.InfiniteHydrationEnabled.Value = GUILayout.Toggle(
+                PluginConfig.InfiniteHydrationEnabled.Value,
+                $" Infinite Hydration [{PluginConfig.ToggleHydrationHotkey.Value}]"
+            );
+            PluginConfig.NoFallDamageEnabled.Value = GUILayout.Toggle(
+                PluginConfig.NoFallDamageEnabled.Value,
+                $" No Fall Damage [{PluginConfig.ToggleFallDamageHotkey.Value}]"
+            );
             PluginConfig.StatusWindowEnabled.Value = GUILayout.Toggle(
                 PluginConfig.StatusWindowEnabled.Value,
                 $" Show Status Window [{PluginConfig.ToggleStatusHotkey.Value}]"

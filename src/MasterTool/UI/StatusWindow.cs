@@ -32,6 +32,12 @@ namespace MasterTool.UI
             status +=
                 $"Weight: <color={(PluginConfig.NoWeightEnabled.Value ? "green" : "red")}>{(PluginConfig.NoWeightEnabled.Value ? "ON" : "OFF")}</color>\n";
             status +=
+                $"Energy: <color={(PluginConfig.InfiniteEnergyEnabled.Value ? "green" : "red")}>{(PluginConfig.InfiniteEnergyEnabled.Value ? "ON" : "OFF")}</color>\n";
+            status +=
+                $"Hydration: <color={(PluginConfig.InfiniteHydrationEnabled.Value ? "green" : "red")}>{(PluginConfig.InfiniteHydrationEnabled.Value ? "ON" : "OFF")}</color>\n";
+            status +=
+                $"Fall Dmg: <color={(PluginConfig.NoFallDamageEnabled.Value ? "green" : "red")}>{(PluginConfig.NoFallDamageEnabled.Value ? "ON" : "OFF")}</color>\n";
+            status +=
                 $"ESP: <color={(PluginConfig.EspEnabled.Value ? "green" : "red")}>{(PluginConfig.EspEnabled.Value ? "ON" : "OFF")}</color>\n";
             status +=
                 $"Quest ESP: <color={(PluginConfig.QuestEspEnabled.Value ? "green" : "red")}>{(PluginConfig.QuestEspEnabled.Value ? "ON" : "OFF")}</color>\n";

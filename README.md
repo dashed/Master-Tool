@@ -70,7 +70,10 @@ The compiled `MasterTool.dll` will be in `build/`.
 | Feature | Description |
 |---------|-------------|
 | **Infinite Stamina** | Keeps leg stamina, arm stamina (aiming), and oxygen at 100% at all times. |
+| **Infinite Energy** | Keeps energy at maximum — no need to eat. Only calls `ChangeEnergy` when below max for zero unnecessary overhead. |
+| **Infinite Hydration** | Keeps hydration at maximum — no need to drink. Same efficiency guard as Energy. |
 | **No Weight Penalties** | Removes movement speed and stamina drain penalties from carrying heavy gear or loot. |
+| **No Fall Damage** | Eliminates fall damage by setting safe fall height to an extreme value. State-tracked: only resets when the mod forced the change, never interferes with game defaults. |
 | **Speedhack** | Adjustable movement speed multiplier. |
 
 ### ESP (Extrasensory Perception)
@@ -126,6 +129,9 @@ The compiled `MasterTool.dll` will be in `build/`.
 | `Numpad 9` | Unlock All Doors |
 | `K` | Toggle Chams |
 | `L` | Toggle Weapon Info |
+| *(unbound)* | Toggle Infinite Energy |
+| *(unbound)* | Toggle Infinite Hydration |
+| *(unbound)* | Toggle No Fall Damage |
 
 ---
 
@@ -171,6 +177,11 @@ Master-Tool/
 │       │   │   └── DamagePatches.cs
 │       │   ├── InfiniteStamina/
 │       │   │   └── StaminaFeature.cs
+│       │   ├── Sustenance/
+│       │   │   ├── EnergyFeature.cs     # Infinite energy
+│       │   │   └── HydrationFeature.cs  # Infinite hydration
+│       │   ├── FallDamage/
+│       │   │   └── FallDamageFeature.cs # No fall damage (state-tracked)
 │       │   ├── Performance/
 │       │   │   └── CullingFeature.cs
 │       │   ├── DoorUnlock/
@@ -209,6 +220,9 @@ Master-Tool/
             ├── Features/
             │   ├── BigHeadStateTests.cs
             │   ├── CullingStateTests.cs
+            │   ├── EnergyHydrationTests.cs
+            │   ├── FallDamageStateTests.cs
+            │   ├── GodModePrefixTests.cs
             │   ├── NoWeightPrefixTests.cs
             │   └── VisionStateTests.cs
             ├── ESP/
@@ -245,7 +259,7 @@ make build    # or: dotnet build
 
 ### Running Tests
 
-136 tests cover pure logic: models, utilities, feature state machines, ESP extraction, and config defaults. Game-dependent code requires Unity/EFT assemblies and cannot be unit-tested — tests duplicate the pure logic with fake types.
+155 tests cover pure logic: models, utilities, feature state machines, ESP extraction, and config defaults. Game-dependent code requires Unity/EFT assemblies and cannot be unit-tested — tests duplicate the pure logic with fake types.
 
 ```bash
 make test     # or: dotnet test

@@ -20,6 +20,9 @@ namespace MasterTool.Config
         public static ConfigEntry<bool> GodModeEnabled;
         public static ConfigEntry<bool> InfiniteStaminaEnabled;
         public static ConfigEntry<bool> NoWeightEnabled;
+        public static ConfigEntry<bool> InfiniteEnergyEnabled;
+        public static ConfigEntry<bool> InfiniteHydrationEnabled;
+        public static ConfigEntry<bool> NoFallDamageEnabled;
         public static ConfigEntry<bool> StatusWindowEnabled;
         public static ConfigEntry<bool> ShowWeaponInfo;
         public static ConfigEntry<KeyboardShortcut> ToggleWeaponInfoHotkey;
@@ -36,6 +39,9 @@ namespace MasterTool.Config
         public static ConfigEntry<KeyboardShortcut> ToggleCullingHotkey;
         public static ConfigEntry<KeyboardShortcut> ToggleUnlockDoorsHotkey;
         public static ConfigEntry<KeyboardShortcut> ToggleQuestEspHotkey;
+        public static ConfigEntry<KeyboardShortcut> ToggleEnergyHotkey;
+        public static ConfigEntry<KeyboardShortcut> ToggleHydrationHotkey;
+        public static ConfigEntry<KeyboardShortcut> ToggleFallDamageHotkey;
 
         // --- Player ESP Settings ---
         public static ConfigEntry<bool> EspEnabled;
@@ -106,6 +112,9 @@ namespace MasterTool.Config
             GodModeEnabled = config.Bind("General", "GodMode", false, "Player takes no damage.");
             InfiniteStaminaEnabled = config.Bind("General", "Infinite Stamina", false, "Unlimited stamina and breath.");
             NoWeightEnabled = config.Bind("General", "No Weight", false, "Removes weight penalties.");
+            InfiniteEnergyEnabled = config.Bind("General", "Infinite Energy", false, "Energy never drains.");
+            InfiniteHydrationEnabled = config.Bind("General", "Infinite Hydration", false, "Hydration never drains.");
+            NoFallDamageEnabled = config.Bind("General", "No Fall Damage", false, "Eliminates fall damage.");
             StatusWindowEnabled = config.Bind("General", "Status Window", true, "Show the mini status window.");
 
             ShowWeaponInfo = config.Bind("General", "Show Weapon Info", true, "Show current weapon and ammo in status window.");
@@ -133,6 +142,9 @@ namespace MasterTool.Config
             ToggleCullingHotkey = config.Bind("Hotkeys", "10. Toggle Culling", new KeyboardShortcut(KeyCode.Keypad8), hotkeyDesc);
             ToggleUnlockDoorsHotkey = config.Bind("Hotkeys", "11. Unlock All Doors", new KeyboardShortcut(KeyCode.Keypad9), hotkeyDesc);
             ToggleQuestEspHotkey = config.Bind("Hotkeys", "14. Toggle Quest ESP", new KeyboardShortcut(KeyCode.Keypad3), hotkeyDesc);
+            ToggleEnergyHotkey = config.Bind("Hotkeys", "15. Toggle Energy", new KeyboardShortcut(KeyCode.None), hotkeyDesc);
+            ToggleHydrationHotkey = config.Bind("Hotkeys", "16. Toggle Hydration", new KeyboardShortcut(KeyCode.None), hotkeyDesc);
+            ToggleFallDamageHotkey = config.Bind("Hotkeys", "17. Toggle Fall Damage", new KeyboardShortcut(KeyCode.None), hotkeyDesc);
 
             // Movement
             SpeedhackEnabled = config.Bind("Movement", "Speedhack", false, "Move faster.");

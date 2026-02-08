@@ -7,11 +7,13 @@ using MasterTool.Config;
 using MasterTool.ESP;
 using MasterTool.Features.BigHeadMode;
 using MasterTool.Features.DoorUnlock;
+using MasterTool.Features.FallDamage;
 using MasterTool.Features.GodMode;
 using MasterTool.Features.InfiniteStamina;
 using MasterTool.Features.NoWeight;
 using MasterTool.Features.Performance;
 using MasterTool.Features.Speedhack;
+using MasterTool.Features.Sustenance;
 using MasterTool.Features.Vision;
 using MasterTool.UI;
 using UnityEngine;
@@ -22,7 +24,7 @@ namespace MasterTool.Plugin
     /// Main BepInEx plugin entry point. Initializes config, applies Harmony patches,
     /// and orchestrates per-frame updates for all feature and ESP modules.
     /// </summary>
-    [BepInPlugin("com.master.tools", "Advanced SPT Mod Menu", "2.4.0")]
+    [BepInPlugin("com.master.tools", "Advanced SPT Mod Menu", "2.5.0")]
     public sealed class MasterToolPlugin : BaseUnityPlugin
     {
         internal static MasterToolPlugin Instance;
@@ -85,6 +87,14 @@ namespace MasterTool.Plugin
 
             if (PluginConfig.InfiniteStaminaEnabled.Value)
                 StaminaFeature.Apply(localPlayer);
+
+            if (PluginConfig.InfiniteEnergyEnabled.Value)
+                EnergyFeature.Apply(localPlayer);
+
+            if (PluginConfig.InfiniteHydrationEnabled.Value)
+                HydrationFeature.Apply(localPlayer);
+
+            FallDamageFeature.Apply(localPlayer, PluginConfig.NoFallDamageEnabled.Value);
 
             CullingFeature.Apply(gameWorld, localPlayer);
 
@@ -179,6 +189,12 @@ namespace MasterTool.Plugin
                 DoorUnlockFeature.UnlockAll();
             if (PluginConfig.ToggleQuestEspHotkey.Value.IsDown())
                 PluginConfig.QuestEspEnabled.Value = !PluginConfig.QuestEspEnabled.Value;
+            if (PluginConfig.ToggleEnergyHotkey.Value.IsDown())
+                PluginConfig.InfiniteEnergyEnabled.Value = !PluginConfig.InfiniteEnergyEnabled.Value;
+            if (PluginConfig.ToggleHydrationHotkey.Value.IsDown())
+                PluginConfig.InfiniteHydrationEnabled.Value = !PluginConfig.InfiniteHydrationEnabled.Value;
+            if (PluginConfig.ToggleFallDamageHotkey.Value.IsDown())
+                PluginConfig.NoFallDamageEnabled.Value = !PluginConfig.NoFallDamageEnabled.Value;
         }
     }
 }
