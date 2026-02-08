@@ -80,24 +80,24 @@ The compiled `MasterTool.dll` will be in `build/`.
 | **Player ESP** | Displays all players and bots with faction-based color coding (BEAR, USEC, Boss, Scav/Raider). Includes distance tracking, customizable colors via RGB sliders, adjustable update rate, distance filter, and optional **line-of-sight mode** that only shows players you can directly see (no wall visibility). |
 | **Item ESP** | Shows loose items on the ground. Supports multi-filter search by name or ID with comma-separated lists (e.g., `LedX, GPU, Salewa`). |
 | **Container ESP** | Reveals items inside containers, crates, jackets, safes, and bodies. Uses a smart caching system (10-second refresh) and squared-distance calculations for zero FPS impact. |
-| **Quest ESP** | Highlights quest-related objectives and locations on the map. |
-| **Chams** | Applies colored material overlays to player models for enhanced visibility through geometry. |
+| **Quest ESP** | Highlights quest-related items in the world and quest zone markers (placement zones, visit locations, flare zones) with configurable colors for items and zones. |
+| **Chams** | Applies colored material overlays to player models for enhanced visibility through geometry. Configurable color intensity (10%–100%). |
 
 ### Visual
 
 | Feature | Description |
 |---------|-------------|
-| **Thermal Vision** | Toggles thermal imaging overlay. |
-| **Night Vision** | Toggles night vision overlay. |
-| **Big Head Mode** | Scales enemy head bones for easier target acquisition. |
-| **Weapon FOV** | Adjusts the weapon viewmodel field of view. |
+| **Thermal Vision** | Toggles thermal imaging overlay. Does not interfere with vanilla thermal goggles when disabled. |
+| **Night Vision** | Toggles night vision overlay. Does not interfere with vanilla NVGs when disabled. |
+| **Big Head Mode** | Scales enemy head bones for easier target acquisition. Only resets heads the mod scaled. |
+| **Weapon FOV** | Per-weapon-category FOV adjustment (pistol, SMG, assault rifle, shotgun, sniper, machinegun, melee). Smoothly lerps between values on weapon switch. |
 
 ### Utility
 
 | Feature | Description |
 |---------|-------------|
 | **Unlock All Doors** | Instantly unlocks every locked door on the map. No keys required. |
-| **Performance Culling** | Disables distant meshes for a performance boost. Note: bots may appear suddenly when entering the configured range. |
+| **Performance Culling** | Deactivates distant bots for a performance boost. Only re-enables bots the mod deactivated — does not interfere with the game's native bot sleep system. |
 | **Teleport Items** | Teleports all loose loot matching the item ESP filter to your position. If no filter is set, all loose loot is teleported. |
 
 ### UI
@@ -181,6 +181,8 @@ Master-Tool/
 │       │   │   └── VisionFeature.cs
 │       │   ├── BigHeadMode/
 │       │   │   └── BigHeadFeature.cs
+│       │   ├── NoWeight/
+│       │   │   └── NoWeightFeature.cs
 │       │   └── Teleport/
 │       │       └── TeleportFeature.cs
 │       ├── ESP/
@@ -200,10 +202,21 @@ Master-Tool/
         └── Tests/
             ├── Models/
             │   └── EspTargetTests.cs
-            └── Utils/
-                ├── FovMappingTests.cs
-                ├── PlayerTagTests.cs
-                └── ReflectionUtilsTests.cs
+            ├── Utils/
+            │   ├── FovMappingTests.cs
+            │   ├── PlayerTagTests.cs
+            │   └── ReflectionUtilsTests.cs
+            ├── Features/
+            │   ├── BigHeadStateTests.cs
+            │   ├── CullingStateTests.cs
+            │   ├── NoWeightPrefixTests.cs
+            │   └── VisionStateTests.cs
+            ├── ESP/
+            │   ├── ChamsCleanupTests.cs
+            │   ├── ChamsIntensityTests.cs
+            │   ├── LineOfSightTests.cs
+            │   └── QuestZoneExtractionTests.cs
+            └── GameStateRefreshTests.cs
 ```
 
 ---
@@ -232,7 +245,7 @@ make build    # or: dotnet build
 
 ### Running Tests
 
-Tests cover pure logic only (models, utilities, config defaults). Game-dependent code requires Unity/EFT assemblies and cannot be unit-tested.
+125 tests cover pure logic: models, utilities, feature state machines, ESP extraction, and config defaults. Game-dependent code requires Unity/EFT assemblies and cannot be unit-tested — tests duplicate the pure logic with fake types.
 
 ```bash
 make test     # or: dotnet test
