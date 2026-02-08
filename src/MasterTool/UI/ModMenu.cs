@@ -3,6 +3,7 @@ using EFT;
 using MasterTool.Config;
 using MasterTool.Features.DoorUnlock;
 using MasterTool.Features.Teleport;
+using MasterTool.Models;
 using UnityEngine;
 
 namespace MasterTool.UI
@@ -238,11 +239,20 @@ namespace MasterTool.UI
                 PluginConfig.ChamsEnabled.Value,
                 $" Enable Player Chams (Models) [{PluginConfig.ToggleChamsHotkey.Value}]"
             );
+            if (GUILayout.Button($"Mode: {PluginConfig.ChamsRenderMode.Value}"))
+            {
+                PluginConfig.ChamsRenderMode.Value = (ChamsMode)(((int)PluginConfig.ChamsRenderMode.Value + 1) % 3);
+            }
 
             GUILayout.Label($"Chams Intensity: {PluginConfig.ChamsIntensity.Value:F1}");
             PluginConfig.ChamsIntensity.Value = GUILayout.HorizontalSlider(PluginConfig.ChamsIntensity.Value, 0.1f, 1f);
             GUILayout.Label($"Chams Opacity: {PluginConfig.ChamsOpacity.Value:F1}");
             PluginConfig.ChamsOpacity.Value = GUILayout.HorizontalSlider(PluginConfig.ChamsOpacity.Value, 0.1f, 1f);
+            if (PluginConfig.ChamsRenderMode.Value == ChamsMode.Outline)
+            {
+                GUILayout.Label($"Outline Scale: {PluginConfig.OutlineScale.Value:F2}");
+                PluginConfig.OutlineScale.Value = GUILayout.HorizontalSlider(PluginConfig.OutlineScale.Value, 1.01f, 1.15f);
+            }
 
             GUILayout.Space(5);
             GUILayout.Label("<b>--- COLORS & TRANSPARENCY (RGB) ---</b>");
@@ -270,6 +280,10 @@ namespace MasterTool.UI
             );
             if (PluginConfig.LootChamsEnabled.Value)
             {
+                if (GUILayout.Button($"Mode: {PluginConfig.LootChamsRenderMode.Value}"))
+                {
+                    PluginConfig.LootChamsRenderMode.Value = (ChamsMode)(((int)PluginConfig.LootChamsRenderMode.Value + 1) % 3);
+                }
                 PluginConfig.LootChamsColor.Value = ColorPicker.Draw("Loot Chams", PluginConfig.LootChamsColor.Value);
             }
             GUILayout.Label("Filter (Name or ID, comma separated):");

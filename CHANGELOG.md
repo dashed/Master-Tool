@@ -6,6 +6,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [2.14.0] - 2026-02-08
+
+### Added
+
+- Chams Rendering Mode: three selectable modes for both player and loot chams
+  - **Solid** (default) — flat color overlay on all faces (existing behavior)
+  - **CullFront** — renders only back faces, creating a hollow silhouette effect
+  - **Outline** — normal character/item appearance with a colored edge outline using the inverted hull technique (scaled duplicate mesh with front-face culling)
+- Config entries: `Chams Render Mode`, `Loot Chams Render Mode` (enum, default Solid), `Outline Scale` (1.01–1.15, default 1.04)
+- Mode cycle buttons in mod menu: Player ESP tab (after Chams toggle) and Item ESP tab (when Loot Chams enabled)
+- Outline Scale slider visible only when Outline mode is selected
+- Mode change detection: switching modes while chams are active triggers cleanup of the previous mode's state before applying the new mode
+- Outline duplicate tracking with `_outlineDuplicates` dictionary, cleaned up on reset and periodic purge
+- Guard against infinite nesting: `GetComponentsInChildren` loops skip GameObjects named `_ChamsOutline`
+- Unit tests for chams mode enum values, mode cycling, cull mode mapping, outline scale clamping, mode change detection, outline duplicate tracking, type-filtered cleanup, and outline naming guard (22 tests)
+- Extended anti-occlusion tests with per-mode Cull property validation and outline duplicate material state (4 tests)
+
 ## [2.13.0] - 2026-02-08
 
 ### Added

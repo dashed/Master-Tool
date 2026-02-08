@@ -1,5 +1,6 @@
 using BepInEx.Configuration;
 using EFT.HealthSystem;
+using MasterTool.Models;
 using UnityEngine;
 
 namespace MasterTool.Config
@@ -85,6 +86,9 @@ namespace MasterTool.Config
         public static ConfigEntry<KeyboardShortcut> ToggleChamsHotkey;
         public static ConfigEntry<bool> LootChamsEnabled;
         public static ConfigEntry<Color> LootChamsColor;
+        public static ConfigEntry<ChamsMode> ChamsRenderMode;
+        public static ConfigEntry<ChamsMode> LootChamsRenderMode;
+        public static ConfigEntry<float> OutlineScale;
 
         // --- Movement ---
         public static ConfigEntry<bool> SpeedhackEnabled;
@@ -313,6 +317,28 @@ namespace MasterTool.Config
                 "Enable colored overlays on loot items for through-wall visibility."
             );
             LootChamsColor = config.Bind("ESP Items", "Loot Chams Color", Color.green, "Color for loot item chams.");
+
+            ChamsRenderMode = config.Bind(
+                "ESP Players",
+                "Chams Render Mode",
+                ChamsMode.Solid,
+                "Rendering mode for player chams: Solid (flat color), CullFront (hollow silhouette), Outline (normal model + colored edge)."
+            );
+            LootChamsRenderMode = config.Bind(
+                "ESP Items",
+                "Loot Chams Render Mode",
+                ChamsMode.Solid,
+                "Rendering mode for loot chams: Solid (flat color), CullFront (hollow silhouette), Outline (normal model + colored edge)."
+            );
+            OutlineScale = config.Bind(
+                "ESP Players",
+                "Outline Scale",
+                1.04f,
+                new ConfigDescription(
+                    "Scale factor for outline duplicate meshes. Larger = thicker outline.",
+                    new AcceptableValueRange<float>(1.01f, 1.15f)
+                )
+            );
 
             // Item & Container ESP
             ItemEspEnabled = config.Bind("ESP Items", "Enabled", false, "Show loose loot.");

@@ -94,8 +94,8 @@ The compiled `MasterTool.dll` will be in `build/`.
 | **Item ESP** | Shows loose items on the ground. Supports multi-filter search by name or ID with comma-separated lists (e.g., `LedX, GPU, Salewa`). |
 | **Container ESP** | Reveals items inside containers, crates, jackets, safes, and bodies. Uses a smart caching system (10-second refresh) and squared-distance calculations for zero FPS impact. |
 | **Quest ESP** | Highlights quest-related items in the world and quest zone markers (placement zones, visit locations, flare zones) with configurable colors for items and zones. |
-| **Player Chams** | Applies colored material overlays to player models for enhanced visibility through geometry. Configurable color intensity (10%–100%) and opacity (10%–100%). Anti-occlusion: forces renderer visibility through multiple walls. |
-| **Loot Chams** | Applies colored material overlays to loose loot items for through-wall visibility. Configurable color via the Item ESP tab. Shares intensity and opacity settings with player chams. Distance limited by Item ESP max distance. |
+| **Player Chams** | Applies colored material overlays to player models for enhanced visibility through geometry. Three rendering modes: **Solid** (flat color, all faces), **CullFront** (hollow silhouette, back faces only), and **Outline** (normal model + colored edge via inverted hull). Configurable color intensity (10%–100%), opacity (10%–100%), and outline thickness. Anti-occlusion: forces renderer visibility through multiple walls. |
+| **Loot Chams** | Applies colored material overlays to loose loot items for through-wall visibility. Same three rendering modes as player chams. Configurable color via the Item ESP tab. Shares intensity and opacity settings with player chams. Distance limited by Item ESP max distance. |
 
 ### Visual
 
@@ -181,6 +181,7 @@ Master-Tool/
 │       ├── Config/
 │       │   └── PluginConfig.cs    # BepInEx configuration bindings
 │       ├── Models/
+│       │   ├── ChamsMode.cs       # Chams rendering mode enum
 │       │   ├── EspTarget.cs       # Player ESP data model
 │       │   ├── ItemEspTarget.cs   # Item ESP data model
 │       │   └── QuestEspTarget.cs  # Quest ESP data model
@@ -250,6 +251,7 @@ Master-Tool/
             ├── ESP/
             │   ├── ChamsAntiOcclusionTests.cs
             │   ├── ChamsCleanupTests.cs
+            │   ├── ChamsModeTests.cs
             │   ├── ChamsIntensityTests.cs
             │   ├── EspPositionTests.cs
             │   ├── EspScreenBoundsTests.cs

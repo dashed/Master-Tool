@@ -9,6 +9,13 @@ namespace MasterTool.Tests.Tests.ESP;
 [TestFixture]
 public class ChamsAntiOcclusionTests
 {
+    private enum ChamsMode
+    {
+        Solid = 0,
+        CullFront = 1,
+        Outline = 2,
+    }
+
     /// <summary>
     /// Represents the chams material property state set during ApplyChams.
     /// </summary>
@@ -19,13 +26,15 @@ public class ChamsAntiOcclusionTests
         public int RenderQueue;
         public bool ForceRenderingOff;
         public bool AllowOcclusionWhenDynamic;
+        public int Cull;
     }
 
     /// <summary>
-    /// Duplicates the property assignment logic from ChamsManager.ApplyChams.
+    /// Duplicates the property assignment logic from ChamsManager.ApplyShaderChams.
     /// </summary>
-    private static ChamsMaterialState GetApplyChamsState()
+    private static ChamsMaterialState GetApplyChamsState(ChamsMode mode = ChamsMode.Solid)
     {
+        int cullMode = mode == ChamsMode.CullFront ? 1 : 0;
         return new ChamsMaterialState
         {
             ZTest = 8, // CompareFunction.Always
@@ -33,6 +42,23 @@ public class ChamsAntiOcclusionTests
             RenderQueue = 4000,
             ForceRenderingOff = false,
             AllowOcclusionWhenDynamic = false,
+            Cull = cullMode,
+        };
+    }
+
+    /// <summary>
+    /// Gets the material state for an outline duplicate (always CullFront).
+    /// </summary>
+    private static ChamsMaterialState GetOutlineDuplicateState()
+    {
+        return new ChamsMaterialState
+        {
+            ZTest = 8,
+            ZWrite = 0,
+            RenderQueue = 4000,
+            ForceRenderingOff = false,
+            AllowOcclusionWhenDynamic = false,
+            Cull = 1, // Always cull front faces on outline duplicate
         };
     }
 
@@ -124,5 +150,40 @@ public class ChamsAntiOcclusionTests
         Assert.That(state.RenderQueue, Is.EqualTo(4000), "RenderQueue must be overlay");
         Assert.That(state.ForceRenderingOff, Is.False, "ForceRenderingOff must be false");
         Assert.That(state.AllowOcclusionWhenDynamic, Is.False, "Occlusion must be disabled");
+    }
+
+    // --- Per-mode Cull property tests ---
+
+    [Test]
+    public void SolidMode_CullIsZero()
+    {
+        var state = GetApplyChamsState(ChamsMode.Solid);
+        Assert.That(state.Cull, Is.EqualTo(0));
+    }
+
+    [Test]
+    public void CullFrontMode_CullIsOne()
+    {
+        var state = GetApplyChamsState(ChamsMode.CullFront);
+        Assert.That(state.Cull, Is.EqualTo(1));
+    }
+
+    [Test]
+    public void OutlineDuplicate_CullIsOne()
+    {
+        var state = GetOutlineDuplicateState();
+        Assert.That(state.Cull, Is.EqualTo(1));
+    }
+
+    [Test]
+    public void OutlineDuplicate_AllAntiOcclusionProperties()
+    {
+        var state = GetOutlineDuplicateState();
+        Assert.That(state.ZTest, Is.EqualTo(8), "ZTest must be Always");
+        Assert.That(state.ZWrite, Is.EqualTo(0), "ZWrite must be disabled");
+        Assert.That(state.RenderQueue, Is.EqualTo(4000), "RenderQueue must be overlay");
+        Assert.That(state.ForceRenderingOff, Is.False, "ForceRenderingOff must be false");
+        Assert.That(state.AllowOcclusionWhenDynamic, Is.False, "Occlusion must be disabled");
+        Assert.That(state.Cull, Is.EqualTo(1), "Outline duplicate must cull front faces");
     }
 }
