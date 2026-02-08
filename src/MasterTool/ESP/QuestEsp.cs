@@ -139,6 +139,9 @@ namespace MasterTool.ESP
                 if (dist > PluginConfig.QuestEspMaxDistance.Value)
                     continue;
 
+                if (PluginConfig.QuestEspLineOfSightOnly.Value && !ItemEsp.HasLineOfSightToPosition(mainCamera, loot.transform.position))
+                    continue;
+
                 if (!questItemIds.Contains(loot.Item.TemplateId))
                     continue;
 
@@ -179,6 +182,12 @@ namespace MasterTool.ESP
 
                 float dist = Vector3.Distance(localPlayer.Transform.position, container.transform.position);
                 if (dist > PluginConfig.QuestEspMaxDistance.Value)
+                    continue;
+
+                if (
+                    PluginConfig.QuestEspLineOfSightOnly.Value
+                    && !ItemEsp.HasLineOfSightToPosition(mainCamera, container.transform.position)
+                )
                     continue;
 
                 var items = container.ItemOwner.RootItem.GetAllItems();
@@ -231,6 +240,9 @@ namespace MasterTool.ESP
 
                 float dist = Vector3.Distance(localPlayer.Transform.position, trigger.transform.position);
                 if (dist > PluginConfig.QuestEspMaxDistance.Value)
+                    continue;
+
+                if (PluginConfig.QuestEspLineOfSightOnly.Value && !ItemEsp.HasLineOfSightToPosition(mainCamera, trigger.transform.position))
                     continue;
 
                 Vector3 screenPos = mainCamera.WorldToScreenPoint(trigger.transform.position);

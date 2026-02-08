@@ -121,6 +121,7 @@ namespace MasterTool.Config
         public static ConfigEntry<Color> ColorQuestItem;
         public static ConfigEntry<Color> ColorQuestZone;
         public static ConfigEntry<int> QuestEspFps;
+        public static ConfigEntry<bool> QuestEspLineOfSightOnly;
 
         // --- 11. Visual ---
         public static ConfigEntry<bool> ThermalVisionEnabled;
@@ -468,6 +469,12 @@ namespace MasterTool.Config
                     "Update rate in frames per second. Higher is smoother but uses more resources.",
                     new AcceptableValueRange<int>(1, 60)
                 )
+            );
+            QuestEspLineOfSightOnly = config.Bind(
+                Sections.EspQuests,
+                "Line of Sight Only",
+                false,
+                "Only show quest items and zones visible to the camera (not behind walls)."
             );
 
             // --- 11. Visual ---

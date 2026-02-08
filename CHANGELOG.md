@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [2.27.0] - 2026-02-08
+
+### Added
+
+- **Line of Sight filtering for Quest ESP** — new "Line of Sight Only" toggle hides quest items and zone markers behind walls, terrain, and buildings. Applied to all three scan types: loose quest items, container quest items, and quest zones. Reuses `ItemEsp.HasLineOfSightToPosition` (no code duplication)
+- `QuestEspLineOfSightOnly` config entry (default off) in ESP Quests section
+
 ## [2.26.0] - 2026-02-08
 
 ### Added

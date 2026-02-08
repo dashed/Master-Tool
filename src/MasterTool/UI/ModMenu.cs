@@ -419,6 +419,10 @@ namespace MasterTool.UI
             );
             GUILayout.Label($"Quest ESP Distance: {PluginConfig.QuestEspMaxDistance.Value:F0}m");
             PluginConfig.QuestEspMaxDistance.Value = GUILayout.HorizontalSlider(PluginConfig.QuestEspMaxDistance.Value, 10f, 500f);
+            PluginConfig.QuestEspLineOfSightOnly.Value = GUILayout.Toggle(
+                PluginConfig.QuestEspLineOfSightOnly.Value,
+                " Line of Sight Only"
+            );
             PluginConfig.ColorQuestItem.Value = ColorPicker.Draw("Quest Items", PluginConfig.ColorQuestItem.Value);
             GUILayout.Label($"Update FPS: {PluginConfig.QuestEspFps.Value}");
             PluginConfig.QuestEspFps.Value = (int)GUILayout.HorizontalSlider(PluginConfig.QuestEspFps.Value, 1f, 60f);
