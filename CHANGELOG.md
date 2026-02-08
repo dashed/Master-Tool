@@ -6,6 +6,34 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [2.19.0] - 2026-02-08
+
+### Added
+
+- 12 new `MasterTool.Core` modules completing the extraction of all mirrored test logic:
+  - `MathTypes`: `Vec3` (with +, \*, magnitude, normalized), `Vec2`, `Color` structs for platform-agnostic math
+  - `ChamsLogic`: intensity/opacity scaling, material state queries, loot chams logic, anti-occlusion state, cleanup tracking
+  - `DamageLogic`: damage blocking decisions, damage modification, local/enemy damage computation
+  - `EspLogic`: layer mask computation, player/item ESP world position calculation
+  - `MovementLogic`: fly mode movement calculation, teleport ray origin calculation
+  - `VisionLogic`: FOV override decisions, weapon class to FOV mapping with constants
+  - `WeightLogic`: weight blocking decisions, weight percentage computation
+  - `SustenanceLogic`: energy/hydration value computation
+  - `FallDamageDefaults`: safe height and default height constants
+  - `RebindLogic`: rebind state machine, key acceptance, frame guard, hotkey labels
+  - `StringExtraction`: reflection-based string field extraction
+  - Extended `HealingLogic`: effect removal decisions, body part name constants
+
+### Changed
+
+- 20 test files now reference `MasterTool.Core` types directly instead of mirroring logic:
+  - Chams tests (5 files): use `ChamsLogic.*` methods and `Color` struct
+  - Damage tests (2 files): use `DamageLogic.*` methods
+  - Feature tests (7 files): use `MovementLogic`, `VisionLogic`, `WeightLogic`, `SustenanceLogic`, `FallDamageDefaults`, `HealingLogic`
+  - ESP tests (2 files): use `EspLogic.*` methods and `Vec3`/`Vec2` structs
+  - UI tests (2 files): use `RebindLogic.*` and `StringExtraction.*`
+- Plugin source files use `using Color = UnityEngine.Color;` aliases to resolve ambiguity with Core types
+
 ## [2.18.0] - 2026-02-08
 
 ### Added

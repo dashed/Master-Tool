@@ -1,28 +1,15 @@
+using MasterTool.Core;
 using NUnit.Framework;
 
 namespace MasterTool.Tests.Tests.Features;
 
 /// <summary>
 /// Tests for player teleport save/load position state and ray origin calculation.
-/// Duplicates the pure logic since Unity assemblies cannot be referenced from net9.0 tests.
+/// Uses <see cref="MovementLogic"/> and <see cref="Vec3"/> from MasterTool.Core.
 /// </summary>
 [TestFixture]
 public class PlayerTeleportTests
 {
-    private struct Vec3
-    {
-        public float x,
-            y,
-            z;
-
-        public Vec3(float x, float y, float z)
-        {
-            this.x = x;
-            this.y = y;
-            this.z = z;
-        }
-    }
-
     /// <summary>
     /// Simulates PlayerTeleportFeature saved position state.
     /// </summary>
@@ -46,15 +33,6 @@ public class PlayerTeleportTests
     private void ClearSavedPosition()
     {
         _savedPosition = null;
-    }
-
-    /// <summary>
-    /// Duplicates CalculateRayOrigin: places the ray origin 500 units above
-    /// the player position for ground-detection raycasting.
-    /// </summary>
-    private static Vec3 CalculateRayOrigin(Vec3 playerPosition)
-    {
-        return new Vec3(playerPosition.x, playerPosition.y + 500f, playerPosition.z);
     }
 
     [SetUp]
@@ -114,7 +92,7 @@ public class PlayerTeleportTests
     [Test]
     public void RayOrigin_IsAbovePlayer()
     {
-        var origin = CalculateRayOrigin(new Vec3(10, -5, 30));
+        var origin = MovementLogic.CalculateRayOrigin(new Vec3(10, -5, 30));
         Assert.That(origin.y, Is.EqualTo(495f));
         Assert.That(origin.x, Is.EqualTo(10f));
         Assert.That(origin.z, Is.EqualTo(30f));
@@ -123,7 +101,7 @@ public class PlayerTeleportTests
     [Test]
     public void RayOrigin_PreservesXZ()
     {
-        var origin = CalculateRayOrigin(new Vec3(100, 50, 200));
+        var origin = MovementLogic.CalculateRayOrigin(new Vec3(100, 50, 200));
         Assert.That(origin.x, Is.EqualTo(100f));
         Assert.That(origin.z, Is.EqualTo(200f));
     }
@@ -131,7 +109,7 @@ public class PlayerTeleportTests
     [Test]
     public void RayOrigin_NegativeY_StillAdds500()
     {
-        var origin = CalculateRayOrigin(new Vec3(0, -100, 0));
+        var origin = MovementLogic.CalculateRayOrigin(new Vec3(0, -100, 0));
         Assert.That(origin.y, Is.EqualTo(400f));
     }
 

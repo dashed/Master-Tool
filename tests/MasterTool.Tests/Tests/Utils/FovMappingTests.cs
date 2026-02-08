@@ -1,96 +1,60 @@
+using MasterTool.Core;
 using NUnit.Framework;
 
 namespace MasterTool.Tests.Tests.Utils;
 
+/// <summary>
+/// Tests for the weapon class to FOV mapping logic.
+/// Uses <see cref="VisionLogic"/> from MasterTool.Core.
+/// </summary>
 [TestFixture]
 public class FovMappingTests
 {
-    // Default FOV values matching PluginConfig defaults
-    private const float FovPistol = 60f;
-    private const float FovSMG = 65f;
-    private const float FovAssaultRifle = 70f;
-    private const float FovShotgun = 55f;
-    private const float FovSniper = 50f;
-    private const float FovDefault = 75f;
-    private const float FovMelee = 60f;
-
-    /// <summary>
-    /// Standalone copy of the weapon class to FOV mapping logic
-    /// from VisionFeature.GetFovForCurrentWeapon, using fixed config values.
-    /// </summary>
-    private static float MapWeaponClassToFov(string weaponClass, bool isMelee = false)
-    {
-        if (isMelee)
-        {
-            return FovMelee;
-        }
-
-        switch (weaponClass?.ToLower())
-        {
-            case "pistol":
-                return FovPistol;
-            case "smg":
-                return FovSMG;
-            case "assaultrifle":
-            case "assaultcarbine":
-                return FovAssaultRifle;
-            case "shotgun":
-                return FovShotgun;
-            case "marksmanrifle":
-            case "sniperrifle":
-                return FovSniper;
-            case "machinegun":
-                return FovAssaultRifle;
-            default:
-                return FovDefault;
-        }
-    }
-
-    [TestCase("pistol", FovPistol)]
-    [TestCase("Pistol", FovPistol)]
-    [TestCase("PISTOL", FovPistol)]
+    [TestCase("pistol", VisionLogic.FovPistol)]
+    [TestCase("Pistol", VisionLogic.FovPistol)]
+    [TestCase("PISTOL", VisionLogic.FovPistol)]
     public void MapWeaponClassToFov_Pistol_ReturnsPistolFov(string input, float expected)
     {
-        Assert.That(MapWeaponClassToFov(input), Is.EqualTo(expected));
+        Assert.That(VisionLogic.MapWeaponClassToFov(input), Is.EqualTo(expected));
     }
 
-    [TestCase("smg", FovSMG)]
-    [TestCase("SMG", FovSMG)]
+    [TestCase("smg", VisionLogic.FovSmg)]
+    [TestCase("SMG", VisionLogic.FovSmg)]
     public void MapWeaponClassToFov_Smg_ReturnsSmgFov(string input, float expected)
     {
-        Assert.That(MapWeaponClassToFov(input), Is.EqualTo(expected));
+        Assert.That(VisionLogic.MapWeaponClassToFov(input), Is.EqualTo(expected));
     }
 
-    [TestCase("assaultrifle", FovAssaultRifle)]
-    [TestCase("AssaultRifle", FovAssaultRifle)]
-    [TestCase("assaultcarbine", FovAssaultRifle)]
-    [TestCase("AssaultCarbine", FovAssaultRifle)]
+    [TestCase("assaultrifle", VisionLogic.FovAssaultRifle)]
+    [TestCase("AssaultRifle", VisionLogic.FovAssaultRifle)]
+    [TestCase("assaultcarbine", VisionLogic.FovAssaultRifle)]
+    [TestCase("AssaultCarbine", VisionLogic.FovAssaultRifle)]
     public void MapWeaponClassToFov_AssaultRifle_ReturnsAssaultRifleFov(string input, float expected)
     {
-        Assert.That(MapWeaponClassToFov(input), Is.EqualTo(expected));
+        Assert.That(VisionLogic.MapWeaponClassToFov(input), Is.EqualTo(expected));
     }
 
-    [TestCase("shotgun", FovShotgun)]
-    [TestCase("Shotgun", FovShotgun)]
+    [TestCase("shotgun", VisionLogic.FovShotgun)]
+    [TestCase("Shotgun", VisionLogic.FovShotgun)]
     public void MapWeaponClassToFov_Shotgun_ReturnsShotgunFov(string input, float expected)
     {
-        Assert.That(MapWeaponClassToFov(input), Is.EqualTo(expected));
+        Assert.That(VisionLogic.MapWeaponClassToFov(input), Is.EqualTo(expected));
     }
 
-    [TestCase("marksmanrifle", FovSniper)]
-    [TestCase("MarksmanRifle", FovSniper)]
-    [TestCase("sniperrifle", FovSniper)]
-    [TestCase("SniperRifle", FovSniper)]
+    [TestCase("marksmanrifle", VisionLogic.FovSniper)]
+    [TestCase("MarksmanRifle", VisionLogic.FovSniper)]
+    [TestCase("sniperrifle", VisionLogic.FovSniper)]
+    [TestCase("SniperRifle", VisionLogic.FovSniper)]
     public void MapWeaponClassToFov_Sniper_ReturnsSniperFov(string input, float expected)
     {
-        Assert.That(MapWeaponClassToFov(input), Is.EqualTo(expected));
+        Assert.That(VisionLogic.MapWeaponClassToFov(input), Is.EqualTo(expected));
     }
 
-    [TestCase("machinegun", FovAssaultRifle)]
-    [TestCase("MachineGun", FovAssaultRifle)]
+    [TestCase("machinegun", VisionLogic.FovAssaultRifle)]
+    [TestCase("MachineGun", VisionLogic.FovAssaultRifle)]
     public void MapWeaponClassToFov_MachineGun_ReturnsAssaultRifleFov(string input, float expected)
     {
-        Assert.That(MapWeaponClassToFov(input), Is.EqualTo(expected));
+        Assert.That(VisionLogic.MapWeaponClassToFov(input), Is.EqualTo(expected));
     }
 
     [TestCase("flamethrower")]
@@ -99,25 +63,25 @@ public class FovMappingTests
     [TestCase("")]
     public void MapWeaponClassToFov_UnknownWeapon_ReturnsDefaultFov(string input)
     {
-        Assert.That(MapWeaponClassToFov(input), Is.EqualTo(FovDefault));
+        Assert.That(VisionLogic.MapWeaponClassToFov(input), Is.EqualTo(VisionLogic.FovDefault));
     }
 
     [Test]
     public void MapWeaponClassToFov_Null_ReturnsDefaultFov()
     {
-        Assert.That(MapWeaponClassToFov(null), Is.EqualTo(FovDefault));
+        Assert.That(VisionLogic.MapWeaponClassToFov(null), Is.EqualTo(VisionLogic.FovDefault));
     }
 
     [Test]
     public void MapWeaponClassToFov_MeleeItem_ReturnsMeleeFov()
     {
-        Assert.That(MapWeaponClassToFov(null, isMelee: true), Is.EqualTo(FovMelee));
+        Assert.That(VisionLogic.MapWeaponClassToFov(null, isMelee: true), Is.EqualTo(VisionLogic.FovMelee));
     }
 
     [Test]
     public void MapWeaponClassToFov_MeleeWithWeaponClass_ReturnsMeleeFov()
     {
         // Melee flag takes priority over any weapClass
-        Assert.That(MapWeaponClassToFov("pistol", isMelee: true), Is.EqualTo(FovMelee));
+        Assert.That(VisionLogic.MapWeaponClassToFov("pistol", isMelee: true), Is.EqualTo(VisionLogic.FovMelee));
     }
 }

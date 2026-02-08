@@ -36,29 +36,24 @@ public class ChamsModeTests
 
     // --- Mode cycling tests ---
 
-    private static ChamsMode CycleMode(ChamsMode current)
-    {
-        return (ChamsMode)(((int)current + 1) % 3);
-    }
-
     [Test]
     public void ModeCycle_SolidToCullFront()
     {
-        var next = CycleMode(ChamsMode.Solid);
+        var next = ChamsLogic.CycleMode(ChamsMode.Solid);
         Assert.That(next, Is.EqualTo(ChamsMode.CullFront));
     }
 
     [Test]
     public void ModeCycle_CullFrontToOutline()
     {
-        var next = CycleMode(ChamsMode.CullFront);
+        var next = ChamsLogic.CycleMode(ChamsMode.CullFront);
         Assert.That(next, Is.EqualTo(ChamsMode.Outline));
     }
 
     [Test]
     public void ModeCycle_OutlineToSolid()
     {
-        var next = CycleMode(ChamsMode.Outline);
+        var next = ChamsLogic.CycleMode(ChamsMode.Outline);
         Assert.That(next, Is.EqualTo(ChamsMode.Solid));
     }
 
@@ -66,11 +61,11 @@ public class ChamsModeTests
     public void ModeCycle_FullLoop()
     {
         var mode = ChamsMode.Solid;
-        mode = CycleMode(mode);
+        mode = ChamsLogic.CycleMode(mode);
         Assert.That(mode, Is.EqualTo(ChamsMode.CullFront));
-        mode = CycleMode(mode);
+        mode = ChamsLogic.CycleMode(mode);
         Assert.That(mode, Is.EqualTo(ChamsMode.Outline));
-        mode = CycleMode(mode);
+        mode = ChamsLogic.CycleMode(mode);
         Assert.That(mode, Is.EqualTo(ChamsMode.Solid));
     }
 

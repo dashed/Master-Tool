@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using MasterTool.Core;
 using NUnit.Framework;
 
 namespace MasterTool.Tests.Tests.Utils;
@@ -7,57 +8,13 @@ namespace MasterTool.Tests.Tests.Utils;
 [TestFixture]
 public class ReflectionUtilsTests
 {
-    /// <summary>
-    /// Standalone copy of ReflectionUtils.TryExtractStrings for testing
-    /// without Unity/EFT dependencies.
-    /// </summary>
-    private static bool TryExtractStrings(object value, List<string> items)
-    {
-        if (value == null)
-        {
-            return false;
-        }
-
-        if (value is string[] strArray)
-        {
-            items.AddRange(strArray);
-            return items.Count > 0;
-        }
-
-        if (value is IEnumerable<string> strEnumerable)
-        {
-            items.AddRange(strEnumerable);
-            return items.Count > 0;
-        }
-
-        if (value is IEnumerable enumerable)
-        {
-            foreach (var item in enumerable)
-            {
-                if (item is string str)
-                {
-                    items.Add(str);
-                }
-            }
-            return items.Count > 0;
-        }
-
-        if (value is string singleStr && !string.IsNullOrEmpty(singleStr))
-        {
-            items.Add(singleStr);
-            return true;
-        }
-
-        return false;
-    }
-
     [Test]
     public void TryExtractStrings_StringArray_ReturnsAllStrings()
     {
         var items = new List<string>();
         string[] input = { "alpha", "bravo", "charlie" };
 
-        bool result = TryExtractStrings(input, items);
+        bool result = StringExtraction.TryExtractStrings(input, items);
 
         Assert.That(result, Is.True);
         Assert.That(items, Is.EqualTo(new[] { "alpha", "bravo", "charlie" }));
@@ -69,7 +26,7 @@ public class ReflectionUtilsTests
         var items = new List<string>();
         IEnumerable<string> input = new List<string> { "one", "two" };
 
-        bool result = TryExtractStrings(input, items);
+        bool result = StringExtraction.TryExtractStrings(input, items);
 
         Assert.That(result, Is.True);
         Assert.That(items, Is.EqualTo(new[] { "one", "two" }));
@@ -80,7 +37,7 @@ public class ReflectionUtilsTests
     {
         var items = new List<string>();
 
-        bool result = TryExtractStrings("hello", items);
+        bool result = StringExtraction.TryExtractStrings("hello", items);
 
         // A string is IEnumerable<char> which matches the IEnumerable branch.
         // That branch iterates chars (not strings), finds no string items,
@@ -94,7 +51,7 @@ public class ReflectionUtilsTests
     {
         var items = new List<string>();
 
-        bool result = TryExtractStrings(null, items);
+        bool result = StringExtraction.TryExtractStrings(null, items);
 
         Assert.That(result, Is.False);
         Assert.That(items, Is.Empty);
@@ -106,7 +63,7 @@ public class ReflectionUtilsTests
         var items = new List<string>();
         string[] input = System.Array.Empty<string>();
 
-        bool result = TryExtractStrings(input, items);
+        bool result = StringExtraction.TryExtractStrings(input, items);
 
         Assert.That(result, Is.False);
         Assert.That(items, Is.Empty);
@@ -118,7 +75,7 @@ public class ReflectionUtilsTests
         var items = new List<string>();
         var input = new ArrayList { "hello", 42, "world", 3.14, null };
 
-        bool result = TryExtractStrings(input, items);
+        bool result = StringExtraction.TryExtractStrings(input, items);
 
         Assert.That(result, Is.True);
         Assert.That(items, Is.EqualTo(new[] { "hello", "world" }));
@@ -130,7 +87,7 @@ public class ReflectionUtilsTests
         var items = new List<string>();
         var input = new ArrayList { 1, 2, 3.0 };
 
-        bool result = TryExtractStrings(input, items);
+        bool result = StringExtraction.TryExtractStrings(input, items);
 
         Assert.That(result, Is.False);
         Assert.That(items, Is.Empty);
@@ -142,7 +99,7 @@ public class ReflectionUtilsTests
         var items = new List<string>();
         string[] input = { "only" };
 
-        bool result = TryExtractStrings(input, items);
+        bool result = StringExtraction.TryExtractStrings(input, items);
 
         Assert.That(result, Is.True);
         Assert.That(items, Is.EqualTo(new[] { "only" }));
@@ -153,7 +110,7 @@ public class ReflectionUtilsTests
     {
         var items = new List<string>();
 
-        bool result = TryExtractStrings(42, items);
+        bool result = StringExtraction.TryExtractStrings(42, items);
 
         Assert.That(result, Is.False);
         Assert.That(items, Is.Empty);

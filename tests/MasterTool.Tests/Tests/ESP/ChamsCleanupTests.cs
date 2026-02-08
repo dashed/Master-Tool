@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using MasterTool.Core;
 using NUnit.Framework;
 
 namespace MasterTool.Tests.Tests.ESP;
@@ -239,15 +240,6 @@ public class ChamsCleanupTests
         return restored;
     }
 
-    /// <summary>
-    /// Mirrors the toggle transition check in ChamsManager.Update().
-    /// Returns true when chams transitions from enabled to disabled.
-    /// </summary>
-    private static bool ShouldResetOnToggle(bool wasEnabled, bool isEnabled)
-    {
-        return wasEnabled && !isEnabled;
-    }
-
     [Test]
     public void ResetAllByType_Skinned_RestoresOnlySkinnedRenderers()
     {
@@ -317,25 +309,25 @@ public class ChamsCleanupTests
     [Test]
     public void ToggleTransition_EnabledToDisabled_ReturnsTrue()
     {
-        Assert.That(ShouldResetOnToggle(true, false), Is.True);
+        Assert.That(ChamsLogic.ShouldResetOnToggle(true, false), Is.True);
     }
 
     [Test]
     public void ToggleTransition_DisabledToEnabled_ReturnsFalse()
     {
-        Assert.That(ShouldResetOnToggle(false, true), Is.False);
+        Assert.That(ChamsLogic.ShouldResetOnToggle(false, true), Is.False);
     }
 
     [Test]
     public void ToggleTransition_StaysEnabled_ReturnsFalse()
     {
-        Assert.That(ShouldResetOnToggle(true, true), Is.False);
+        Assert.That(ChamsLogic.ShouldResetOnToggle(true, true), Is.False);
     }
 
     [Test]
     public void ToggleTransition_StaysDisabled_ReturnsFalse()
     {
-        Assert.That(ShouldResetOnToggle(false, false), Is.False);
+        Assert.That(ChamsLogic.ShouldResetOnToggle(false, false), Is.False);
     }
 
     [Test]

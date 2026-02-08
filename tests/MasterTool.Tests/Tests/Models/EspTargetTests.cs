@@ -1,39 +1,15 @@
+using MasterTool.Core;
 using NUnit.Framework;
 
 namespace MasterTool.Tests.Tests.Models;
 
+/// <summary>
+/// Tests for ESP target data models.
+/// Uses <see cref="Vec2"/> and <see cref="Color"/> from MasterTool.Core (shared library).
+/// </summary>
 [TestFixture]
 public class EspTargetTests
 {
-    // Minimal Vector2/Color structs to mirror UnityEngine types for testing
-    private struct Vec2
-    {
-        public float X,
-            Y;
-
-        public Vec2(float x, float y)
-        {
-            X = x;
-            Y = y;
-        }
-    }
-
-    private struct Col
-    {
-        public float R,
-            G,
-            B,
-            A;
-
-        public Col(float r, float g, float b, float a)
-        {
-            R = r;
-            G = g;
-            B = b;
-            A = a;
-        }
-    }
-
     // Standalone model mirrors (same fields as the real Models)
     private class EspTarget
     {
@@ -41,7 +17,7 @@ public class EspTargetTests
         public float Distance;
         public string Nickname;
         public string Side;
-        public Col Color;
+        public Color Color;
     }
 
     private class ItemEspTarget
@@ -49,7 +25,7 @@ public class EspTargetTests
         public Vec2 ScreenPosition;
         public float Distance;
         public string Name;
-        public Col Color;
+        public Color Color;
     }
 
     private class QuestEspTarget
@@ -57,7 +33,7 @@ public class EspTargetTests
         public Vec2 ScreenPosition;
         public float Distance;
         public string Name;
-        public Col Color;
+        public Color Color;
         public bool IsZone;
     }
 
@@ -72,7 +48,7 @@ public class EspTargetTests
             Distance = 42.5f,
             Nickname = "TestPlayer",
             Side = "BEAR",
-            Color = new Col(1f, 0f, 0f, 1f),
+            Color = new Color(1f, 0f, 0f, 1f),
         };
 
         Assert.That(target.ScreenPosition.X, Is.EqualTo(100f));
@@ -109,7 +85,7 @@ public class EspTargetTests
             ScreenPosition = new Vec2(300f, 400f),
             Distance = 15.3f,
             Name = "M4A1",
-            Color = new Col(0f, 1f, 0f, 0.8f),
+            Color = new Color(0f, 1f, 0f, 0.8f),
         };
 
         Assert.That(target.ScreenPosition.X, Is.EqualTo(300f));
@@ -140,7 +116,7 @@ public class EspTargetTests
             ScreenPosition = new Vec2(500f, 600f),
             Distance = 120.7f,
             Name = "Quest Item Location",
-            Color = new Col(0f, 0f, 1f, 1f),
+            Color = new Color(0f, 0f, 1f, 1f),
             IsZone = true,
         };
 

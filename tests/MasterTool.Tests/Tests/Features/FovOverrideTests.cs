@@ -1,3 +1,4 @@
+using MasterTool.Core;
 using NUnit.Framework;
 
 namespace MasterTool.Tests.Tests.Features;
@@ -5,29 +6,11 @@ namespace MasterTool.Tests.Tests.Features;
 /// <summary>
 /// Tests for FOV override logic: ADS skip decision, direct assignment behavior,
 /// and LateUpdate frame ordering.
-/// Duplicates the pure decision logic since Unity cannot be referenced from net9.0 tests.
+/// Uses <see cref="VisionLogic"/> from MasterTool.Core.
 /// </summary>
 [TestFixture]
 public class FovOverrideTests
 {
-    /// <summary>
-    /// Duplicates the FOV override decision from VisionFeature.UpdateWeaponFov.
-    /// Returns true if the mod should override the camera FOV this frame.
-    /// </summary>
-    private static bool ShouldOverrideFov(bool fovEnabled, bool isAiming, bool overrideAds)
-    {
-        if (!fovEnabled)
-        {
-            return false;
-        }
-
-        if (isAiming && !overrideAds)
-        {
-            return false;
-        }
-        return true;
-    }
-
     /// <summary>
     /// Simulates a frame where the game sets FOV and then our LateUpdate overrides it.
     /// Returns the final FOV value after both updates.
@@ -51,37 +34,37 @@ public class FovOverrideTests
     [Test]
     public void Enabled_NotAiming_ShouldOverride()
     {
-        Assert.That(ShouldOverrideFov(true, false, false), Is.True);
+        Assert.That(VisionLogic.ShouldOverrideFov(true, false, false), Is.True);
     }
 
     [Test]
     public void Enabled_Aiming_OverrideAdsOn_ShouldOverride()
     {
-        Assert.That(ShouldOverrideFov(true, true, true), Is.True);
+        Assert.That(VisionLogic.ShouldOverrideFov(true, true, true), Is.True);
     }
 
     [Test]
     public void Enabled_Aiming_OverrideAdsOff_ShouldNotOverride()
     {
-        Assert.That(ShouldOverrideFov(true, true, false), Is.False);
+        Assert.That(VisionLogic.ShouldOverrideFov(true, true, false), Is.False);
     }
 
     [Test]
     public void Disabled_NotAiming_ShouldNotOverride()
     {
-        Assert.That(ShouldOverrideFov(false, false, false), Is.False);
+        Assert.That(VisionLogic.ShouldOverrideFov(false, false, false), Is.False);
     }
 
     [Test]
     public void Disabled_Aiming_ShouldNotOverride()
     {
-        Assert.That(ShouldOverrideFov(false, true, false), Is.False);
+        Assert.That(VisionLogic.ShouldOverrideFov(false, true, false), Is.False);
     }
 
     [Test]
     public void Disabled_Aiming_OverrideAdsOn_ShouldNotOverride()
     {
-        Assert.That(ShouldOverrideFov(false, true, true), Is.False);
+        Assert.That(VisionLogic.ShouldOverrideFov(false, true, true), Is.False);
     }
 
     // --- Direct assignment tests (no lerp) ---
@@ -125,7 +108,7 @@ public class FovOverrideTests
     public void LateUpdate_StanceChange_NoFlicker()
     {
         // Simulate multiple frames during stance transition
-        float[] gameStanceFovs = { 75f, 70f, 65f, 65f }; // Standing → crouching
+        float[] gameStanceFovs = { 75f, 70f, 65f, 65f }; // Standing -> crouching
         float modTarget = 85f;
 
         foreach (float gameFov in gameStanceFovs)
@@ -139,11 +122,11 @@ public class FovOverrideTests
     public void LateUpdate_AdsTransition_SkipsCorrectly()
     {
         // Frame 1: Not aiming — override
-        Assert.That(SimulateFrameFov(75f, 85f, ShouldOverrideFov(true, false, false)), Is.EqualTo(85f));
+        Assert.That(SimulateFrameFov(75f, 85f, VisionLogic.ShouldOverrideFov(true, false, false)), Is.EqualTo(85f));
         // Frame 2: ADS starts — skip (game zooms to 50)
-        Assert.That(SimulateFrameFov(50f, 85f, ShouldOverrideFov(true, true, false)), Is.EqualTo(50f));
+        Assert.That(SimulateFrameFov(50f, 85f, VisionLogic.ShouldOverrideFov(true, true, false)), Is.EqualTo(50f));
         // Frame 3: ADS ends — override again
-        Assert.That(SimulateFrameFov(75f, 85f, ShouldOverrideFov(true, false, false)), Is.EqualTo(85f));
+        Assert.That(SimulateFrameFov(75f, 85f, VisionLogic.ShouldOverrideFov(true, false, false)), Is.EqualTo(85f));
     }
 
     // --- Edge cases ---
@@ -159,7 +142,7 @@ public class FovOverrideTests
     public void AdsOverrideOn_StillOverrides()
     {
         // User wants custom FOV even during ADS
-        float result = SimulateFrameFov(50f, 85f, ShouldOverrideFov(true, true, true));
+        float result = SimulateFrameFov(50f, 85f, VisionLogic.ShouldOverrideFov(true, true, true));
         Assert.That(result, Is.EqualTo(85f), "Override ADS should force mod FOV during ADS");
     }
 
@@ -167,7 +150,7 @@ public class FovOverrideTests
     public void DisabledDuringAds_GameFovPreserved()
     {
         // Feature disabled — game FOV should always win
-        float result = SimulateFrameFov(50f, 85f, ShouldOverrideFov(false, true, true));
+        float result = SimulateFrameFov(50f, 85f, VisionLogic.ShouldOverrideFov(false, true, true));
         Assert.That(result, Is.EqualTo(50f));
     }
 }

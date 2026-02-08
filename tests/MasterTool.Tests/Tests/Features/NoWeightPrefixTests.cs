@@ -1,37 +1,26 @@
+using MasterTool.Core;
 using NUnit.Framework;
 
 namespace MasterTool.Tests.Tests.Features;
 
 /// <summary>
 /// Tests for the NoWeight prefix decision logic.
-/// Duplicates the pure prefix logic since Harmony patches
-/// cannot be exercised from net9.0 tests.
+/// Uses <see cref="WeightLogic"/> from MasterTool.Core.
 /// </summary>
 [TestFixture]
 public class NoWeightPrefixTests
 {
-    /// <summary>
-    /// Mirrors the WeightPrefix logic from NoWeightFeature.
-    /// Returns true if the original method should run, false to skip it.
-    /// Sets result to 0 when the feature is enabled.
-    /// </summary>
-    private static bool WeightPrefix(bool noWeightEnabled, ref float result)
-    {
-        if (noWeightEnabled)
-        {
-            result = 0f;
-            return false;
-        }
-
-        return true;
-    }
-
     [Test]
     public void Enabled_SetsResultToZero()
     {
         float result = 42f;
 
-        bool runOriginal = WeightPrefix(noWeightEnabled: true, ref result);
+        bool shouldBlock = WeightLogic.ShouldBlockWeight(noWeightEnabled: true);
+        bool runOriginal = !shouldBlock;
+        if (shouldBlock)
+        {
+            result = 0f;
+        }
 
         Assert.That(result, Is.EqualTo(0f), "Should set weight to zero");
         Assert.That(runOriginal, Is.False, "Should skip original method");
@@ -42,7 +31,12 @@ public class NoWeightPrefixTests
     {
         float result = 42f;
 
-        bool runOriginal = WeightPrefix(noWeightEnabled: false, ref result);
+        bool shouldBlock = WeightLogic.ShouldBlockWeight(noWeightEnabled: false);
+        bool runOriginal = !shouldBlock;
+        if (shouldBlock)
+        {
+            result = 0f;
+        }
 
         Assert.That(result, Is.EqualTo(42f), "Should not modify result");
         Assert.That(runOriginal, Is.True, "Should let original method run");
@@ -53,7 +47,12 @@ public class NoWeightPrefixTests
     {
         float result = 0f;
 
-        bool runOriginal = WeightPrefix(noWeightEnabled: true, ref result);
+        bool shouldBlock = WeightLogic.ShouldBlockWeight(noWeightEnabled: true);
+        bool runOriginal = !shouldBlock;
+        if (shouldBlock)
+        {
+            result = 0f;
+        }
 
         Assert.That(result, Is.EqualTo(0f));
         Assert.That(runOriginal, Is.False);
@@ -65,17 +64,24 @@ public class NoWeightPrefixTests
         float result = 50f;
 
         // Enable — zero it
-        WeightPrefix(noWeightEnabled: true, ref result);
+        if (WeightLogic.ShouldBlockWeight(noWeightEnabled: true))
+        {
+            result = 0f;
+        }
         Assert.That(result, Is.EqualTo(0f));
 
         // Disable — pass through (result stays whatever it was)
         result = 50f;
-        bool runOriginal = WeightPrefix(noWeightEnabled: false, ref result);
+        bool shouldBlock = WeightLogic.ShouldBlockWeight(noWeightEnabled: false);
+        bool runOriginal = !shouldBlock;
         Assert.That(result, Is.EqualTo(50f));
         Assert.That(runOriginal, Is.True);
 
         // Enable again — zero it
-        WeightPrefix(noWeightEnabled: true, ref result);
+        if (WeightLogic.ShouldBlockWeight(noWeightEnabled: true))
+        {
+            result = 0f;
+        }
         Assert.That(result, Is.EqualTo(0f));
     }
 }

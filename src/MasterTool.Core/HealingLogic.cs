@@ -26,4 +26,17 @@ public static class HealingLogic
     {
         return current > 0f && current < maximum;
     }
+
+    /// <summary>
+    /// Determines whether negative effects should be removed.
+    /// </summary>
+    public static bool ShouldRemoveEffects(bool codModeEnabled, bool removeEffectsEnabled)
+    {
+        return codModeEnabled && removeEffectsEnabled;
+    }
+
+    /// <summary>
+    /// All body part names used by the healing system.
+    /// </summary>
+    public static readonly string[] BodyPartNames = { "Head", "Chest", "Stomach", "LeftArm", "RightArm", "LeftLeg", "RightLeg" };
 }

@@ -4,6 +4,7 @@ using EFT.HealthSystem;
 using MasterTool.Core;
 using MasterTool.Plugin;
 using UnityEngine;
+using Color = UnityEngine.Color;
 using KeyCode = UnityEngine.KeyCode;
 
 namespace MasterTool.Config

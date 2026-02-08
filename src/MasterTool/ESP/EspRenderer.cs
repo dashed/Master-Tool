@@ -1,5 +1,6 @@
 using MasterTool.Core;
 using UnityEngine;
+using Color = UnityEngine.Color;
 
 namespace MasterTool.ESP
 {

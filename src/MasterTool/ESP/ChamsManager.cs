@@ -6,6 +6,7 @@ using MasterTool.Core;
 using MasterTool.Plugin;
 using MasterTool.Utils;
 using UnityEngine;
+using Color = UnityEngine.Color;
 using KeyCode = UnityEngine.KeyCode;
 
 namespace MasterTool.ESP

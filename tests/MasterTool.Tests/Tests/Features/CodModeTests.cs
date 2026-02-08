@@ -177,9 +177,7 @@ public class CodModeTests
     [Test]
     public void AllBodyParts_HasSevenEntries()
     {
-        // Mirrors the AllBodyParts array in CodModeFeature
-        var bodyParts = new[] { "Head", "Chest", "Stomach", "LeftArm", "RightArm", "LeftLeg", "RightLeg" };
-        Assert.That(bodyParts, Has.Length.EqualTo(7));
+        Assert.That(HealingLogic.BodyPartNames, Has.Length.EqualTo(7));
     }
 
     // === Bleed-Timer Interaction Tests (core bug fix) ===
@@ -315,32 +313,24 @@ public class CodModeTests
     [Test]
     public void ShouldRemoveEffects_BothEnabled_ReturnsTrue()
     {
-        Assert.That(ShouldRemoveEffects(true, true), Is.True);
+        Assert.That(HealingLogic.ShouldRemoveEffects(true, true), Is.True);
     }
 
     [Test]
     public void ShouldRemoveEffects_CodDisabled_ReturnsFalse()
     {
-        Assert.That(ShouldRemoveEffects(false, true), Is.False);
+        Assert.That(HealingLogic.ShouldRemoveEffects(false, true), Is.False);
     }
 
     [Test]
     public void ShouldRemoveEffects_RemoveDisabled_ReturnsFalse()
     {
-        Assert.That(ShouldRemoveEffects(true, false), Is.False);
+        Assert.That(HealingLogic.ShouldRemoveEffects(true, false), Is.False);
     }
 
     [Test]
     public void ShouldRemoveEffects_BothDisabled_ReturnsFalse()
     {
-        Assert.That(ShouldRemoveEffects(false, false), Is.False);
-    }
-
-    /// <summary>
-    /// Mirrors config check for whether negative effects should be removed.
-    /// </summary>
-    private static bool ShouldRemoveEffects(bool codModeEnabled, bool removeEffectsEnabled)
-    {
-        return codModeEnabled && removeEffectsEnabled;
+        Assert.That(HealingLogic.ShouldRemoveEffects(false, false), Is.False);
     }
 }

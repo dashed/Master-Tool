@@ -1,18 +1,17 @@
+using MasterTool.Core;
 using NUnit.Framework;
 
 namespace MasterTool.Tests.Tests.Features;
 
 /// <summary>
 /// Tests for the fall damage state machine logic used by FallDamageFeature.
+/// Uses constants from <see cref="FallDamageDefaults"/> in MasterTool.Core.
 /// Duplicates the state-tracking logic since ActiveHealthController
 /// cannot be referenced from net9.0 tests.
 /// </summary>
 [TestFixture]
 public class FallDamageStateTests
 {
-    private const float SafeHeight = 999999f;
-    private const float DefaultHeight = 1.8f;
-
     /// <summary>
     /// Simulates ActiveHealthController.FallSafeHeight.
     /// </summary>
@@ -30,12 +29,12 @@ public class FallDamageStateTests
     {
         if (enabled)
         {
-            _fallSafeHeight = SafeHeight;
+            _fallSafeHeight = FallDamageDefaults.SafeHeight;
             _modForced = true;
         }
         else if (_modForced)
         {
-            _fallSafeHeight = DefaultHeight;
+            _fallSafeHeight = FallDamageDefaults.DefaultHeight;
             _modForced = false;
         }
     }
@@ -43,7 +42,7 @@ public class FallDamageStateTests
     [SetUp]
     public void SetUp()
     {
-        _fallSafeHeight = DefaultHeight;
+        _fallSafeHeight = FallDamageDefaults.DefaultHeight;
         _modForced = false;
     }
 
@@ -51,7 +50,7 @@ public class FallDamageStateTests
     public void Enabled_SetsSafeHeight()
     {
         ApplyFallDamage(true);
-        Assert.That(_fallSafeHeight, Is.EqualTo(SafeHeight));
+        Assert.That(_fallSafeHeight, Is.EqualTo(FallDamageDefaults.SafeHeight));
         Assert.That(_modForced, Is.True);
     }
 
@@ -68,10 +67,10 @@ public class FallDamageStateTests
     public void EnabledThenDisabled_Resets()
     {
         ApplyFallDamage(true);
-        Assert.That(_fallSafeHeight, Is.EqualTo(SafeHeight));
+        Assert.That(_fallSafeHeight, Is.EqualTo(FallDamageDefaults.SafeHeight));
 
         ApplyFallDamage(false);
-        Assert.That(_fallSafeHeight, Is.EqualTo(DefaultHeight));
+        Assert.That(_fallSafeHeight, Is.EqualTo(FallDamageDefaults.DefaultHeight));
         Assert.That(_modForced, Is.False);
     }
 
@@ -94,7 +93,7 @@ public class FallDamageStateTests
             ApplyFallDamage(true);
         }
 
-        Assert.That(_fallSafeHeight, Is.EqualTo(SafeHeight));
+        Assert.That(_fallSafeHeight, Is.EqualTo(FallDamageDefaults.SafeHeight));
         Assert.That(_modForced, Is.True);
     }
 
@@ -102,23 +101,23 @@ public class FallDamageStateTests
     public void RapidToggle_HandlesCorrectly()
     {
         ApplyFallDamage(true);
-        Assert.That(_fallSafeHeight, Is.EqualTo(SafeHeight));
+        Assert.That(_fallSafeHeight, Is.EqualTo(FallDamageDefaults.SafeHeight));
 
         ApplyFallDamage(false);
-        Assert.That(_fallSafeHeight, Is.EqualTo(DefaultHeight));
+        Assert.That(_fallSafeHeight, Is.EqualTo(FallDamageDefaults.DefaultHeight));
 
         ApplyFallDamage(true);
-        Assert.That(_fallSafeHeight, Is.EqualTo(SafeHeight));
+        Assert.That(_fallSafeHeight, Is.EqualTo(FallDamageDefaults.SafeHeight));
 
         ApplyFallDamage(false);
-        Assert.That(_fallSafeHeight, Is.EqualTo(DefaultHeight));
+        Assert.That(_fallSafeHeight, Is.EqualTo(FallDamageDefaults.DefaultHeight));
     }
 
     [Test]
     public void Disabled_DefaultState_NoChange()
     {
         ApplyFallDamage(false);
-        Assert.That(_fallSafeHeight, Is.EqualTo(DefaultHeight));
+        Assert.That(_fallSafeHeight, Is.EqualTo(FallDamageDefaults.DefaultHeight));
         Assert.That(_modForced, Is.False);
     }
 
@@ -129,7 +128,7 @@ public class FallDamageStateTests
         _fallSafeHeight = 2f; // Game changes it
 
         ApplyFallDamage(true);
-        Assert.That(_fallSafeHeight, Is.EqualTo(SafeHeight), "Mod should re-override");
+        Assert.That(_fallSafeHeight, Is.EqualTo(FallDamageDefaults.SafeHeight), "Mod should re-override");
     }
 
     [Test]
