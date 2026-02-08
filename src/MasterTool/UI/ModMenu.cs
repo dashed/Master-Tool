@@ -60,10 +60,11 @@ namespace MasterTool.UI
         public void Draw(int id, Rect windowRect, GameWorld gameWorld, Player localPlayer)
         {
             _selectedTab = GUILayout.SelectionGrid(_selectedTab, TabNames, 4);
-            GUILayout.Space(10);
+            Rect tabsRect = GUILayoutUtility.GetLastRect();
+            float contentTop = tabsRect.yMax + 10;
 
             GUI.DragWindow(new Rect(0, 0, windowRect.width, DragBarHeight));
-            GUILayout.BeginArea(new Rect(10, DragBarHeight + 5, windowRect.width - 20, windowRect.height - DragBarHeight - 20));
+            GUILayout.BeginArea(new Rect(10, contentTop, windowRect.width - 20, windowRect.height - contentTop - 10));
             _mainScroll = GUILayout.BeginScrollView(_mainScroll);
 
             switch (_selectedTab)
