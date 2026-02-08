@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [2.11.1] - 2026-02-07
+
+### Fixed
+
+- Plugin no longer crashes on startup in SPT 4.0 — `ActiveHealthController.DoBleed` has multiple overloads that caused `AmbiguousMatchException` during Harmony patching. All ActiveHealthController patches now use `TryPatchAllOverloads` which iterates methods by name and patches each overload individually with per-overload error handling
+
+### Added
+
+- `UnityEngine.InputLegacyModule.dll` assembly reference required for Fly Mode input handling (`Input.GetAxis`/`Input.GetKey`)
+
 ## [2.11.0] - 2026-02-07
 
 ### Fixed
