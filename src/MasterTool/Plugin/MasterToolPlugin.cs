@@ -19,7 +19,7 @@ namespace MasterTool.Plugin
     /// Main BepInEx plugin entry point. Initializes config, applies Harmony patches,
     /// and orchestrates per-frame updates for all feature and ESP modules.
     /// </summary>
-    [BepInPlugin("com.master.tools", "Advanced SPT Mod Menu", "2.1.2")]
+    [BepInPlugin("com.master.tools", "Advanced SPT Mod Menu", "2.2.0")]
     public sealed class MasterToolPlugin : BaseUnityPlugin
     {
         internal static MasterToolPlugin Instance;
