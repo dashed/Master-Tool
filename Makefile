@@ -14,9 +14,14 @@ CONFIGURATION ?= Release
 SRC_DIR      := src
 TEST_DIR     := tests
 LIBS_DIR     := libs
+BUILD_DIR    := build
+
+# ─── SPT Installation ────────────────────────────────────────────────
+SPT_DIR      ?= /mnt/e/sp_tarkov/40
+PLUGIN_DIR   := $(SPT_DIR)/BepInEx/plugins
 
 .DEFAULT_GOAL := help
-.PHONY: help all ci version-check restore build build-tests test clean format format-check lint lint-fix
+.PHONY: help all ci version-check restore build build-tests test deploy install clean format format-check lint lint-fix
 
 # ─── Meta ─────────────────────────────────────────────────────────────
 
@@ -56,6 +61,27 @@ build: ## Build the plugin DLL (requires libs/)
 
 build-tests: ## Build the test project
 	$(DOTNET) build $(TEST_PROJECT) -c $(CONFIGURATION) --nologo
+
+# ─── Deploy ───────────────────────────────────────────────────────────
+
+deploy: build ## Build and show deploy-ready files in build/
+	@echo "Deploy-ready files in $(BUILD_DIR)/:"
+	@ls -lh $(BUILD_DIR)/MasterTool.dll $(BUILD_DIR)/MasterTool.Core.dll
+	@echo ""
+	@echo "Copy both DLLs to your SPT plugins folder:"
+	@echo "  cp $(BUILD_DIR)/MasterTool.dll $(BUILD_DIR)/MasterTool.Core.dll <SPT>/BepInEx/plugins/"
+	@echo "Or run: make install"
+
+install: deploy ## Deploy and install to SPT_DIR
+	@if [ ! -d "$(PLUGIN_DIR)" ]; then \
+		echo "Error: Plugin directory not found: $(PLUGIN_DIR)"; \
+		echo "Set SPT_DIR to your SPT installation, e.g.:"; \
+		echo "  make install SPT_DIR=/mnt/e/sp_tarkov/40"; \
+		exit 1; \
+	fi
+	@echo "Installing to $(PLUGIN_DIR)..."
+	@cp $(BUILD_DIR)/MasterTool.dll $(BUILD_DIR)/MasterTool.Core.dll "$(PLUGIN_DIR)/"
+	@echo "Installed MasterTool.dll + MasterTool.Core.dll to $(PLUGIN_DIR)/"
 
 # ─── Test ─────────────────────────────────────────────────────────────
 

@@ -14,10 +14,11 @@ An advanced BepInEx mod menu for **Single Player Tarkov (SPT)** featuring combat
 
 ## Installation
 
-1. Download the latest `MasterTool.dll` from the [Releases](https://github.com/dashed/Master-Tool/releases) page.
-2. Copy `MasterTool.dll` into your SPT installation:
+1. Download the latest `MasterTool.dll` and `MasterTool.Core.dll` from the [Releases](https://github.com/dashed/Master-Tool/releases) page.
+2. Copy both DLLs into your SPT installation:
    ```
    SPT\BepInEx\plugins\MasterTool.dll
+   SPT\BepInEx\plugins\MasterTool.Core.dll
    ```
 3. Launch SPT. The mod menu is accessible in-raid by pressing **Insert**.
 
@@ -53,7 +54,7 @@ Create a `libs/` folder in the repository root and copy the following DLLs from 
 dotnet build
 ```
 
-The compiled `MasterTool.dll` will be in `build/`.
+The compiled `MasterTool.dll` and `MasterTool.Core.dll` will be in `build/`. Copy both to your SPT plugins folder.
 
 ---
 
@@ -337,12 +338,14 @@ Master-Tool/
 A `Makefile` is provided for common tasks. Run `make help` to see all targets:
 
 ```bash
+make build          # Build plugin DLL (requires libs/)
+make deploy         # Build and show deploy-ready files
+make install        # Build and install to SPT_DIR
 make test           # Run unit tests
 make format         # Auto-format code with CSharpier
 make format-check   # Check formatting (CI-safe, no changes)
 make lint           # Check code style against .editorconfig
 make lint-fix       # Auto-fix code style issues
-make build          # Build plugin DLL (requires libs/)
 make clean          # Remove build artifacts
 make all            # format-check + lint + test
 make ci             # Full CI pipeline

@@ -8,6 +8,8 @@ BepInEx mod menu plugin for **Single Player Tarkov (SPT)** — a legitimate sing
 
 ```bash
 make build          # Build plugin DLL (requires libs/)
+make deploy         # Build and show deploy-ready files
+make install        # Build and install to SPT_DIR
 make test           # Run unit tests
 make format         # Auto-format with CSharpier
 make format-check   # Check formatting (CI-safe)
