@@ -15,6 +15,7 @@ namespace MasterTool.ESP
     {
         private readonly Dictionary<Renderer, Shader> _originalShaders = new Dictionary<Renderer, Shader>();
         private readonly Dictionary<Renderer, GameObject> _outlineDuplicates = new Dictionary<Renderer, GameObject>();
+        private readonly Dictionary<Renderer, Mesh> _bakedMeshes = new Dictionary<Renderer, Mesh>();
         private readonly Dictionary<int, Renderer[]> _cachedPlayerRenderers = new Dictionary<int, Renderer[]>();
         private readonly Dictionary<int, Renderer[]> _cachedLootRenderers = new Dictionary<int, Renderer[]>();
         private static Shader _chamsShader;
@@ -287,6 +288,16 @@ namespace MasterTool.ESP
 
                     float scale = Mathf.Clamp(PluginConfig.OutlineScale.Value, 1.01f, 1.15f);
                     existing.transform.localScale = new Vector3(scale, scale, scale);
+
+                    // Re-bake skinned mesh to follow animation
+                    if (renderer is SkinnedMeshRenderer skinnedSource)
+                    {
+                        var meshFilter = existing.GetComponent<MeshFilter>();
+                        if (meshFilter != null && meshFilter.sharedMesh != null)
+                        {
+                            skinnedSource.BakeMesh(meshFilter.sharedMesh);
+                        }
+                    }
                 }
                 return;
             }
@@ -325,21 +336,26 @@ namespace MasterTool.ESP
             float scale = Mathf.Clamp(PluginConfig.OutlineScale.Value, 1.01f, 1.15f);
             outlineObj.transform.localScale = new Vector3(scale, scale, scale);
 
-            var outlineSkinned = outlineObj.AddComponent<SkinnedMeshRenderer>();
-            outlineSkinned.sharedMesh = source.sharedMesh;
-            outlineSkinned.bones = source.bones;
-            outlineSkinned.rootBone = source.rootBone;
+            // BakeMesh snapshots the deformed mesh so MeshRenderer can render it
+            // with localScale applied (SkinnedMeshRenderer ignores localScale)
+            var bakedMesh = new Mesh();
+            source.BakeMesh(bakedMesh);
 
-            outlineSkinned.material = new Material(_chamsShader);
-            outlineSkinned.material.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.Always);
-            outlineSkinned.material.SetInt("_ZWrite", 0);
-            outlineSkinned.material.SetInt("_Cull", 1); // Cull front faces
-            outlineSkinned.material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-            outlineSkinned.material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-            outlineSkinned.material.renderQueue = 4000;
+            var outlineFilter = outlineObj.AddComponent<MeshFilter>();
+            outlineFilter.mesh = bakedMesh;
+            _bakedMeshes[source] = bakedMesh;
 
-            outlineSkinned.forceRenderingOff = false;
-            outlineSkinned.allowOcclusionWhenDynamic = false;
+            var outlineMeshRenderer = outlineObj.AddComponent<MeshRenderer>();
+            outlineMeshRenderer.material = new Material(_chamsShader);
+            outlineMeshRenderer.material.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.Always);
+            outlineMeshRenderer.material.SetInt("_ZWrite", 0);
+            outlineMeshRenderer.material.SetInt("_Cull", 1); // Cull front faces
+            outlineMeshRenderer.material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+            outlineMeshRenderer.material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+            outlineMeshRenderer.material.renderQueue = 4000;
+
+            outlineMeshRenderer.forceRenderingOff = false;
+            outlineMeshRenderer.allowOcclusionWhenDynamic = false;
 
             return outlineObj;
         }
@@ -376,6 +392,13 @@ namespace MasterTool.ESP
 
         private void DestroyOutlineDuplicate(Renderer renderer)
         {
+            if (_bakedMeshes.TryGetValue(renderer, out var mesh))
+            {
+                if (mesh != null)
+                    UnityEngine.Object.Destroy(mesh);
+                _bakedMeshes.Remove(renderer);
+            }
+
             if (_outlineDuplicates.TryGetValue(renderer, out var outline))
             {
                 if (outline != null)
@@ -398,6 +421,13 @@ namespace MasterTool.ESP
 
             foreach (var key in keysToRemove)
             {
+                if (_bakedMeshes.TryGetValue(key, out var mesh))
+                {
+                    if (mesh != null)
+                        UnityEngine.Object.Destroy(mesh);
+                    _bakedMeshes.Remove(key);
+                }
+
                 if (_outlineDuplicates.TryGetValue(key, out var outline))
                 {
                     if (outline != null)
@@ -441,6 +471,22 @@ namespace MasterTool.ESP
             foreach (var r in dead)
             {
                 _originalShaders.Remove(r);
+            }
+
+            var deadBaked = new List<Renderer>();
+            foreach (var kv in _bakedMeshes)
+            {
+                if (kv.Key == null)
+                {
+                    if (kv.Value != null)
+                        UnityEngine.Object.Destroy(kv.Value);
+                    deadBaked.Add(kv.Key);
+                }
+            }
+
+            foreach (var r in deadBaked)
+            {
+                _bakedMeshes.Remove(r);
             }
 
             var deadOutlines = new List<Renderer>();

@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [2.29.0] - 2026-02-10
+
+### Fixed
+
+- **Outline chams on players** — outline mode now works on SkinnedMeshRenderers (player models). The previous implementation created a scaled-up SkinnedMeshRenderer duplicate, but bone-driven vertices ignore `transform.localScale`. The fix uses `SkinnedMeshRenderer.BakeMesh()` to snapshot the deformed mesh each frame into a MeshFilter + MeshRenderer, which respects localScale and produces a visible inverted-hull outline
+
 ## [2.28.0] - 2026-02-08
 
 ### Added
