@@ -6,6 +6,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [2.30.0] - 2026-02-11
+
+### Added
+
+- **Reflection validation framework** — centralized `ReflectionHelper` with startup validation to catch obfuscated field/property/method name mismatches caused by game updates. Inspired by [SPTQuestingBots](https://github.com/dwesterwick/SPTQuestingBots)'s reflection validation commit
+  - `ReflectionHelper.RequireField()`, `RequireProperty()`, `RequireMethod()` — drop-in replacements for raw reflection calls that log errors instead of silently returning `null`
+  - `KnownMembers` registry documenting all 10 string-literal reflection lookups on game types
+  - `ValidateAllReflectionMembers()` called at plugin startup — validates all registered members exist and logs failures loudly
+- `ReflectionValidationTests` with 4-layer defense (639 total tests):
+  - Source scan: no raw `.GetField`/`.GetProperty`/`AccessTools.Field|Property` calls bypass `ReflectionHelper`
+  - Source scan: all Harmony `___param` field injections are registered in `KnownMembers`
+  - DLL metadata: validates member names against `libs/Assembly-CSharp.dll` using `PEReader` (skips gracefully when DLL not available)
+  - Registry completeness: sanity check for minimum entry count
+
+### Changed
+
+- Migrated all reflection callsites to use `ReflectionHelper`:
+  - `VisionFeature` — `typeof(Player).GetField/GetProperty` → `RequireField/RequireProperty`
+  - `PeacefulPatches` — 8 reflection lookups in `ResolveReflection()` and `TryPatch()` → `RequireProperty/RequireMethod`
+  - `NoWeightFeature` — `AccessTools.Method()` → `RequireMethod()`
+  - `DamagePatches` — `type.GetMethod()` in `TryPatchDamageMethod` → `RequireMethod()`
+
 ## [2.29.0] - 2026-02-10
 
 ### Fixed

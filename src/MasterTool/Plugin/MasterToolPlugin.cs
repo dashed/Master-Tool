@@ -20,6 +20,7 @@ using MasterTool.Features.Sustenance;
 using MasterTool.Features.Teleport;
 using MasterTool.Features.Vision;
 using MasterTool.UI;
+using MasterTool.Utils;
 using UnityEngine;
 
 namespace MasterTool.Plugin
@@ -28,7 +29,7 @@ namespace MasterTool.Plugin
     /// Main BepInEx plugin entry point. Initializes config, applies Harmony patches,
     /// and orchestrates per-frame updates for all feature and ESP modules.
     /// </summary>
-    [BepInPlugin("com.master.tools", "Advanced SPT Mod Menu", "2.29.0")]
+    [BepInPlugin("com.master.tools", "Advanced SPT Mod Menu", "2.30.0")]
     public sealed class MasterToolPlugin : BaseUnityPlugin
     {
         internal static MasterToolPlugin Instance;
@@ -66,6 +67,7 @@ namespace MasterTool.Plugin
             Log = Logger;
 
             PluginConfig.Initialize(Config);
+            ReflectionHelper.ValidateAllReflectionMembers();
 
             _harmony = new Harmony("com.master.tools");
             DamagePatches.PatchAll(_harmony);

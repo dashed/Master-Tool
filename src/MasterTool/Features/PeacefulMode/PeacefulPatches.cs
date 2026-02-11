@@ -5,6 +5,7 @@ using HarmonyLib;
 using MasterTool.Config;
 using MasterTool.Core;
 using MasterTool.Plugin;
+using MasterTool.Utils;
 
 namespace MasterTool.Features.PeacefulMode
 {
@@ -37,7 +38,7 @@ namespace MasterTool.Features.PeacefulMode
         {
             try
             {
-                var method = type.GetMethod(methodName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                var method = ReflectionHelper.RequireMethod(type, methodName, "PeacefulPatches — Harmony target");
                 if (method == null)
                     return;
                 var patchMethod = new HarmonyMethod(
@@ -74,35 +75,39 @@ namespace MasterTool.Features.PeacefulMode
 
             try
             {
-                _aiDataProp = typeof(Player).GetProperty("AIData", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                _aiDataProp = ReflectionHelper.RequireProperty(typeof(Player), "AIData", "PeacefulPatches — bot AI access");
                 if (_aiDataProp != null)
                 {
-                    _botOwnerProp = _aiDataProp.PropertyType.GetProperty(
+                    _botOwnerProp = ReflectionHelper.RequireProperty(
+                        _aiDataProp.PropertyType,
                         "BotOwner",
-                        BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic
+                        "PeacefulPatches — BotOwner on AIData"
                     );
                 }
                 if (_botOwnerProp != null)
                 {
                     var botOwnerType = _botOwnerProp.PropertyType;
-                    _memoryProp = botOwnerType.GetProperty("Memory", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-                    _enemiesControllerProp = botOwnerType.GetProperty(
+                    _memoryProp = ReflectionHelper.RequireProperty(botOwnerType, "Memory", "PeacefulPatches — Memory on BotOwner");
+                    _enemiesControllerProp = ReflectionHelper.RequireProperty(
+                        botOwnerType,
                         "EnemiesController",
-                        BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic
+                        "PeacefulPatches — EnemiesController on BotOwner"
                     );
                 }
                 if (_memoryProp != null)
                 {
-                    _deleteInfoMethod = _memoryProp.PropertyType.GetMethod(
+                    _deleteInfoMethod = ReflectionHelper.RequireMethod(
+                        _memoryProp.PropertyType,
                         "DeleteInfoAboutEnemy",
-                        BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic
+                        "PeacefulPatches — delete enemy info"
                     );
                 }
                 if (_enemiesControllerProp != null)
                 {
-                    _removeMethod = _enemiesControllerProp.PropertyType.GetMethod(
+                    _removeMethod = ReflectionHelper.RequireMethod(
+                        _enemiesControllerProp.PropertyType,
                         "Remove",
-                        BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic
+                        "PeacefulPatches — remove from enemies controller"
                     );
                 }
             }

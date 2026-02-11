@@ -6,6 +6,7 @@ using EFT.InventoryLogic;
 using MasterTool.Config;
 using MasterTool.Core;
 using MasterTool.Plugin;
+using MasterTool.Utils;
 using UnityEngine;
 
 namespace MasterTool.Features.Vision
@@ -112,17 +113,11 @@ namespace MasterTool.Features.Vision
                 if (!_isAimingSearched)
                 {
                     _isAimingSearched = true;
-                    _pwaField = typeof(Player).GetField(
-                        "ProceduralWeaponAnimation",
-                        BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic
-                    );
+                    _pwaField = ReflectionHelper.RequireField(typeof(Player), "ProceduralWeaponAnimation", "VisionFeature — ADS detection");
                     if (_pwaField != null)
                     {
                         var pwaType = _pwaField.FieldType;
-                        _isAimingProp = pwaType.GetProperty(
-                            "IsAiming",
-                            BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic
-                        );
+                        _isAimingProp = ReflectionHelper.RequireProperty(pwaType, "IsAiming", "VisionFeature — IsAiming on PWA");
                     }
                 }
 

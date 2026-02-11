@@ -231,10 +231,11 @@ Master-Tool/
 │       │   ├── ItemEspTarget.cs   # Item ESP data model
 │       │   └── QuestEspTarget.cs  # Quest ESP data model
 │       ├── Utils/
-│       │   ├── CoreConversions.cs # Vec3/Color/BodyPart conversion extensions
-│       │   ├── PlayerUtils.cs     # Player helper methods
-│       │   ├── ReflectionUtils.cs # Reflection helper methods
-│       │   └── KeyBindParser.cs   # Unity-side key bind parser (delegates to Core)
+│       │   ├── CoreConversions.cs  # Vec3/Color/BodyPart conversion extensions
+│       │   ├── KeyBindParser.cs    # Unity-side key bind parser (delegates to Core)
+│       │   ├── PlayerUtils.cs      # Player helper methods
+│       │   ├── ReflectionHelper.cs # Centralized reflection with validation and error logging
+│       │   └── ReflectionUtils.cs  # Quest condition reflection probing
 │       ├── Features/
 │       │   ├── GodMode/
 │       │   │   └── DamagePatches.cs
@@ -290,8 +291,10 @@ Master-Tool/
             │   └── MathTypesTests.cs
             ├── Utils/
             │   ├── FovMappingTests.cs
+            │   ├── KeyBindParserTests.cs
             │   ├── PlayerTagTests.cs
-            │   └── ReflectionUtilsTests.cs
+            │   ├── ReflectionUtilsTests.cs
+            │   └── ReflectionValidationTests.cs
             ├── Features/
             │   ├── BigHeadStateTests.cs
             │   ├── BodyPartProtectionTests.cs
@@ -326,8 +329,6 @@ Master-Tool/
             ├── UI/
             │   ├── HotkeyRebindTests.cs
             │   └── SubTabTests.cs
-            ├── Utils/
-            │   └── KeyBindParserTests.cs
             └── GameStateRefreshTests.cs
 ```
 
@@ -359,7 +360,7 @@ make build    # or: dotnet build
 
 ### Running Tests
 
-635 tests cover pure logic: models, utilities, feature state machines, ESP calculations, and config defaults. Pure logic lives in the `MasterTool.Core` shared library (`netstandard2.0`), referenced by both the plugin (`net472`) and test project (`net9.0`). Game-dependent code requires Unity/EFT assemblies and cannot be unit-tested.
+639 tests cover pure logic: models, utilities, feature state machines, ESP calculations, config defaults, and reflection validation. Pure logic lives in the `MasterTool.Core` shared library (`netstandard2.0`), referenced by both the plugin (`net472`) and test project (`net9.0`). Game-dependent code requires Unity/EFT assemblies and cannot be unit-tested.
 
 ```bash
 make test     # or: dotnet test

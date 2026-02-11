@@ -5,6 +5,7 @@ using HarmonyLib;
 using MasterTool.Config;
 using MasterTool.Core;
 using MasterTool.Plugin;
+using MasterTool.Utils;
 
 namespace MasterTool.Features.NoWeight
 {
@@ -23,7 +24,11 @@ namespace MasterTool.Features.NoWeight
         {
             try
             {
-                var method = AccessTools.Method(typeof(InventoryEquipment), nameof(InventoryEquipment.smethod_1));
+                var method = ReflectionHelper.RequireMethod(
+                    typeof(InventoryEquipment),
+                    nameof(InventoryEquipment.smethod_1),
+                    "NoWeightFeature — weight calc"
+                );
                 if (method == null)
                 {
                     return;

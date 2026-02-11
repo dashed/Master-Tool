@@ -98,7 +98,7 @@ namespace MasterTool.Features.GodMode
         {
             try
             {
-                var method = type.GetMethod(methodName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                var method = ReflectionHelper.RequireMethod(type, methodName, "DamagePatches — Harmony target");
                 if (method == null)
                     return;
                 var prefix = new HarmonyMethod(
